@@ -1,12 +1,13 @@
 import {
   EnvironmentOutlined,
   PhoneOutlined,
+  TruckOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Button, Form, Input, Select, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as UserService from "../../../src/services/UserService";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import { updateUser } from "../../redux/userSlide";
@@ -20,7 +21,7 @@ const ProfilePage = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-
+  
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
@@ -209,10 +210,10 @@ const ProfilePage = () => {
               <div className="shop__sidebar__categories">
                 <ul>
                   <li>
-                    <Link style={{ color: "#000" }}>Tài khoản</Link>
+                    <Link style={{ color: "#000" }}><UserOutlined /> Tài khoản</Link>
                   </li>
                   <li>
-                    <Link>Thông tin đơn hàng</Link>
+                    <Link to={"/my-order"}><TruckOutlined /> Thông tin đơn hàng</Link>
                   </li>
                 </ul>
               </div>

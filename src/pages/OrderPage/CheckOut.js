@@ -238,7 +238,7 @@ const CheckOut = () => {
                         <input
                           onChange={handleCheckboxChange}
                           checked={payment === "paymentincash"}
-                          autoFocus
+                          
                           type="checkbox"
                           id="paymentincash"
                         />

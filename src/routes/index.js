@@ -13,6 +13,8 @@ import UpdateOrder from "../../src/pages/Admin/updateorder";
 import Order from "../../src/pages/Admin/order";
 import ProductType from "../pages/ProductPage/productType";
 import OrderSuccess from "../pages/OrderPage/OrderSuccess";
+import MyOrderPage from "../pages/profile/MyOrderPage";
+
 
 export const routes = [
   {
@@ -71,6 +73,11 @@ export const routes = [
   {
     path: "/profile-user",
     page: ProfilePage,
+    isShowHearder: true,
+  },
+  {
+    path: "/my-order",
+    page: MyOrderPage,
     isShowHearder: true,
   },
   {

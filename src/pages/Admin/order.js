@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import * as OrderService from "../../services/OrderService";
@@ -6,8 +6,13 @@ import { converPrice } from "../../utils";
 import { orderContant } from "../../contant";
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from 'recharts';
 import PieChartComponent from './chart';
+import VnProvinces from 'vn-local-plus';
+import { formatTimeStr } from 'antd/es/statistic/utils';
 
 const OrderAdmin = () => {
+  const [province, setProvince] = useState("");
+  const [district, setDistrict] = useState("");
+  const [ward, setWard] = useState("");
 
   const fetchOrderAll = async () => {
     const res = await OrderService.getAllOrder();
@@ -19,9 +24,46 @@ const OrderAdmin = () => {
     queryFn: fetchOrderAll,
   });
 
+  useEffect(() => {
+    const fetchLocationData = async () => {
+      try {
+        if (orders && orders.data && orders.data.length > 0) {
+          const order = orders.data[0]; 
+          const { city, district, ward } = order.shippingAddress;
+
+          const provinceData = await VnProvinces.getProvinces();
+          const userProvince = provinceData.find((prov) => prov.code === city);
+          setProvince(userProvince?.name || "");
+
+          if (city) {
+            const districtData = await VnProvinces.getDistrictsByProvinceCode(city);
+            const userDistrict = districtData.find((dist) => dist.code === district);
+            setDistrict(userDistrict?.name || "");
+          }
+
+          if (district) {
+            const wardData = await VnProvinces.getWardsByDistrictCode(district);
+            const userWard = wardData.find((wardItem) => wardItem.code === ward);
+            setWard(userWard?.name || "");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching location data:", error);
+      }
+    };
+
+    fetchLocationData();
+  }, [orders]);
 
 
-  console.log("orders", orders);
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+  
   return (
     <div className="container">
       <div className="row">
@@ -92,8 +134,8 @@ const OrderAdmin = () => {
                           return (
                             <tr>
                               <td>{order?.shippingAddress.fullName}</td>
-                              <td>{order?.shippingAddress.phone}</td>
-                              <td>{`${order?.shippingAddress.address} ${order?.shippingAddress.city}`}</td>
+                              <td>{order?.shippingAddress.phone} {formatDate(order?.createdAt)}</td>
+                              <td>{`${order?.shippingAddress.address} , ${ward}, ${district}, ${province}`}</td>
                               <td>{order?.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}</td>
                               <td>
                                 {order?.isDelivered ? "Đã giao" : "Chưa giao"}

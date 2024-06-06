@@ -10,7 +10,7 @@ import {
 import { converPrice } from "../../utils";
 import "./orderpage.css";
 import * as UserService from "../../../src/services/UserService";
-import { Checkbox } from "antd";
+import { Checkbox, message } from "antd";
 import StepComponent from "../../components/StepComponent/StepComponent";
 import VnProvinces from 'vn-local-plus';
 
@@ -19,7 +19,7 @@ const OrderPage = () => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [listChecked, setListChecked] = useState([]);
-
+  console.log(user)
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
@@ -164,7 +164,7 @@ const OrderPage = () => {
       <section className="shopping-cart spad">
         <div className="container">
           <div className="row">
-            <div className="col-lg-8">
+            <div className="col-lg-12">
               <StepComponent
                 items={itemsDiscount}
                 curent={
@@ -333,6 +333,7 @@ const OrderPage = () => {
                 discount={priceDiscountMemo}
                 total={totalPriceMemo}
                 disabled={order?.orderItemsSelected?.length === 0}
+                isLoggedIn={!!user?.id} 
               />
             </div>
           </div>
@@ -346,15 +347,23 @@ export default OrderPage;
 
 const CheckOut = (props) => {
   const [activeItem, setActiveItem] = useState("home");
-  const { provisional, total, discount, disabled } = props;
+  const { provisional, total, discount, disabled, isLoggedIn } = props;
   const navigate = useNavigate();
 
   const handleClick = (item) => {
     setActiveItem(item);
   };
+
   const handleClickCheckOut = () => {
-    navigate(`/Checkout`);
+    if (!isLoggedIn) {
+      message.info("Bạn chưa đăng nhập");
+    } else if (disabled) {
+      message.info("Chưa chọn sản phẩm");
+    } else {
+      navigate(`/Checkout`);
+    }
   };
+
   return (
     <div className="cart__total">
       <h6>Cart total</h6>
@@ -376,9 +385,7 @@ const CheckOut = (props) => {
           onClick={(e) => {
             e.preventDefault();
             handleClick("shop");
-            if (!disabled) {
-              handleClickCheckOut();
-            }
+            handleClickCheckOut();
           }}
         >
           Proceed to checkout
