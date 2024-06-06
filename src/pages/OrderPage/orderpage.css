@@ -1,0 +1,16 @@
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+.btn-increase-decrease {
+    padding-left: 6px;
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #000000;
+    padding-right: 6px;
+    cursor: pointer;
+    border-radius: 1px;
+}

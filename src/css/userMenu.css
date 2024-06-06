@@ -1,0 +1,8 @@
+.user-menu p {
+  cursor: pointer;
+  &:hover {
+    /* border-radius: 4px;
+    background-color: #000; */
+    color: #ff00ff;
+  }
+}
