@@ -14,6 +14,7 @@ import Order from "../../src/pages/Admin/order";
 import ProductType from "../pages/ProductPage/productType";
 import OrderSuccess from "../pages/OrderPage/OrderSuccess";
 import MyOrderPage from "../pages/profile/MyOrderPage";
+import DetailsOrderPage from "../pages/profile/DetailsOrderPage";
 
 
 export const routes = [
@@ -78,6 +79,11 @@ export const routes = [
   {
     path: "/my-order",
     page: MyOrderPage,
+    isShowHearder: true,
+  },
+  {
+    path: "/details-order",
+    page: DetailsOrderPage,
     isShowHearder: true,
   },
   {

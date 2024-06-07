@@ -7,17 +7,17 @@ import {
 import { Avatar, Button, Form, Input, List, Select, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as UserService from "../../services/UserService";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import { updateUser } from "../../redux/userSlide";
-
+import * as OrderService from "../../services/OrderService";
 import VnProvinces from "vn-local-plus";
+import { useQuery } from "@tanstack/react-query";
+import { converPrice } from "../../utils";
+import { orderContant } from "../../contant";
 
 const MyOrderPage = () => {
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
-
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
@@ -110,7 +110,7 @@ const MyOrderPage = () => {
     return `${day}/${month}/${year}`;
   };
 
-  const data = [
+  const data123 = [
     {
       title: "Ant Design Title 1",
     },
@@ -121,9 +121,41 @@ const MyOrderPage = () => {
       title: "Ant Design Title 3",
     },
     {
-      title: "Ant Design Title 4aaaaaaaaaaaaaaaaaaaaaaaaaaaaa sssssssssssssssssssssssssssss ddddddddddddddddddddddddddddd",
+      title:
+        "Ant Design Title 4aaaaaaaaaaaaaaaaaaaaaaaaaaaaa sssssssssssssssssssssssssssss ddddddddddddddddddddddddddddd",
     },
   ];
+
+  const location = useLocation();
+  const { state } = location;
+  console.log(state);
+  const fetchMyOrder = async () => {
+    const res = await OrderService.getOrderByUserId(state?.id, state?.token);
+    return res.data;
+  };
+
+  const queryOrder = useQuery({
+    queryKey: ["order"],
+    queryFn: fetchMyOrder,
+    enabled: !!(state?.id && state?.token),
+  });
+
+  const { data } = queryOrder;
+
+  const renderProduct = (products) => {
+    return products.map((product, index) => (
+      <List.Item key={index}>
+        <List.Item.Meta
+          avatar={<Avatar size={80} src={require(`../../img/product/${product?.image}`)} />}
+          title={<a href="https://ant.design">{product.name}</a>}
+          description={product.description}
+        />
+        <p>{`${product.amount} x  ${converPrice(product.price)}`}</p>
+      </List.Item>
+    ));
+  };
+
+  console.log(data);
 
   return (
     <div className="container pt-5" style={{ marginBottom: 200 }}>
@@ -138,7 +170,10 @@ const MyOrderPage = () => {
           ĐƠN HÀNG CỦA BẠN
         </h2>
         <div className="col-3 col-sm-3 col-md-3">
-          <div className="card border-0 shadow mt-3" style={{ borderRadius: "5px" }}>
+          <div
+            className="card border-0 shadow mt-3"
+            style={{ borderRadius: "5px" }}
+          >
             <div
               style={{
                 width: "100%",
@@ -179,42 +214,34 @@ const MyOrderPage = () => {
           </div>
         </div>
         <div className="col-9 col-sm-9 col-md-9 ">
-          <div className="card border-1 mt-3">
-            <div
-              style={{
-                width: "100%",
-                backgroundColor: "#c3d2bd",
-                padding: "8px",
-              }}
-            >
-              Mã đơn hàng: <span>123456789</span> | Ngày đặt:{" "}
-              <span>06/06/2024 </span>| Thanh toán:{" "}
-              <span>Thanh toán khi nhận hàng</span>
-            </div>
+          {data?.map((order) => {
+            return (
+              <div className="card border-1 mt-3">
+                <div
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#c3d2bd",
+                    padding: "8px",
+                  }}
+                >
+                  Mã đơn hàng: <span>{order?._id}</span> | Ngày đặt:{" "}
+                  <span>{formatDate(order?.createdAt)} </span>| Thanh toán:{" "}
+                  <span>{orderContant.payment[order?.paymentMethod]}</span>
+                </div>
 
-            <div className="card-body" style={{paddingTop:"10px"}}>
-              <List
-                itemLayout="horizontal"
-                dataSource={data}
-                renderItem={(item, index) => (
-                  <List.Item>
-                    <List.Item.Meta
-                      avatar={
-                        <Avatar  size={80} 
-                          src={require("../../img/product/lego1.webp")}
-                        />
-                      }
-                      title={<a href="https://ant.design">{item.title}</a>}
-                      description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                <div className="card-body" style={{ paddingTop: "10px" }}>
+                <List itemLayout="horizontal">
+                    {renderProduct(order?.orderItems)}
+                  </List>
+                </div>
+                  <div>
 
-                    />
-                    <p>1 x 20.000.000 Đ</p>
-                 
-                  </List.Item>
-                )}
-              />
-            </div>
-          </div>
+                  <p style={{float:"right"}}>Tổng tiền: {converPrice(order?.totalPrice)}</p>
+                  </div>
+
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

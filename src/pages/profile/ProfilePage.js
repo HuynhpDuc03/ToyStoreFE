@@ -12,16 +12,17 @@ import * as UserService from "../../../src/services/UserService";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import { updateUser } from "../../redux/userSlide";
 
-import VnProvinces from 'vn-local-plus';
+import VnProvinces from "vn-local-plus";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  
+
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
@@ -51,7 +52,6 @@ const ProfilePage = () => {
     setAddress(e.target.value);
   };
 
-
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
@@ -63,7 +63,7 @@ const ProfilePage = () => {
     };
     fetchProvinces();
   }, []);
-  
+
   useEffect(() => {
     const fetchDistricts = async () => {
       if (city) {
@@ -81,7 +81,7 @@ const ProfilePage = () => {
     };
     fetchDistricts();
   }, [city]);
-  
+
   useEffect(() => {
     const fetchWards = async () => {
       if (district) {
@@ -99,7 +99,7 @@ const ProfilePage = () => {
     };
     fetchWards();
   }, [district]);
-  
+
   const handleProvinceChange = async (value) => {
     setCity(value);
     setDistrict("");
@@ -112,7 +112,7 @@ const ProfilePage = () => {
       console.error("Error fetching districts:", error);
     }
   };
-  
+
   const handleDistrictChange = async (value) => {
     setDistrict(value);
     setWard("");
@@ -123,7 +123,7 @@ const ProfilePage = () => {
       console.error("Error fetching wards:", error);
     }
   };
-  
+
   const handleWardChange = (value) => {
     setWard(value);
   };
@@ -132,12 +132,10 @@ const ProfilePage = () => {
     setEditMode(true);
   };
 
-  const mutation = useMutationHooks(
-    (data) => {
-      const { id, access_token, ...rests } = data;
-      UserService.UpdateUser(id, rests, access_token);
-    }
-  );
+  const mutation = useMutationHooks((data) => {
+    const { id, access_token, ...rests } = data;
+    UserService.UpdateUser(id, rests, access_token);
+  });
 
   const { data, isSuccess, isError, error } = mutation;
 
@@ -168,9 +166,14 @@ const ProfilePage = () => {
     });
     setEditMode(false);
   };
-
-
-
+  const handleClickNavigate = () => {
+    navigate("/my-order", {
+      state: {
+        id: user?.id,
+        token: user?.access_token,
+      },
+    });
+  };
   return (
     <div className="container pt-5" style={{ marginBottom: 200 }}>
       <div className="row">
@@ -210,10 +213,19 @@ const ProfilePage = () => {
               <div className="shop__sidebar__categories">
                 <ul>
                   <li>
-                    <Link style={{ color: "#000" }}><UserOutlined /> Tài khoản</Link>
+                    <Link style={{ color: "#000" }}>
+                      <UserOutlined /> Tài khoản
+                    </Link>
                   </li>
                   <li>
-                    <Link to={"/my-order"}><TruckOutlined /> Thông tin đơn hàng</Link>
+                    <Link
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleClickNavigate();
+                      }}
+                    >
+                      <TruckOutlined /> Thông tin đơn hàng
+                    </Link>
                   </li>
                 </ul>
               </div>
