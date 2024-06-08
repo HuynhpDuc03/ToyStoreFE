@@ -1,134 +1,19 @@
-import {
-  EnvironmentOutlined,
-  PhoneOutlined,
-  TruckOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { Avatar, Button, Form, Input, List, Select, message } from "antd";
+import { SmileOutlined, TruckOutlined, UserOutlined } from "@ant-design/icons";
+import { Avatar, Button, List } from "antd";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import * as UserService from "../../services/UserService";
-import { useMutationHooks } from "../../hooks/useMutationHook";
-import { updateUser } from "../../redux/userSlide";
 import * as OrderService from "../../services/OrderService";
 import VnProvinces from "vn-local-plus";
 import { useQuery } from "@tanstack/react-query";
 import { converPrice } from "../../utils";
 import { orderContant } from "../../contant";
+import { useMutationHooks } from "../../hooks/useMutationHook";
 
 const MyOrderPage = () => {
-  const [city, setCity] = useState("");
-  const [district, setDistrict] = useState("");
-  const [ward, setWard] = useState("");
-
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
-
-  useEffect(() => {
-    const fetchProvinces = async () => {
-      try {
-        const res = VnProvinces.getProvinces();
-        setProvinces(res);
-      } catch (error) {
-        console.error("Error fetching provinces:", error);
-      }
-    };
-    fetchProvinces();
-  }, []);
-
-  useEffect(() => {
-    const fetchDistricts = async () => {
-      if (city) {
-        try {
-          const res = VnProvinces.getDistrictsByProvinceCode(city);
-          setDistricts(res);
-          const currentDistrict = res.find((d) => d.code === district);
-          if (currentDistrict) {
-            setDistrict(currentDistrict.code);
-          }
-        } catch (error) {
-          console.error("Error fetching districts:", error);
-        }
-      }
-    };
-    fetchDistricts();
-  }, [city]);
-
-  useEffect(() => {
-    const fetchWards = async () => {
-      if (district) {
-        try {
-          const res = VnProvinces.getWardsByDistrictCode(district);
-          setWards(res);
-          const currentWard = res.find((w) => w.code === ward);
-          if (currentWard) {
-            setWard(currentWard.code);
-          }
-        } catch (error) {
-          console.error("Error fetching wards:", error);
-        }
-      }
-    };
-    fetchWards();
-  }, [district]);
-
-  const handleProvinceChange = async (value) => {
-    setCity(value);
-    setDistrict("");
-    setWard("");
-    try {
-      const res = VnProvinces.getDistrictsByProvinceCode(value);
-      setDistricts(res);
-      setWards([]);
-    } catch (error) {
-      console.error("Error fetching districts:", error);
-    }
-  };
-
-  const handleDistrictChange = async (value) => {
-    setDistrict(value);
-    setWard("");
-    try {
-      const res = VnProvinces.getWardsByDistrictCode(value);
-      setWards(res);
-    } catch (error) {
-      console.error("Error fetching wards:", error);
-    }
-  };
-
-  const handleWardChange = (value) => {
-    setWard(value);
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
-  const data123 = [
-    {
-      title: "Ant Design Title 1",
-    },
-    {
-      title: "Ant Design Title 2",
-    },
-    {
-      title: "Ant Design Title 3",
-    },
-    {
-      title:
-        "Ant Design Title 4aaaaaaaaaaaaaaaaaaaaaaaaaaaaa sssssssssssssssssssssssssssss ddddddddddddddddddddddddddddd",
-    },
-  ];
-
   const location = useLocation();
   const { state } = location;
-  console.log(state);
+  const navigate = useNavigate();
+
   const fetchMyOrder = async () => {
     const res = await OrderService.getOrderByUserId(state?.id, state?.token);
     return res.data;
@@ -146,7 +31,12 @@ const MyOrderPage = () => {
     return products.map((product, index) => (
       <List.Item key={index}>
         <List.Item.Meta
-          avatar={<Avatar size={80} src={require(`../../img/product/${product?.image}`)} />}
+          avatar={
+            <Avatar
+              size={80}
+              src={require(`../../img/product/${product?.image}`)}
+            />
+          }
           title={<a href="https://ant.design">{product.name}</a>}
           description={product.description}
         />
@@ -154,6 +44,35 @@ const MyOrderPage = () => {
       </List.Item>
     ));
   };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+  const handleDetailsOrder = (id) => {
+    navigate(`/details-order/${id}`, {
+      state: {
+        token: state?.token,
+        name: state?.name
+      },
+    });
+  };
+
+  const mutation = useMutationHooks((data)=> {
+    const { id, token} = data;
+    const res = OrderService.cancelOrder(id, token);
+    return res
+  })
+  const handleCancelOrder = (id) => {
+    mutation.mutate({id, token: state?.token},{
+      onSettled: () => {
+        queryOrder.refetch()
+      }
+    })
+  }
+
 
   console.log(data);
 
@@ -192,7 +111,7 @@ const MyOrderPage = () => {
                   fontWeight: "700",
                 }}
               >
-                Tài khoản của bạn
+                <SmileOutlined /> Chào {state?.name}
               </p>
             </div>
             <div className="card-body">
@@ -224,21 +143,38 @@ const MyOrderPage = () => {
                     padding: "8px",
                   }}
                 >
-                  Mã đơn hàng: <span>{order?._id}</span> | Ngày đặt:{" "}
-                  <span>{formatDate(order?.createdAt)} </span>| Thanh toán:{" "}
-                  <span>{orderContant.payment[order?.paymentMethod]}</span>
+                  Ngày đặt: <span>{formatDate(order?.createdAt)} </span>| Thanh
+                  toán:{" "}
+                  <span>{orderContant.payment[order?.paymentMethod]}</span> |{" "}
+                  Giao hàng: <span>chờ giao hàng</span>
                 </div>
 
-                <div className="card-body" style={{ paddingTop: "10px" }}>
-                <List itemLayout="horizontal">
+                <div
+                  className="card-body"
+                  style={{ paddingTop: "10px", paddingBottom: "10px" }}
+                >
+                  <List itemLayout="horizontal">
                     {renderProduct(order?.orderItems)}
                   </List>
                 </div>
+                <hr style={{ marginTop: "0px" }} />
+                <div className="card-body" style={{ paddingTop: "0px" }}>
+                  <span style={{ float: "right", fontSize: "18px" }}>
+                    Tổng tiền:{" "}
+                    <span style={{ color: "#e53637", fontWeight: "700" }}>
+                      {converPrice(order?.totalPrice)}
+                    </span>
+                  </span>
                   <div>
+                    <Button style={{ marginRight: "10px" }}>
+                      Hủy đơn hàng
+                    </Button>
 
-                  <p style={{float:"right"}}>Tổng tiền: {converPrice(order?.totalPrice)}</p>
+                    <Button onClick={() => handleDetailsOrder(order?._id)}>
+                      Xem chi tiết
+                    </Button>
                   </div>
-
+                </div>
               </div>
             );
           })}

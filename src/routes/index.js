@@ -82,7 +82,7 @@ export const routes = [
     isShowHearder: true,
   },
   {
-    path: "/details-order",
+    path: "/details-order/:id",
     page: DetailsOrderPage,
     isShowHearder: true,
   },

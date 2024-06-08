@@ -117,6 +117,7 @@ const CheckOut = () => {
         user: user?.id,
         paymentMethod: payment,
         itemsPrice: priceMemo,
+        discountPrice: priceDiscountMemo,
         shippingPrice: diliveryPriceMemo,
         totalPrice: totalPriceMemo,
       });
@@ -299,6 +300,7 @@ const CheckOut = () => {
                         );
                       })}
                     </ul>
+                    
                     <ul className="checkout__total__all">
                       <li>
                         Tạm tính <span>{converPrice(priceMemo)}</span>

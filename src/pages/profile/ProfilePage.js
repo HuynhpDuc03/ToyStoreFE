@@ -1,6 +1,7 @@
 import {
   EnvironmentOutlined,
   PhoneOutlined,
+  SmileOutlined,
   TruckOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -170,6 +171,7 @@ const ProfilePage = () => {
     navigate("/my-order", {
       state: {
         id: user?.id,
+        name: user?.name,
         token: user?.access_token,
       },
     });
@@ -206,7 +208,7 @@ const ProfilePage = () => {
                   fontWeight: "700",
                 }}
               >
-                Tài khoản của bạn
+                <SmileOutlined /> Chào {user?.name}
               </p>
             </div>
             <div className="card-body">
