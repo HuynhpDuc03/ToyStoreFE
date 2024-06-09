@@ -201,7 +201,9 @@ const ProductDetail = () => {
                             bạn.
                           </p>
                           <div className="product__details__cart__option">
-                            <span>Số lượng </span>
+                            {productDetails?.countInStock > 0 ? (
+                              <>
+                              <span>Số lượng </span>
                             <InputNumber
                               style={{ marginRight: "10px" }}
                               min={1}
@@ -213,11 +215,13 @@ const ProductDetail = () => {
                             <span>
                               {productDetails?.countInStock} sản phẩm có sẵn
                             </span>
-                            {errorLimitOrder && (
-                              <div style={{ color: "red" }}>
-                                Sản phẩm này đã hết hàng
-                              </div>
+                              </>
+                            ) : (
+                              <h5 style={{ color: "rgb(255, 123, 2)" }}>
+                                  Sản phẩm hết hàng vui lòng liên hệ
+                              </h5>
                             )}
+                            
                           </div>
                           <button
                             onClick={handleAddOrderProduct}

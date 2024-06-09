@@ -36,6 +36,7 @@ const CheckOut = () => {
   }, [order]);
 
   const priceDiscountMemo = useMemo(() => {
+    if (isNaN(priceMemo)) return 0;
     if (priceMemo > 1000000 && priceMemo < 2000000) {
       return 100000;
     } else if (priceMemo > 2000000 && priceMemo < 3000000) {
@@ -121,6 +122,7 @@ const CheckOut = () => {
         shippingPrice: diliveryPriceMemo,
         totalPrice: totalPriceMemo,
       });
+      console.log('Order Data:', mutationAddOrder);
     }
   };
 

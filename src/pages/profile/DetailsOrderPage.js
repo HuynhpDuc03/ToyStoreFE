@@ -58,20 +58,6 @@ const DetailsOrderPage = () => {
 
   console.log("dataaaaa", orderDetails);
 
-  const data1 = [
-    {
-      title: "Ant Design Title 1",
-    },
-    {
-      title: "Ant Design Title 2",
-    },
-    {
-      title: "Ant Design Title 3",
-    },
-    {
-      title: "Ant Design Title 4",
-    },
-  ];
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -204,7 +190,7 @@ const DetailsOrderPage = () => {
                 <div className="card-body">
                   <h5>Thông tin địa chỉ</h5>
                   <hr style={{ height: "0px" }} />
-                  <span style={{ fontSize: "14px" }}>
+                  <span style={{ fontSize: "14px", textTransform:"capitalize" }}>
                     <UserOutlined /> {orderDetails?.shippingAddress?.fullName} -{" "}
                     <PhoneOutlined /> {orderDetails?.shippingAddress?.phone}
                   </span>

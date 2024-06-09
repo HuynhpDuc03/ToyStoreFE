@@ -60,10 +60,9 @@ const ProductPage = () => {
   });
 
   const handleSortingChange = (value) => {
-
     setSortOrder(value);
   };
-  
+
   const handlePriceFilterChange = (range) => {
     setSelectedPrices((prevSelectedPrices) => {
       if (prevSelectedPrices.includes(range)) {
@@ -114,7 +113,7 @@ const ProductPage = () => {
                     </button>
                   </form>
                 </div>
-             
+
                 <div className="shop__sidebar__accordion">
                   <div className="accordion" id="accordionExample">
                     <div class="card">
@@ -151,7 +150,7 @@ const ProductPage = () => {
                       </div>
                     </div>
                   </div>
-                  <hr/>
+                  <hr />
                   <div className="accordion" id="accordionExample1">
                     <div class="card">
                       <div class="card-heading">
@@ -166,70 +165,119 @@ const ProductPage = () => {
                       >
                         <div class="card-body">
                           <div class="shop__sidebar__categories">
-                          <ul class="nice-scroll">
+                            <ul class="nice-scroll">
                               <li>
-                                <Checkbox 
-                                  onChange={() => handlePriceFilterChange("0-200000")} 
-                                  checked={selectedPrices.includes("0-200000")} 
-                                  className="slidebar-checkbox" 
-                                  style={{ fontSize: "15px", lineHeight: "32px", transition: "all,0.3s" }}
+                                <Checkbox
+                                  onChange={() =>
+                                    handlePriceFilterChange("0-200000")
+                                  }
+                                  checked={selectedPrices.includes("0-200000")}
+                                  className="slidebar-checkbox"
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "32px",
+                                    transition: "all,0.3s",
+                                  }}
                                 >
                                   Dưới 200.000 Đ
                                 </Checkbox>
                               </li>
                               <li>
-                                <Checkbox 
-                                  onChange={() => handlePriceFilterChange("200000-500000")} 
-                                  checked={selectedPrices.includes("200000-500000")} 
-                                  className="slidebar-checkbox" 
-                                  style={{ fontSize: "15px", lineHeight: "32px", transition: "all,0.3s" }}
+                                <Checkbox
+                                  onChange={() =>
+                                    handlePriceFilterChange("200000-500000")
+                                  }
+                                  checked={selectedPrices.includes(
+                                    "200000-500000"
+                                  )}
+                                  className="slidebar-checkbox"
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "32px",
+                                    transition: "all,0.3s",
+                                  }}
                                 >
                                   200.000 Đ - 500.000 Đ
                                 </Checkbox>
                               </li>
                               <li>
-                                <Checkbox 
-                                  onChange={() => handlePriceFilterChange("500000-1000000")} 
-                                  checked={selectedPrices.includes("500000-1000000")} 
-                                  className="slidebar-checkbox" 
-                                  style={{ fontSize: "15px", lineHeight: "32px", transition: "all,0.3s" }}
+                                <Checkbox
+                                  onChange={() =>
+                                    handlePriceFilterChange("500000-1000000")
+                                  }
+                                  checked={selectedPrices.includes(
+                                    "500000-1000000"
+                                  )}
+                                  className="slidebar-checkbox"
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "32px",
+                                    transition: "all,0.3s",
+                                  }}
                                 >
                                   500.000 Đ - 1.000.000 Đ
                                 </Checkbox>
                               </li>
                               <li>
-                                <Checkbox 
-                                  onChange={() => handlePriceFilterChange("1000000-2000000")} 
-                                  checked={selectedPrices.includes("1000000-2000000")} 
-                                  className="slidebar-checkbox" 
-                                  style={{ fontSize: "15px", lineHeight: "32px", transition: "all,0.3s" }}
+                                <Checkbox
+                                  onChange={() =>
+                                    handlePriceFilterChange("1000000-2000000")
+                                  }
+                                  checked={selectedPrices.includes(
+                                    "1000000-2000000"
+                                  )}
+                                  className="slidebar-checkbox"
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "32px",
+                                    transition: "all,0.3s",
+                                  }}
                                 >
                                   1.000.000 Đ - 2.000.000 Đ
                                 </Checkbox>
                               </li>
                               <li>
-                                <Checkbox 
-                                  onChange={() => handlePriceFilterChange("2000000-4000000")} 
-                                  checked={selectedPrices.includes("2000000-4000000")} 
-                                  className="slidebar-checkbox" 
-                                  style={{ fontSize: "15px", lineHeight: "32px", transition: "all,0.3s" }}
+                                <Checkbox
+                                  onChange={() =>
+                                    handlePriceFilterChange("2000000-4000000")
+                                  }
+                                  checked={selectedPrices.includes(
+                                    "2000000-4000000"
+                                  )}
+                                  className="slidebar-checkbox"
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "32px",
+                                    transition: "all,0.3s",
+                                  }}
                                 >
                                   2.000.000 Đ - 4.000.000 Đ
                                 </Checkbox>
                               </li>
                               <li>
-                                <Checkbox 
-                                  onChange={() => handlePriceFilterChange("4000000-Infinity")} 
-                                  checked={selectedPrices.includes("4000000-Infinity")} 
-                                  className="slidebar-checkbox" 
-                                  style={{ fontSize: "15px", lineHeight: "32px", transition: "all,0.3s" }}
+                                <Checkbox
+                                  onChange={() =>
+                                    handlePriceFilterChange("4000000-Infinity")
+                                  }
+                                  checked={selectedPrices.includes(
+                                    "4000000-Infinity"
+                                  )}
+                                  className="slidebar-checkbox"
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "32px",
+                                    transition: "all,0.3s",
+                                  }}
                                 >
                                   Trên 4.000.000 Đ
                                 </Checkbox>
                               </li>
                             </ul>
                             {selectedPrices.length > 0 && (
-                              <Link onClick={handleClearAllPrices} className="btn-delete-all-price">
+                              <Link
+                                onClick={handleClearAllPrices}
+                                className="btn-delete-all-price"
+                              >
                                 Xóa tất cả
                               </Link>
                             )}
@@ -238,7 +286,7 @@ const ProductPage = () => {
                       </div>
                     </div>
                   </div>
-                  <hr/>
+                  <hr />
                 </div>
               </div>
             </div>
@@ -341,7 +389,8 @@ const ProductPage = () => {
 export default ProductPage;
 
 const Product = (props) => {
-  const { image, name, price, rating, discount, selled, id } = props;
+  const { image, name, price, rating, discount, selled, id, countInStock } =
+    props;
   const navigate = useNavigate();
   const handleDetailsProduct = (id) => {
     navigate(`/productsDetail/${id}`);
@@ -385,32 +434,38 @@ const Product = (props) => {
             {name}
           </h6>
           <div style={{ display: "flex", alignItems: "baseline" }}>
-            <strong style={{ color: "rgb(255, 123, 2)" }}>
-              {converPrice(discountedPrice)}
-            </strong>
-            <span
-              style={{
-                color: "rgba(0, 0, 0, .54)",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                maxWidth: "65px", // Adjust this value based on your needs
-                textDecoration: "line-through",
-                marginLeft: "3px",
-                marginRight: "2px",
-              }}
-            >
-              {converPrice(price)}
-            </span>
-            <span
-              style={{
-                fontSize: "14px",
-                color: "red",
-                backgroundColor: "#feeeea",
-              }}
-            >
-              -{discount}%
-            </span>
+            {countInStock > 0 ? (
+              <>
+                <strong style={{ color: "rgb(255, 123, 2)" }}>
+                  {converPrice(discountedPrice)}
+                </strong>
+                <span
+                  style={{
+                    color: "rgba(0, 0, 0, .54)",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "65px", // Adjust this value based on your needs
+                    textDecoration: "line-through",
+                    marginLeft: "3px",
+                    marginRight: "2px",
+                  }}
+                >
+                  {converPrice(price)}
+                </span>
+                <span
+                  style={{
+                    fontSize: "14px",
+                    color: "red",
+                    backgroundColor: "#feeeea",
+                  }}
+                >
+                  -{discount}%
+                </span>
+              </>
+            ) : (
+              <strong style={{ color: "rgb(255, 123, 2)" }}>Liên hệ</strong>
+            )}
           </div>
           <Rate disabled defaultValue={rating} style={{ fontSize: "12px" }} />{" "}
           <span style={{ fontSize: "12px" }}>
@@ -421,5 +476,3 @@ const Product = (props) => {
     </div>
   );
 };
-
-
