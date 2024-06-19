@@ -6,7 +6,8 @@ import * as OrderService from "../../services/OrderService";
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { removeAllOrderProduct } from "../../redux/slides/orderSlide";
-import VnProvinces from 'vn-local-plus';
+import VnProvinces from "vn-local-plus";
+import { PayPalButton } from "react-paypal-button-v2";
 
 const CheckOut = () => {
   const order = useSelector((state) => state.order);
@@ -73,7 +74,9 @@ const CheckOut = () => {
         setProvince(userProvince?.name || "");
 
         if (user.city) {
-          const districtData = VnProvinces.getDistrictsByProvinceCode(user.city);
+          const districtData = VnProvinces.getDistrictsByProvinceCode(
+            user.city
+          );
           const userDistrict = districtData.find(
             (dist) => dist.code === user.district
           );
@@ -82,9 +85,7 @@ const CheckOut = () => {
 
         if (user.district) {
           const wardData = VnProvinces.getWardsByDistrictCode(user.district);
-          const userWard = wardData.find(
-            (ward) => ward.code === user.ward
-          );
+          const userWard = wardData.find((ward) => ward.code === user.ward);
           setWard(userWard?.name || "");
         }
       } catch (error) {
@@ -94,7 +95,6 @@ const CheckOut = () => {
 
     fetchLocationData();
   }, [user.city, user.district, user.ward]);
-
 
   const handleAddOrder = () => {
     if (
@@ -122,7 +122,7 @@ const CheckOut = () => {
         shippingPrice: diliveryPriceMemo,
         totalPrice: totalPriceMemo,
       });
-      console.log('Order Data:', mutationAddOrder);
+      console.log("Order Data:", mutationAddOrder);
     }
   };
 
@@ -241,7 +241,6 @@ const CheckOut = () => {
                         <input
                           onChange={handleCheckboxChange}
                           checked={payment === "paymentincash"}
-                          
                           type="checkbox"
                           id="paymentincash"
                         />
@@ -249,18 +248,19 @@ const CheckOut = () => {
                       </label>
                     </div>
 
-                    {/* <div className="checkout__input__checkbox">
-                      <label for="momo">
-                        Momo
+                    <div className="checkout__input__checkbox">
+                      <label for="paypal">
+                        PayPal
                         <input
                           onChange={handleCheckboxChange}
-                          checked={payment === "momo"}
+                          checked={payment === "paypal"}
                           type="checkbox"
-                          id="momo"
+                          id="paypal"
                         />
                         <span className="checkmark"></span>
                       </label>
                     </div>
+                    {/*                     
                     <div className="checkout__input__checkbox">
                       <label for="zalopay">
                         Zalo Pay
@@ -302,7 +302,7 @@ const CheckOut = () => {
                         );
                       })}
                     </ul>
-                    
+
                     <ul className="checkout__total__all">
                       <li>
                         Tạm tính <span>{converPrice(priceMemo)}</span>
@@ -318,16 +318,36 @@ const CheckOut = () => {
                         Thành tiền <span>{converPrice(totalPriceMemo)}</span>
                       </li>
                     </ul>
-            
+
                     <p>{`Địa chỉ:  ${user?.address}, ${ward}, ${district}, ${province}`}</p>
-                   
-                    <button
-                      type="button"
-                      onClick={() => handleAddOrder()}
-                      className="site-btn"
-                    >
-                      ĐẶT HÀNG
-                    </button>
+                    {payment === "paypal" ? (
+                      <PayPalButton
+                        amount="0.01"
+                        // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
+                        onSuccess={(details, data) => {
+                          alert(
+                            "Transaction completed by " +
+                              details.payer.name.given_name
+                          );
+
+                          // OPTIONAL: Call your server to save the transaction
+                          return fetch("/paypal-transaction-complete", {
+                            method: "post",
+                            body: JSON.stringify({
+                              orderID: data.orderID,
+                            }),
+                          });
+                        }}
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleAddOrder()}
+                        className="site-btn"
+                      >
+                        ĐẶT HÀNG
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

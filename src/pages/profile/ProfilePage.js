@@ -171,7 +171,6 @@ const ProfilePage = () => {
     navigate("/my-order", {
       state: {
         id: user?.id,
-        name: user?.name,
         token: user?.access_token,
       },
     });
@@ -208,7 +207,7 @@ const ProfilePage = () => {
                   fontWeight: "700",
                 }}
               >
-                <SmileOutlined /> Chào {user?.name}
+                <SmileOutlined /> Thông tin của bạn
               </p>
             </div>
             <div className="card-body">

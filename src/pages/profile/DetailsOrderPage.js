@@ -8,7 +8,7 @@ import {
   TruckOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import * as OrderService from "../../services/OrderService";
 import { useQuery } from "@tanstack/react-query";
 import VnProvinces from "vn-local-plus";
@@ -19,7 +19,8 @@ const DetailsOrderPage = () => {
   const location = useLocation();
   const { state } = location;
   const { id } = params;
-
+  console.log("id",params)
+  const navigate = useNavigate();
   const [provinceName, setProvinceName] = useState("");
   const [districtName, setDistrictName] = useState("");
   const [wardName, setWardName] = useState("");
@@ -56,8 +57,15 @@ const DetailsOrderPage = () => {
     }
   }, [orderDetails]);
 
-  console.log("dataaaaa", orderDetails);
 
+  const handleClickNavigate = () => {
+    navigate("/my-order", {
+      state: {
+        id: state?.userid,
+        token: state?.token,
+      },
+    });
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -103,7 +111,7 @@ const DetailsOrderPage = () => {
                   fontWeight: "700",
                 }}
               >
-                <SmileOutlined /> Chào {state?.name}
+                <SmileOutlined /> Thông tin của bạn
               </p>
             </div>
             <div className="card-body">
@@ -116,8 +124,7 @@ const DetailsOrderPage = () => {
                   </li>
                   <li>
                     <Link
-                      to={"#"}
-                      onClick={(e) => e.preventDefault()}
+                      onClick={(e) => {e.preventDefault();handleClickNavigate();}}
                       style={{ color: "#000" }}
                     >
                       <TruckOutlined /> Thông tin đơn hàng

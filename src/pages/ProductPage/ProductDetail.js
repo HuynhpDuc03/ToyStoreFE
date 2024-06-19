@@ -92,7 +92,7 @@ const ProductDetail = () => {
           })
           .then(() => message.success("Đã thêm vào giỏ hàng", 1.5));
       } else {
-        setErrorLimitOrder(true);
+        message.error("Có lỗi khi thêm vào giỏ hàng",1.5);
       }
     }
   };

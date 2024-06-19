@@ -4,9 +4,11 @@ import { Link, useNavigate } from "react-router-dom";
 import * as ProductService from "../../services/ProductService";
 import { useDispatch, useSelector } from "react-redux";
 import { searchProduct } from "../../redux/slides/productSlide";
-import { Checkbox, Rate, Select } from "antd";
+import { Button, Checkbox, InputNumber, Modal, Rate, Select } from "antd";
 import { useDebounce } from "../../hooks/useDebounce";
 import { converPrice } from "../../utils";
+import { ShoppingCartOutlined } from "@ant-design/icons";
+import ProductDetailsContent from "./ProductDetailsModal";
 
 const ProductPage = () => {
   const dispatch = useDispatch();
@@ -391,6 +393,8 @@ export default ProductPage;
 const Product = (props) => {
   const { image, name, price, rating, discount, selled, id, countInStock } =
     props;
+  const [open, setOpen] = useState(false);
+
   const navigate = useNavigate();
   const handleDetailsProduct = (id) => {
     navigate(`/productsDetail/${id}`);
@@ -436,7 +440,7 @@ const Product = (props) => {
           <div style={{ display: "flex", alignItems: "baseline" }}>
             {countInStock > 0 ? (
               <>
-                <strong style={{ color: "rgb(255, 123, 2)" }}>
+                <strong style={{ color: "rgb(255, 123, 2)", fontSize: "15px" }}>
                   {converPrice(discountedPrice)}
                 </strong>
                 <span
@@ -445,7 +449,8 @@ const Product = (props) => {
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
-                    maxWidth: "65px", // Adjust this value based on your needs
+                    fontSize: "12px",
+                    maxWidth: "62px", // Adjust this value based on your needs
                     textDecoration: "line-through",
                     marginLeft: "3px",
                     marginRight: "2px",
@@ -472,7 +477,27 @@ const Product = (props) => {
             Đã bán: {formatSelled(selled)}
           </span>
         </div>
+        <Button icon={<ShoppingCartOutlined style={{fontSize:"18px"}}/>} onClick={() => setOpen(true)} type="default" className="primary-btn" style={{width:"50%", maxHeight:"100%"}}>
+      
+        </Button>
+        <Modal
+          title="Thông tin sản phẩm"
+          open={open}
+          onCancel={() => setOpen(false)}
+          footer={null}
+          width={1200}
+          style={{ top: 20 }}
+        >
+          <ProductDetailsContent
+            productDetails={props} // Hoặc lấy chi tiết sản phẩm từ state hoặc API
+           
+          />
+        </Modal>
       </div>
     </div>
   );
 };
+
+
+
+

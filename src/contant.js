@@ -5,7 +5,8 @@ export const orderContant = {
     },
     payment: {
         paymentincash: 'Thanh toán bằng tiền mặt',
-        momo: 'Momo',
-        zalopay: 'Zalo pay',
+        momo: 'Thanh Toán bằng Momo',
+        zalopay: 'Thanh Toán bằng Zalo pay',
+        paypal: 'Thanh Toán bằng PayPal'
     }
 }

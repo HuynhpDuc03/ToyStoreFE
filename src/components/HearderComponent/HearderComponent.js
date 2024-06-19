@@ -106,10 +106,10 @@ const Header = () => {
     const content = (
         <div className='user-menu'>
             <p onClick={() => navigate('/profile-user')}>Thông tin người dùng</p>
-            <p onClick={handleLogout}>Đăng xuất tài khoản</p>
             {user?.isAdmin && (
                 <p onClick={() => navigate('/Admin')}>Quản lí hệ thống</p>
             )}
+            <p onClick={handleLogout}>Đăng xuất tài khoản</p>
 
         </div>
     );

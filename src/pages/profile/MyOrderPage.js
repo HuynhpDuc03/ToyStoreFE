@@ -54,6 +54,7 @@ const MyOrderPage = () => {
   const handleDetailsOrder = (id) => {
     navigate(`/details-order/${id}`, {
       state: {
+        userid: state?.id,
         token: state?.token,
         name: state?.name,
       },
@@ -132,7 +133,7 @@ const MyOrderPage = () => {
                   fontWeight: "700",
                 }}
               >
-                <SmileOutlined /> Chào {state?.name}
+                <SmileOutlined /> Thông tin của bạn
               </p>
             </div>
             <div className="card-body">
