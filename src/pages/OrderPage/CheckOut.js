@@ -97,6 +97,14 @@ const CheckOut = () => {
   }, [user.city, user.district, user.ward]);
 
   const handleAddOrder = () => {
+    if (!deliveryMethod) {
+      message.info("Vui lòng chọn phương thức giao hàng.");
+      return;
+    }
+    if (!payment) {
+      message.info("Vui lòng chọn phương thức thanh toán.");
+      return;
+    }
     if (
       (!user?.access_token &&
         order &&
@@ -118,12 +126,13 @@ const CheckOut = () => {
         user: user?.id,
         paymentMethod: payment,
         itemsPrice: priceMemo,
-        discountPrice: priceDiscountMemo,
         shippingPrice: diliveryPriceMemo,
         totalPrice: totalPriceMemo,
+        discountPrice: Number(priceDiscountMemo),
+
       });
       console.log("Order Data:", mutationAddOrder);
-    }
+    }  
   };
 
   const mutationAddOrder = useMutationHooks((data) => {
@@ -247,32 +256,6 @@ const CheckOut = () => {
                         <span className="checkmark"></span>
                       </label>
                     </div>
-
-                    <div className="checkout__input__checkbox">
-                      <label for="paypal">
-                        PayPal
-                        <input
-                          onChange={handleCheckboxChange}
-                          checked={payment === "paypal"}
-                          type="checkbox"
-                          id="paypal"
-                        />
-                        <span className="checkmark"></span>
-                      </label>
-                    </div>
-                    {/*                     
-                    <div className="checkout__input__checkbox">
-                      <label for="zalopay">
-                        Zalo Pay
-                        <input
-                          onChange={handleCheckboxChange}
-                          checked={payment === "zalopay"}
-                          type="checkbox"
-                          id="zalopay"
-                        />
-                        <span className="checkmark"></span>
-                      </label>
-                    </div> */}
                   </div>
                 </div>
                 <div className="col-lg-4 col-md-6">
@@ -320,26 +303,7 @@ const CheckOut = () => {
                     </ul>
 
                     <p>{`Địa chỉ:  ${user?.address}, ${ward}, ${district}, ${province}`}</p>
-                    {payment === "paypal" ? (
-                      <PayPalButton
-                        amount="0.01"
-                        // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
-                        onSuccess={(details, data) => {
-                          alert(
-                            "Transaction completed by " +
-                              details.payer.name.given_name
-                          );
-
-                          // OPTIONAL: Call your server to save the transaction
-                          return fetch("/paypal-transaction-complete", {
-                            method: "post",
-                            body: JSON.stringify({
-                              orderID: data.orderID,
-                            }),
-                          });
-                        }}
-                      />
-                    ) : (
+              
                       <button
                         type="button"
                         onClick={() => handleAddOrder()}
@@ -347,7 +311,6 @@ const CheckOut = () => {
                       >
                         ĐẶT HÀNG
                       </button>
-                    )}
                   </div>
                 </div>
               </div>

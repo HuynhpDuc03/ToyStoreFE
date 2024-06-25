@@ -4,11 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import * as ProductService from "../../services/ProductService";
 import { useDispatch, useSelector } from "react-redux";
 import { searchProduct } from "../../redux/slides/productSlide";
-import { Button, Checkbox, InputNumber, Modal, Rate, Select } from "antd";
+import { Button, Checkbox, Modal, Rate, Select } from "antd";
 import { useDebounce } from "../../hooks/useDebounce";
 import { converPrice } from "../../utils";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import ProductDetailsContent from "./ProductDetailsModal";
+import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 
 const ProductPage = () => {
   const dispatch = useDispatch();
@@ -53,7 +54,7 @@ const ProductPage = () => {
     fetchAllTypeProduct();
   }, []);
 
-  const { data: products } = useQuery({
+  const { isLoading ,data: products } = useQuery({
     queryKey: ["products", limit, searchDebounce, sortOrder, selectedPrices],
     queryFn: fetchProductAll,
     retry: 3,
@@ -343,23 +344,28 @@ const ProductPage = () => {
                 </div>
               </div>
               <div className="row">
-                {products?.data?.map((product) => {
-                  return (
-                    <Product
-                      key={product._id}
-                      countInStock={product.countInStock}
-                      description={product.description}
-                      image={product.image}
-                      name={product.name}
-                      price={product.price}
-                      rating={product.rating}
-                      type={product.type}
-                      discount={product.discount}
-                      selled={product.selled}
-                      id={product._id}
-                    />
-                  );
-                })}
+              {isLoading ? (
+                  <LoadingComponent isLoading={isLoading} />
+                ) : (
+                  products?.data?.map((product) => {
+                    return (
+                      <Product
+                        key={product._id}
+                        countInStock={product.countInStock}
+                        description={product.description}
+                        image={product.image}
+                        name={product.name}
+                        price={product.price}
+                        rating={product.rating}
+                        type={product.type}
+                        discount={product.discount}
+                        selled={product.selled}
+                        id={product._id}
+                      />
+                    );
+                  })
+                )}
+
               </div>
               <div className="row">
                 <div className="col-lg-12">
@@ -489,7 +495,7 @@ const Product = (props) => {
           style={{ top: 20 }}
         >
           <ProductDetailsContent
-            productDetails={props} // Hoặc lấy chi tiết sản phẩm từ state hoặc API
+            id={id} 
            
           />
         </Modal>

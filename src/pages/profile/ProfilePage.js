@@ -138,7 +138,7 @@ const ProfilePage = () => {
     UserService.UpdateUser(id, rests, access_token);
   });
 
-  const { data, isSuccess, isError, error } = mutation;
+  const { data, isSuccess, isError } = mutation;
 
   const handleGetDetailUser = async (id, token) => {
     const res = await UserService.getDetailsUser(id, token);

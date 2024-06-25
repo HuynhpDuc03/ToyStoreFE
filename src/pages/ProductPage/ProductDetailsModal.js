@@ -4,12 +4,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { addOrderProduct } from "../../redux/slides/orderSlide";
 import { converPrice } from "../../utils";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import * as ProductService from "../../services/ProductService";
+import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 
-const ProductDetailsContent = ({ productDetails }) => {
+
+const ProductDetailsContent = ({id}) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const order = useSelector((state) => state.order);
   const navigate = useNavigate();
+
   const location = useLocation();
   const [errorLimitOrder, setErrorLimitOrder] = useState(false);
 
@@ -26,6 +31,16 @@ const ProductDetailsContent = ({ productDetails }) => {
     console.log("value", value);
     setNumProduct(Number(value));
   };
+  const fetchGetDetailsProduct = async () => {
+    const res = await ProductService.getDetailsProduct(id);
+    return res?.data;
+  };
+  const { isLoading, isError,data: productDetails } = useQuery({
+    queryKey: ["product-details", id],
+    queryFn: fetchGetDetailsProduct
+  });
+
+  console.log("details",productDetails)
 
   useEffect(() => {
     const orderRedux = order?.orderItems?.find(
@@ -82,9 +97,13 @@ const ProductDetailsContent = ({ productDetails }) => {
 
   const discountedPrice =
     productDetails?.price * (1 - productDetails?.discount / 100);
-
+   
   return (
     <>
+    {isLoading ? (
+      <LoadingComponent isLoading={isLoading} />
+    ) : (
+    <div>
       <hr />
       <div className="container">
         <div className="row  ">
@@ -162,10 +181,10 @@ const ProductDetailsContent = ({ productDetails }) => {
               <div className="product__details__last__option">
                 <ul>
                   <li>
-                    <span>Mã sản phẩm:</span> {123456}
+                    <span>Mã sản phẩm:</span> {productDetails?.id}
                   </li>
                   <li>
-                    <span>Thể loại:</span> {"LOL"}
+                    <span>Thể loại:</span> {productDetails?.type}
                   </li>
                 </ul>
               </div>
@@ -173,7 +192,9 @@ const ProductDetailsContent = ({ productDetails }) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
+  )}
+  </>
   );
 };
 

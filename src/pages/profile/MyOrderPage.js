@@ -4,28 +4,27 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as OrderService from "../../services/OrderService";
 import VnProvinces from "vn-local-plus";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { converPrice } from "../../utils";
 import { orderContant } from "../../contant";
 import { useMutationHooks } from "../../hooks/useMutationHook";
+import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 
 const MyOrderPage = () => {
   const location = useLocation();
   const { state } = location;
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
   const fetchMyOrder = async () => {
     const res = await OrderService.getOrderByUserId(state?.id, state?.token);
     return res.data;
   };
 
-  const queryOrder = useQuery({
-    queryKey: ["order"],
+  const { isLoading, data } = useQuery({
+    queryKey: ["order", state?.id],
     queryFn: fetchMyOrder,
     enabled: !!(state?.id && state?.token),
   });
-
-  const { data } = queryOrder;
 
   const renderProduct = (products) => {
     return products?.map((product, index) => (
@@ -71,11 +70,19 @@ const MyOrderPage = () => {
       { id: order?._id, token: state?.token, orderItems: order?.orderItems },
       {
         onSuccess: () => {
-          queryOrder.refetch();
+          queryClient.refetchQueries(["order", state?.id]);
+          setTimeout(() => {
+            setConfirmLoading(false);
+            setOpen(false);
+          }, 1000); // Delay closing the modal for 1 second
+        },
+        onError: () => {
+          setConfirmLoading(false); // Stop the loading state of the modal even if there's an error
         },
       }
     );
   };
+
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Vui lòng xác nhận hủy đơn hàng!");
@@ -88,10 +95,6 @@ const MyOrderPage = () => {
   const handleOk = () => {
     setModalText("Vui lòng xác nhận hủy đơn hàng!");
     setConfirmLoading(true);
-    setTimeout(() => {
-      setOpen(false);
-      setConfirmLoading(false);
-    }, 1000);
     handleCancelOrder(currentOrder);
   };
   const handleCancel = () => {
@@ -155,67 +158,67 @@ const MyOrderPage = () => {
           </div>
         </div>
         <div className="col-9 col-sm-9 col-md-9 ">
-          {Array.isArray(data) && data.length > 0 ? (
-            data.map((order) => {
-              return (
-                <div className="card border-1 mt-3" key={order?._id}>
-                  <div
-                    style={{
-                      width: "100%",
-                      backgroundColor: "#c3d2bd",
-                      padding: "8px",
-                    }}
-                  >
-                    Ngày đặt: <span>{formatDate(order?.createdAt)} </span>|
-                    Thanh toán:{" "}
-                    <span>{orderContant.payment[order?.paymentMethod]}</span> |{" "}
-                    Giao hàng: <span>chờ giao hàng</span>
-                  </div>
+          {isLoading ? (
+            <LoadingComponent isLoading={isLoading} />
+          ) : Array.isArray(data) ? (
+            data.map((order) => (
+              <div className="card border-1 mt-3" key={order?._id}>
+                <div
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#c3d2bd",
+                    padding: "8px",
+                  }}
+                >
+                  Ngày đặt: <span>{formatDate(order?.createdAt)} </span>| Thanh
+                  toán:{" "}
+                  <span>{orderContant.payment[order?.paymentMethod]}</span> |{" "}
+                  Giao hàng: <span>chờ giao hàng</span>
+                </div>
 
-                  <div
-                    className="card-body"
-                    style={{ paddingTop: "10px", paddingBottom: "10px" }}
-                  >
-                    <List itemLayout="horizontal">
-                      {renderProduct(order?.orderItems)}
-                    </List>
-                  </div>
-                  <hr style={{ marginTop: "0px" }} />
-                  <div className="card-body" style={{ paddingTop: "0px" }}>
-                    <span style={{ float: "right", fontSize: "18px" }}>
-                      Tổng tiền:{" "}
-                      <span style={{ color: "#e53637", fontWeight: "700" }}>
-                        {converPrice(order?.totalPrice)}
-                      </span>
+                <div
+                  className="card-body"
+                  style={{ paddingTop: "10px", paddingBottom: "10px" }}
+                >
+                  <List itemLayout="horizontal">
+                    {renderProduct(order?.orderItems)}
+                  </List>
+                </div>
+                <hr style={{ marginTop: "0px" }} />
+                <div className="card-body" style={{ paddingTop: "0px" }}>
+                  <span style={{ float: "right", fontSize: "18px" }}>
+                    Tổng tiền:{" "}
+                    <span style={{ color: "#e53637", fontWeight: "700" }}>
+                      {converPrice(order?.totalPrice)}
                     </span>
-                    <div>
-                      <Button
-                        danger
-                        onClick={() => showModal(order)}
-                        style={{ marginRight: "10px" }}
-                      >
-                        Hủy đơn hàng
-                      </Button>
-                      <Modal
-                        title="Bạn có chắc muốn hủy đơn hàng ?"
-                        open={open}
-                        mask={false}
-                        onOk={handleOk}
-                        confirmLoading={confirmLoading}
-                        onCancel={handleCancel}
-                      >
-                        <p>{modalText}</p>
-                      </Modal>
-                      <Button onClick={() => handleDetailsOrder(order?._id)}>
-                        Xem chi tiết
-                      </Button>
-                    </div>
+                  </span>
+                  <div>
+                    <Button
+                      danger
+                      onClick={() => showModal(order)}
+                      style={{ marginRight: "10px" }}
+                    >
+                      Hủy đơn hàng
+                    </Button>
+                    <Modal
+                      title="Bạn có chắc muốn hủy đơn hàng ?"
+                      open={open}
+                      mask={false}
+                      onOk={handleOk}
+                      confirmLoading={confirmLoading}
+                      onCancel={handleCancel}
+                    >
+                      <p>{modalText}</p>
+                    </Modal>
+                    <Button onClick={() => handleDetailsOrder(order?._id)}>
+                      Xem chi tiết
+                    </Button>
                   </div>
                 </div>
-              );
-            })
+              </div>
+            ))
           ) : (
-            <div>No orders found.</div>
+            <div>No orders found</div>
           )}
         </div>
       </div>

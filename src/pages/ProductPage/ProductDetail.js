@@ -6,6 +6,7 @@ import { Image, InputNumber, Rate, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { addOrderProduct } from "../../redux/slides/orderSlide";
 import { converPrice } from "../../utils";
+import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -35,11 +36,13 @@ const ProductDetail = () => {
     const res = await ProductService.getDetailsProduct(id);
     return res.data;
   };
-  const { data: productDetails } = useQuery({
+  const { isLoading, data: productDetails } = useQuery({
     queryKey: ["product-details", id],
     queryFn: fetchGetDetailsProduct,
     enabled: !!id,
   });
+
+
   let imageUrl = productDetails?.image
     ? require(`../../img/product/${productDetails.image}`)
     : require(`../../img/product/product-1.jpg`);
@@ -109,7 +112,7 @@ const ProductDetail = () => {
   };
   
   return (
-    <div>
+    <LoadingComponent isLoading={isLoading}>
       {/* <!-- Shop Details Section Begin --> */}
       <section className="shop-details">
         <div className="product__details__pic">
@@ -445,7 +448,7 @@ const ProductDetail = () => {
         </div>
       </section>
       {/* <!-- Shop Details Section End --> */}
-    </div>
+    </LoadingComponent>
   );
 };
 
