@@ -75,6 +75,10 @@ const DetailsOrderPage = () => {
     return `${day}/${month}/${year}`;
   };
 
+  const handleDetailsProduct = (id) => {
+    navigate(`/productsDetail/${id}`);
+  };
+
   return (
     <LoadingComponent isLoading={isLoading}>
     <div className="container pt-5" style={{ marginBottom: 200 }}>
@@ -179,10 +183,13 @@ const DetailsOrderPage = () => {
                             avatar={
                               <Avatar
                                 size={80}
-                                src={require(`../../img/product/${item?.image}`)}
+                                src={require(`../../img/product/${item?.image[0]}`)}
                               />
                             }
-                            title={<a href="https://ant.design">{item.name}</a>}
+                            title={<Link  onClick={(e) => {
+                              e.preventDefault();
+                              handleDetailsProduct(item?.product);
+                            }}>{item.name}</Link>}
                             description={"Đồ chơi siêu trí tuệ"}
                           />
                           <p>{`${item.amount} x  ${converPrice(

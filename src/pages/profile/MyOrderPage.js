@@ -25,7 +25,9 @@ const MyOrderPage = () => {
     queryFn: fetchMyOrder,
     enabled: !!(state?.id && state?.token),
   });
-
+  const handleDetailsProduct = (id) => {
+    navigate(`/productsDetail/${id}`);
+  };
   const renderProduct = (products) => {
     return products?.map((product, index) => (
       <List.Item key={index}>
@@ -33,10 +35,19 @@ const MyOrderPage = () => {
           avatar={
             <Avatar
               size={80}
-              src={require(`../../img/product/${product?.image}`)}
+              src={require(`../../img/product/${product?.image[0]}`)}
             />
           }
-          title={<a href="https://ant.design">{product.name}</a>}
+          title={
+            <Link
+              onClick={(e) => {
+                e.preventDefault();
+                handleDetailsProduct(product?.product);
+              }}
+            >
+              {product.name}
+            </Link>
+          }
           description={"Đồ chơi siêu trí tuệ"}
         />
         <p>{`${product.amount} x  ${converPrice(product.price)}`}</p>

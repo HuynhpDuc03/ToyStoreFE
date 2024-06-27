@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 import { useNavigate } from "react-router-dom";
 import * as ProductService from "../../services/ProductService";
 import { useQuery } from "@tanstack/react-query";
 import { converPrice } from "../../utils";
-import { Carousel, Rate } from "antd";
+import { Button, Carousel, Modal, Rate } from "antd";
+import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
+import { ShoppingCartOutlined } from "@ant-design/icons";
+import ProductDetailsContent from "../ProductPage/ProductDetailsModal";
+
 const HomePage = () => {
   const fetchProductAll = async (context) => {
     const limit = 8;
@@ -13,13 +17,13 @@ const HomePage = () => {
     return res;
   };
 
-  const { data: products } = useQuery({
+  const { isLoading ,data: products } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProductAll,
   });
 
   return (
-    <div>
+    <LoadingComponent isLoading={isLoading}>
 
 <Carousel autoplay>
     <div>
@@ -59,7 +63,7 @@ const HomePage = () => {
                       key={product._id}
                       countInStock={product.countInStock}
                       description={product.description}
-                      image={product.image}
+                      image={product.image[0]}
                       name={product.name}
                       price={product.price}
                       rating={product.rating}
@@ -74,13 +78,14 @@ const HomePage = () => {
         </div>
       </section>
       {/* <!-- Product Section End -->*/}
-    </div>
+    </LoadingComponent>
   );
 };
 export default HomePage;
 const Product = (props) => {
   const { image, name, price, rating, discount, selled, id } = props;
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const handleDetailsProduct = (id) => {
     navigate(`/productsDetail/${id}`);
   };
@@ -146,6 +151,22 @@ const Product = (props) => {
             Đã bán: {formatSelled(selled)}
           </span>
         </div>
+        <Button icon={<ShoppingCartOutlined style={{fontSize:"18px"}}/>} onClick={() => setOpen(true)} type="default" className="primary-btn" style={{width:"50%", maxHeight:"100%"}}>
+      
+      </Button>
+      <Modal
+        title="Thông tin sản phẩm"
+        open={open}
+        onCancel={() => setOpen(false)}
+        footer={null}
+        width={1200}
+        style={{ top: 20 }}
+      >
+        <ProductDetailsContent
+          id={id} 
+         
+        />
+      </Modal>
       </div>
     </div>
   );

@@ -353,7 +353,7 @@ const ProductPage = () => {
                         key={product._id}
                         countInStock={product.countInStock}
                         description={product.description}
-                        image={product.image}
+                        image={product.image[0]}
                         name={product.name}
                         price={product.price}
                         rating={product.rating}

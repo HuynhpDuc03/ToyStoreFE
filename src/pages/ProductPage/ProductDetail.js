@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addOrderProduct } from "../../redux/slides/orderSlide";
 import { converPrice } from "../../utils";
 import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
+import ProductImagesSlider from "../../components/ProductImageSliderCompoent/ProductImagesSlider";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -44,7 +45,7 @@ const ProductDetail = () => {
 
 
   let imageUrl = productDetails?.image
-    ? require(`../../img/product/${productDetails.image}`)
+    ? require(`../../img/product/${productDetails.image[0]}`)
     : require(`../../img/product/product-1.jpg`);
 
   useEffect(() => {
@@ -146,7 +147,7 @@ const ProductDetail = () => {
                 <div className="tab-content">
                   <div className="tab-pane active" id="tabs-1" role="tabpanel">
                     <div className="product__details__pic__item">
-                      <Image style={{width:"360px", height:"360px"}} src={imageUrl} />
+                      <ProductImagesSlider images={productDetails?.image} />
                     </div>
                   </div>
                 </div>

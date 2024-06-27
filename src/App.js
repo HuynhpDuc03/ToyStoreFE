@@ -21,6 +21,9 @@ import "../src/css/slicknav.min.css";
 import "../src/css/style.css";
 import "../src/css/404.css";
 import "../src/css/userMenu.css";
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/thumbs'
 
 function App() {
   const dispatch = useDispatch();

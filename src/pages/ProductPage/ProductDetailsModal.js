@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import * as ProductService from "../../services/ProductService";
 import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
+import ProductImagesSlider from "../../components/ProductImageSliderCompoent/ProductImagesSlider";
 
 
 const ProductDetailsContent = ({id}) => {
@@ -35,7 +36,7 @@ const ProductDetailsContent = ({id}) => {
     const res = await ProductService.getDetailsProduct(id);
     return res?.data;
   };
-  const { isLoading, isError,data: productDetails } = useQuery({
+  const { isLoading,data: productDetails } = useQuery({
     queryKey: ["product-details", id],
     queryFn: fetchGetDetailsProduct
   });
@@ -98,6 +99,8 @@ const ProductDetailsContent = ({id}) => {
   const discountedPrice =
     productDetails?.price * (1 - productDetails?.discount / 100);
    
+
+
   return (
     <>
     {isLoading ? (
@@ -108,11 +111,12 @@ const ProductDetailsContent = ({id}) => {
       <div className="container">
         <div className="row  ">
           <div className="col-md-6 mt-3">
-            <img
+            {/* <Image
               width={546}
               height={546}
               src={require(`../../img/product/${productDetails?.image}`)}
-            />
+            /> */}
+              <ProductImagesSlider images={productDetails?.image} />
           </div>
           <div className="col-md-6 mt-4">
             <div className="product__details__text">

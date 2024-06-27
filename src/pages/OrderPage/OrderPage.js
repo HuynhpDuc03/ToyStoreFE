@@ -9,7 +9,7 @@ import {
 } from "../../redux/slides/orderSlide";
 import { converPrice } from "../../utils";
 import "./orderpage.css";
-import * as UserService from "../../../src/services/UserService";
+
 import { Checkbox, message } from "antd";
 import StepComponent from "../../components/StepComponent/StepComponent";
 import VnProvinces from 'vn-local-plus';
@@ -229,7 +229,7 @@ const OrderPage = () => {
                                   width={100}
                                   height={100}
                                   src={require("../../img/product/" +
-                                    order?.image)}
+                                    order?.image[0])}
                                   alt=""
                                 />
                               </div>

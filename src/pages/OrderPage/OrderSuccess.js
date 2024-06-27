@@ -121,7 +121,7 @@ const OrderSuccess = () => {
                                 width={100}
                                 height={100}
                                 src={require("../../img/product/" +
-                                  order?.image)}
+                                  order?.image[0])}
                                 alt=""
                               />
                             </div>

@@ -7,7 +7,7 @@ import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { removeAllOrderProduct } from "../../redux/slides/orderSlide";
 import VnProvinces from "vn-local-plus";
-import { PayPalButton } from "react-paypal-button-v2";
+
 
 const CheckOut = () => {
   const order = useSelector((state) => state.order);

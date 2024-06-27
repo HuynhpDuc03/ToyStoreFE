@@ -26,7 +26,7 @@ const Admin = () => {
     price: "",
     description: "",
     rating: "",
-    image: "",
+    image: [],
     type: "",
     discount: "",
     countInStock: "",
@@ -106,7 +106,7 @@ const Admin = () => {
     }
   }, [rowSelected, OpenDrawer]);
 
-  console.log("stateproducts", stateProductDetail);
+  console.log("stateproducts", stateProduct);
 
   const showDrawer = () => {
     setOpenDrawer(true);
@@ -292,25 +292,22 @@ const Admin = () => {
   //         })
   //     }
 
-  const handleOnchangeAvatar = async ({fileList}) => {
-    const file= fileList[0]
-    if (file) {
-      setStateProduct({
-        ...stateProduct,
-        image: file.name, 
-      });
-    }
-  };
-  const handleOnchangeAvatarDetails = async ({fileList}) => {
-    const file= fileList[0]
-    if (file) {
-      setStateProductDetail({
-        ...stateProductDetail,
-        image: file.name, 
-      });
-    }
-  };
+  const handleOnchangeAvatar = async  ({ fileList }) => {
+    const fileNames = fileList.map((file) => file.name);
+    console.log("file names", fileNames);
+     setStateProduct({
+       ...stateProduct,
+       image: fileNames,
+     });
+   };
 
+  const handleOnchangeAvatarDetails = async ({fileList}) => {
+    const fileNames = fileList.map((file) => file.name);
+    setStateProductDetail({
+      ...stateProductDetail,
+      image: fileNames,
+    });
+  };
 
   // const handleOnchangeAvatarDetails = async ({ fileList }) => {
   //   const file = fileList[0];
@@ -525,14 +522,16 @@ const Admin = () => {
                            
 
                             <WrapperUploadFile
-                        
-                         
+                              
+                              multiple
+                              name="image"
+                              listType="picture"
                               accept=".png, .jpeg, .jpg"
+                              showUploadList={true}
                               onChange={handleOnchangeAvatar}
-                           
                             >
                               <Button>Select File</Button>
-                              {stateProduct?.image && (
+                              {/* {stateProduct?.image && (
                                 <img
                                   src={require('../../img/product/' +  stateProduct?.image)}
                                   style={{
@@ -544,7 +543,7 @@ const Admin = () => {
                                   }}
                                   alt="avatar"
                                 />
-                              )}
+                              )} */}
                             </WrapperUploadFile>
                           </Form.Item>
                           <Form.Item wrapperCol={{ offset: 16, span: 16 }}>
@@ -693,7 +692,7 @@ const Admin = () => {
                               onChange={handleOnchangeAvatarDetails}
                             >
                               <Button>Select File</Button>
-                              {stateProductDetail?.image && (
+                              {/* {stateProductDetail?.image && (
                                 <img
                                   src={require("../../img/product/"+stateProductDetail?.image)}
                                   style={{
@@ -705,7 +704,7 @@ const Admin = () => {
                                   }}
                                   alt="avatar"
                                 />
-                              )}
+                              )} */}
                             </WrapperUploadFile>
                           </Form.Item>
                           <Form.Item wrapperCol={{ offset: 20, span: 20 }}>
