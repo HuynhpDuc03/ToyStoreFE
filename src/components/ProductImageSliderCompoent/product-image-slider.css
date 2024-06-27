@@ -3,6 +3,7 @@
     /* padding-top: 100%; */
     overflow: hidden;
     position: relative;
+    margin-bottom: 5%;
 }
 .product-images-slider .swiper-slide Image {
     position: absolute;

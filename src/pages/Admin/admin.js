@@ -12,7 +12,6 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import ModalComponent from "../../components/ModalComponent/ModalComponent";
 
-
 const Admin = () => {
   const user = useSelector((state) => state?.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -107,6 +106,7 @@ const Admin = () => {
   }, [rowSelected, OpenDrawer]);
 
   console.log("stateproducts", stateProduct);
+  console.log("stateproductsDetails", stateProductDetail);
 
   const showDrawer = () => {
     setOpenDrawer(true);
@@ -292,16 +292,16 @@ const Admin = () => {
   //         })
   //     }
 
-  const handleOnchangeAvatar = async  ({ fileList }) => {
+  const handleOnchangeAvatar = async ({ fileList }) => {
     const fileNames = fileList.map((file) => file.name);
     console.log("file names", fileNames);
-     setStateProduct({
-       ...stateProduct,
-       image: fileNames,
-     });
-   };
+    setStateProduct({
+      ...stateProduct,
+      image: fileNames,
+    });
+  };
 
-  const handleOnchangeAvatarDetails = async ({fileList}) => {
+  const handleOnchangeAvatarDetails = async ({ fileList }) => {
     const fileNames = fileList.map((file) => file.name);
     setStateProductDetail({
       ...stateProductDetail,
@@ -331,9 +331,6 @@ const Admin = () => {
     );
   };
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-  };
   return (
     <div className="container">
       <div className="row">
@@ -519,10 +516,7 @@ const Admin = () => {
                               },
                             ]}
                           >
-                           
-
                             <WrapperUploadFile
-                              
                               multiple
                               name="image"
                               listType="picture"
@@ -688,23 +682,43 @@ const Admin = () => {
                             ]}
                           >
                             <WrapperUploadFile
-                               accept=".png, .jpeg, .jpg"
+                              multiple
+                              name="image"
+                              listType="picture"
+                              accept=".png, .jpeg, .jpg"
+                              showUploadList={true}
                               onChange={handleOnchangeAvatarDetails}
                             >
                               <Button>Select File</Button>
-                              {/* {stateProductDetail?.image && (
-                                <img
-                                  src={require("../../img/product/"+stateProductDetail?.image)}
-                                  style={{
-                                    height: "60px",
-                                    width: "60px",
-                                    borderRadius: "50%",
-                                    objectFit: "cover",
-                                    marginLeft: "10px",
-                                  }}
-                                  alt="avatar"
-                                />
-                              )} */}
+                              {stateProductDetail?.image?.length > 0 && (
+                                <ul style={{listStyle:"none"}}>
+                                  {stateProductDetail?.image?.map((fileName) => (
+                                    <li key={fileName} style={{ 
+                                      height: "66px",
+                                      width:"354px",
+                                      padding: "8px",
+                                      border:" 1px solid #d9d9d9",
+                                      borderRadius: "8px",
+                                      
+                                      marginBottom:"8px"
+                                  }}>
+                                      <img
+                                        src={require("../../img/product/" +
+                                          fileName)}
+                                        style={{
+                                          height: "60px",
+                                          width: "60px",
+                                          borderRadius: "50%",
+                                          objectFit: "cover",
+                                          marginLeft: "10px",
+                                        }}
+                                        alt="avatar"
+                                      />{" "}
+                                      {fileName}
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
                             </WrapperUploadFile>
                           </Form.Item>
                           <Form.Item wrapperCol={{ offset: 20, span: 20 }}>
@@ -759,4 +773,3 @@ const Admin = () => {
 };
 
 export default Admin;
-

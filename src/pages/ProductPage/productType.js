@@ -5,8 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
 import { converPrice } from "../../utils";
-import { Rate, Select } from "antd";
+import { Button, Modal, Rate, Select } from "antd";
 import { searchProduct } from "../../redux/slides/productSlide";
+import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
+import ProductDetailsContent from "./ProductDetailsModal";
+import { ShoppingCartOutlined } from "@ant-design/icons";
 
 
 const ProductType = () => {
@@ -54,7 +57,7 @@ const ProductType = () => {
     fetchAllTypeProduct();
   }, []);
 
-  const { data: products } = useQuery({
+  const { isLoading,data: products } = useQuery({
     queryKey: ["products", limit, state,sortOrder],
     queryFn: fetchProductType,
     retry: 3,
@@ -68,7 +71,7 @@ const ProductType = () => {
   };
 
   return (
-    <div>
+    <LoadingComponent isLoading={isLoading}>
       {/* <!-- Breadcrumb Section Begin --> */}
       <section className="breadcrumb-option">
         <div className="container">
@@ -216,7 +219,7 @@ const ProductType = () => {
                         key={product._id}
                         countInStock={product.countInStock}
                         description={product.description}
-                        image={product.image}
+                        image={product.image[0]}
                         name={product.name}
                         price={product.price}
                         rating={product.rating}
@@ -251,14 +254,15 @@ const ProductType = () => {
         </div>
       </section>
       {/* <!-- Shop Section End --> */}
-    </div>
+    </LoadingComponent>
   );
 };
 export default ProductType;
 
 const ProductwithType = (props) => {
-  const { image, name, price, rating, discount, id, selled } = props;
+  const { image, name, price, rating, discount, id, selled, countInStock } = props;
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const handleDetailsProduct = (id) => {
     navigate(`/productsDetail/${id}`);
   };
@@ -273,66 +277,89 @@ const ProductwithType = (props) => {
   const discountedPrice = price * (1 - discount / 100);
   return (
     <div
-      className="col-lg-3 col-md-6 col-sm-6 border-shadow"
-      style={{ marginTop: "5px", marginBottom: "5px" }}
-    >
-      <div style={{ marginBottom: "15px" }}>
-        <div
-          className="product__item__pic set-bg"
-          style={{
-            backgroundImage: `url(${require("../../img/product/" + image)})`,
-            cursor: "pointer",
-          }}
-          onClick={() => handleDetailsProduct(id)}
-        >
-          <span className="label" style={{ color: "red" }}>
-            YÊU THÍCH
-          </span>
-        </div>
-        <div className="product__item__text">
-          <h6
-            style={{
-              whiteSpace: "nowrap",
-              textOverflow: "ellipsis",
-              overflow: "hidden",
-            }}
-          >
-            {name}
-          </h6>
-          <div style={{ display: "flex", alignItems: "baseline" }}>
-            <strong style={{ color: "rgb(255, 123, 2)" }}>
-              {converPrice(discountedPrice)}
-            </strong>
-            <span
-              style={{
-                color: "rgba(0, 0, 0, .54)",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                maxWidth: "65px", // Adjust this value based on your needs
-                textDecoration: "line-through",
-                marginLeft: "3px",
-                marginRight: "2px",
-              }}
-            >
-              {converPrice(price)}
-            </span>
-            <span
-              style={{
-                fontSize: "14px",
-                color: "red",
-                backgroundColor: "#feeeea",
-              }}
-            >
-              -{discount}%
-            </span>
-          </div>
-          <Rate disabled defaultValue={rating} style={{ fontSize: "12px" }} />{" "}
-          <span style={{ fontSize: "12px" }}>
-            Đã bán: {formatSelled(selled)}
-          </span>
-        </div>
+    className="col-lg-3 col-md-6 col-sm-6 border-shadow"
+    style={{ marginTop: "5px", marginBottom: "5px" }}
+  >
+    <div style={{ marginBottom: "15px" }}>
+      <div
+        className="product__item__pic set-bg"
+        style={{
+          backgroundImage: `url(${require("../../img/product/" + image)})`,
+          cursor: "pointer",
+        }}
+        onClick={() => handleDetailsProduct(id)}
+      >
+        <span className="label" style={{ color: "red" }}>
+          YÊU THÍCH
+        </span>
       </div>
+      <div className="product__item__text">
+        <h6
+          style={{
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+            overflow: "hidden",
+          }}
+        >
+          {name}
+        </h6>
+        <div style={{ display: "flex", alignItems: "baseline" }}>
+          {countInStock > 0 ? (
+            <>
+              <strong style={{ color: "rgb(255, 123, 2)", fontSize: "15px" }}>
+                {converPrice(discountedPrice)}
+              </strong>
+              <span
+                style={{
+                  color: "rgba(0, 0, 0, .54)",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  fontSize: "12px",
+                  maxWidth: "62px", // Adjust this value based on your needs
+                  textDecoration: "line-through",
+                  marginLeft: "3px",
+                  marginRight: "2px",
+                }}
+              >
+                {converPrice(price)}
+              </span>
+              <span
+                style={{
+                  fontSize: "14px",
+                  color: "red",
+                  backgroundColor: "#feeeea",
+                }}
+              >
+                -{discount}%
+              </span>
+            </>
+          ) : (
+            <strong style={{ color: "rgb(255, 123, 2)" }}>Liên hệ</strong>
+          )}
+        </div>
+        <Rate disabled defaultValue={rating} style={{ fontSize: "12px" }} />{" "}
+        <span style={{ fontSize: "12px" }}>
+          Đã bán: {formatSelled(selled)}
+        </span>
+      </div>
+      <Button icon={<ShoppingCartOutlined style={{fontSize:"18px"}}/>} onClick={() => setOpen(true)} type="default" className="primary-btn" style={{width:"50%", maxHeight:"100%"}}>
+    
+      </Button>
+      <Modal
+        title="Thông tin sản phẩm"
+        open={open}
+        onCancel={() => setOpen(false)}
+        footer={null}
+        width={1200}
+        style={{ top: 20 }}
+      >
+        <ProductDetailsContent
+          id={id} 
+         
+        />
+      </Modal>
     </div>
+  </div>
   );
 };
