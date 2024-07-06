@@ -1,9 +1,8 @@
 import { SmileOutlined, TruckOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Button, List, Modal } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as OrderService from "../../services/OrderService";
-import VnProvinces from "vn-local-plus";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { converPrice } from "../../utils";
 import { orderContant } from "../../contant";

@@ -8,13 +8,13 @@ import Signin from "../pages/Form/Signin";
 import Register from "../pages/Form/Register";
 import ProfilePage from "../pages/profile/ProfilePage";
 import Admin from "../../src/pages/Admin/admin";
-import OrderDetails from "../../src/pages/Admin/detailorder";
-import UpdateOrder from "../../src/pages/Admin/updateorder";
+
 import Order from "../../src/pages/Admin/order";
 import ProductType from "../pages/ProductPage/productType";
 import OrderSuccess from "../pages/OrderPage/OrderSuccess";
 import MyOrderPage from "../pages/profile/MyOrderPage";
 import DetailsOrderPage from "../pages/profile/DetailsOrderPage";
+import UserAdmin from "../pages/Admin/UserAdmin";
 
 
 export const routes = [
@@ -89,23 +89,18 @@ export const routes = [
   {
     path: "/Admin",
     page: Admin,
-    isShowHearder: true,
+    isShowHearder: false,
     isPrivate: true,
   },
   {
     path: "/AdminOrder",
     page: Order,
-    isShowHearder: true,
+    isShowHearder: false,
   },
   {
-    path: "/DetailOrder",
-    page: OrderDetails,
-    isShowHearder: true,
-  },
-  {
-    path: "/UpdateOrder",
-    page: UpdateOrder,
-    isShowHearder: true,
+    path: "/AdminUser",
+    page: UserAdmin,
+    isShowHearder: false,
   },
   {
     path: "*",

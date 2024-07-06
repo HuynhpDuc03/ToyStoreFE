@@ -15,7 +15,13 @@ export const getBase64 = (file) =>
         reader.onerror = (error) => reject(error);
     });
 
-
+    export const truncateDescription = (description, maxLength = 100) => {
+        if (description.length <= maxLength) {
+          return description;
+        }
+        return description.slice(0, maxLength) + "...";
+      };
+      
     
 export const converPrice = (price) => {
     try {
