@@ -10,21 +10,19 @@ import {
 import { converPrice } from "../../utils";
 import "./orderpage.css";
 
-import { Checkbox, message } from "antd";
+import { Button, Checkbox, message } from "antd";
 import StepComponent from "../../components/StepComponent/StepComponent";
-import VnProvinces from 'vn-local-plus';
+import VnProvinces from "vn-local-plus";
 
 const OrderPage = () => {
   const order = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [listChecked, setListChecked] = useState([]);
-  console.log(user)
+  console.log(user);
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
-
- 
 
   const onChange = (e) => {
     if (listChecked.includes(e.target.value)) {
@@ -63,7 +61,9 @@ const OrderPage = () => {
         setProvince(userProvince?.name || "");
 
         if (user.city) {
-          const districtData = VnProvinces.getDistrictsByProvinceCode(user.city);
+          const districtData = VnProvinces.getDistrictsByProvinceCode(
+            user.city
+          );
           const userDistrict = districtData.find(
             (dist) => dist.code === user.district
           );
@@ -72,9 +72,7 @@ const OrderPage = () => {
 
         if (user.district) {
           const wardData = VnProvinces.getWardsByDistrictCode(user.district);
-          const userWard = wardData.find(
-            (ward) => ward.code === user.ward
-          );
+          const userWard = wardData.find((ward) => ward.code === user.ward);
           setWard(userWard?.name || "");
         }
       } catch (error) {
@@ -123,7 +121,7 @@ const OrderPage = () => {
   }, [priceMemo]);
 
   const totalPriceMemo = useMemo(() => {
-    const totalPrice = priceMemo - priceDiscountMemo 
+    const totalPrice = priceMemo - priceDiscountMemo;
     return isNaN(Number(totalPrice)) ? 0 : Number(totalPrice);
   }, [priceMemo, priceDiscountMemo]);
 
@@ -141,7 +139,15 @@ const OrderPage = () => {
       description: "Khi mua hàng trên 3.000.000 Đ",
     },
   ];
+  const [open, setOpen] = useState(false);
 
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
   return (
     <div>
       <section className="breadcrumb-option">
@@ -175,7 +181,7 @@ const OrderPage = () => {
                     : priceDiscountMemo === 100000
                     ? 1
                     : priceDiscountMemo === 0
-                    ? 0 
+                    ? 0
                     : order?.orderItemsSelected?.length === 0
                     ? 0
                     : 3
@@ -321,9 +327,26 @@ const OrderPage = () => {
             <div className="col-lg-4 mt-3">
               {user?.address ? (
                 <div className="cart__discount">
-                  <h6>Địa chỉ giao hàng</h6>
-
-                  <div>{`${user?.address}, ${ward}, ${district}, ${province}`}</div>
+                  <h6>Địa chỉ giao hàng   <Button
+                        style={{
+                          fontSize: "15px",
+                          fontWeight: 500,
+                         
+                        }}
+                        onClick={showDrawer}
+                        type="link"
+                      >
+                        Thay đổi
+                      </Button></h6>
+                  <div style={{ textTransform: "capitalize",fontSize:"16px" }}>
+                    Người nhận: {user?.name}
+                  
+                  </div>
+                  <div>
+                    {user?.address}
+         
+                  </div>
+                  <div>{ward}, {district}, {province}</div>
                 </div>
               ) : (
                 <div></div>
@@ -333,7 +356,7 @@ const OrderPage = () => {
                 discount={priceDiscountMemo}
                 total={totalPriceMemo}
                 disabled={order?.orderItemsSelected?.length === 0}
-                isLoggedIn={!!user?.id} 
+                isLoggedIn={!!user?.id}
               />
             </div>
           </div>

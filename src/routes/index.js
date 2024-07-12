@@ -15,6 +15,7 @@ import OrderSuccess from "../pages/OrderPage/OrderSuccess";
 import MyOrderPage from "../pages/profile/MyOrderPage";
 import DetailsOrderPage from "../pages/profile/DetailsOrderPage";
 import UserAdmin from "../pages/Admin/UserAdmin";
+import ProductFavorite from "../pages/ProductPage/ProductFavourite";
 
 
 export const routes = [
@@ -44,7 +45,11 @@ export const routes = [
     page: ProductType,
     isShowHearder: true,
   },
-
+  {
+    path: "/productFavorite",
+    page: ProductFavorite,
+    isShowHearder: true,
+  },
 
   {
     path: "/Order",

@@ -2,12 +2,21 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import * as ProductService from "../../services/ProductService";
 import { useQuery } from "@tanstack/react-query";
-import { Image, InputNumber, Rate, message } from "antd";
+import { InputNumber, Rate, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { addOrderProduct } from "../../redux/slides/orderSlide";
-import { converPrice } from "../../utils";
+import favoriteSlide, {
+  addFavoriteProduct,
+  removeFavoriteProduct,
+} from "../../redux/slides/favoriteSlide";
+import { converPrice, initFacebookSDK } from "../../utils";
 import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 import ProductImagesSlider from "../../components/ProductImageSliderCompoent/ProductImagesSlider";
+import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
+import ButtonFavouriteComponent from "../../components/ButtonFavouriteComponent/ButtonFavouriteComponent";
+import { ShoppingCartOutlined } from "@ant-design/icons";
+import LikeButtonComponent from "../../components/LikeButtonComponent/LikeButtonComponent";
+import CommentComponent from "../../components/CommentComponent/CommentComponent";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -17,6 +26,7 @@ const ProductDetail = () => {
   const user = useSelector((state) => state.user);
 
   const order = useSelector((state) => state.order);
+  const favoriteItems = useSelector((state) => state.favorite.favoriteItems);
   const [errorLimitOrder, setErrorLimitOrder] = useState(false);
   const location = useLocation();
   const dispatch = useDispatch();
@@ -43,11 +53,6 @@ const ProductDetail = () => {
     enabled: !!id,
   });
 
-
-  let imageUrl = productDetails?.image
-    ? require(`../../img/product/${productDetails.image[0]}`)
-    : require(`../../img/product/product-1.jpg`);
-
   useEffect(() => {
     const orderRedux = order?.orderItems?.find(
       (item) => item.product === productDetails?._id
@@ -62,6 +67,13 @@ const ProductDetail = () => {
     }
   }, [numProduct]);
 
+  useEffect(() => {
+    const isFavourite = favoriteItems.some(
+      (item) => item.product === productDetails?._id
+    );
+    setFavourite(isFavourite);
+  }, [favoriteItems, productDetails]);
+
   const handleAddOrderProduct = () => {
     if (!user?.id) {
       localStorage.setItem("redirectURL", location.pathname);
@@ -74,7 +86,6 @@ const ProductDetail = () => {
         orderRedux?.amount + numProduct <= orderRedux?.countInstock ||
         (!orderRedux && productDetails?.countInStock > 0)
       ) {
-     
         dispatch(
           addOrderProduct({
             orderItem: {
@@ -96,12 +107,42 @@ const ProductDetail = () => {
           })
           .then(() => message.success("Đã thêm vào giỏ hàng", 1.5));
       } else {
-        message.error("Có lỗi khi thêm vào giỏ hàng",1.5);
+        message.error("Có lỗi khi thêm vào giỏ hàng", 1.5);
       }
     }
   };
 
-  const discountedPrice = productDetails?.price * (1 - productDetails?.discount / 100);
+  const handleFavoriteClick = () => {
+    if (!user?.id) {
+      localStorage.setItem("redirectURL", location.pathname);
+      navigate("/SignIn", { state: location?.pathname });
+    } else {
+      if (favourite) {
+        dispatch(removeFavoriteProduct({ idProduct: productDetails?._id }));
+        message.success("Đã xóa khỏi danh sách yêu thích", 1.5);
+      } else {
+        dispatch(
+          addFavoriteProduct({
+            favoriteItem: {
+              name: productDetails?.name,
+              image: productDetails?.image,
+              price: productDetails?.price,
+              product: productDetails?._id,
+              discount: productDetails?.discount,
+              countInStock: productDetails?.countInStock,
+              rating: productDetails?.rating,
+              selled: productDetails?.selled,
+            },
+          })
+        );
+        message.success("Đã thêm vào danh sách yêu thích", 1.5);
+      }
+      setFavourite(!favourite);
+    }
+  };
+
+  const discountedPrice =
+    productDetails?.price * (1 - productDetails?.discount / 100);
 
   const formatSelled = (selled) => {
     if (selled > 1000) {
@@ -111,13 +152,22 @@ const ProductDetail = () => {
       return selled;
     }
   };
-  
+
+  const [favourite, setFavourite] = useState(false);
+
+  useEffect(() => {
+    initFacebookSDK()
+  }, []);
+
   return (
     <LoadingComponent isLoading={isLoading}>
       {/* <!-- Shop Details Section Begin --> */}
       <section className="shop-details">
         <div className="product__details__pic">
-          <div className="container pt-3 pb-3" style={{ backgroundColor:"#fff",borderRadius:"5px"}}>
+          <div
+            className="container pt-3 pb-3"
+            style={{ backgroundColor: "#fff", borderRadius: "5px" }}
+          >
             <div className="row">
               <div className="col-lg-4"></div>
               <div className="col-lg-8">
@@ -204,36 +254,63 @@ const ProductDetail = () => {
                             Kai điều khiển để tạo ra cỗ máy kết hợp của riêng
                             bạn.
                           </p>
+                          <LikeButtonComponent
+                            dataHref={
+                              "https://developers.facebook.com/docs/plugins/"
+                            }
+                          />
                           <div className="product__details__cart__option">
                             {productDetails?.countInStock > 0 ? (
                               <>
-                              <span>Số lượng </span>
-                            <InputNumber
-                              style={{ marginRight: "10px" }}
-                              min={1}
-                              max={productDetails?.countInStock}
-                              defaultValue={1}
-                              value={numProduct}
-                              onChange={onChange}
-                            />
-                            <span>
-                              {productDetails?.countInStock} sản phẩm có sẵn
-                            </span>
+                                <span>Số lượng </span>
+                                <InputNumber
+                                  style={{ marginRight: "10px" }}
+                                  min={1}
+                                  max={productDetails?.countInStock}
+                                  defaultValue={1}
+                                  value={numProduct}
+                                  onChange={onChange}
+                                />
+                                <span>
+                                  {productDetails?.countInStock} sản phẩm có sẵn
+                                </span>
                               </>
                             ) : (
                               <h5 style={{ color: "rgb(255, 123, 2)" }}>
-                                  Sản phẩm hết hàng vui lòng liên hệ
+                                Sản phẩm hết hàng vui lòng liên hệ
                               </h5>
                             )}
-                            
                           </div>
-                          <button
-                            onClick={handleAddOrderProduct}
-                            className="primary-btn"
-                            style={{ border: "none" }}
-                          >
-                            add to cart
-                          </button>
+                          <div className="row">
+                            <div className="col-md-6">
+                              <ButtonComponent
+                                onClick={handleAddOrderProduct}
+                                style={{ height: "48px" }}
+                              >
+                                <ShoppingCartOutlined
+                                  style={{
+                                    display: "inline-flex",
+                                    marginRight: "5px",
+                                  }}
+                                />{" "}
+                                ADD TO CART
+                              </ButtonComponent>
+                            </div>
+                            <div className="col-md-6">
+                              <ButtonFavouriteComponent
+                                onClick={handleFavoriteClick}
+                                style={{
+                                  height: "48px",
+                                  background: "#fff",
+                                  color: "#ff0000",
+                                  borderColor: "#ff0000",
+                                }}
+                                isFavourite={favourite}
+                              >
+                                Yêu thích
+                              </ButtonFavouriteComponent>
+                            </div>
+                          </div>
                           <div className="product__details__last__option">
                             <ul>
                               <li>
@@ -444,6 +521,18 @@ const ProductDetail = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+        <div className="container">
+          <div className="row">
+            <div className="col-md-12">
+              <CommentComponent
+                dataHref={
+                  "https://developers.facebook.com/docs/plugins/comments#configurator"
+                }
+                width="1140"
+              />
             </div>
           </div>
         </div>

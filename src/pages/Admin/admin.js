@@ -21,6 +21,8 @@ import { Content, Header } from "antd/es/layout/layout";
 
 import { converPrice, truncateDescription } from "../../utils";
 import SiderComponent from "../../components/SiderComponent/SiderComponent";
+import TextArea from "antd/es/input/TextArea";
+import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 
 const Admin = () => {
   const user = useSelector((state) => state?.user);
@@ -30,6 +32,8 @@ const Admin = () => {
   // eslint-disable-next-line no-unused-vars
   const [isLoadingUpdate, setIsLoaddingUpdate] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+  const [loadingDrawer, setLoadingDrawer] = useState(true);
+
   const inittial = () => ({
     name: "",
     price: "",
@@ -120,6 +124,10 @@ const Admin = () => {
 
   const showDrawer = () => {
     setOpenDrawer(true);
+    setLoadingDrawer(true);
+    setTimeout(() => {
+      setLoadingDrawer(false);
+    }, 1000);
   };
 
   const onClose = () => {
@@ -365,7 +373,8 @@ const Admin = () => {
     setMarginLeft(collapsed ? 200 : 80);
   };
   return (
-    <Layout >
+    <LoadingComponent isLoading={isLoadingProducts}>
+    <Layout>
       <SiderComponent collapsed={collapsed} user={user} selectKey={"1"}/>
       <Layout  style={{
           height: "100%",
@@ -577,11 +586,13 @@ const Admin = () => {
                 </Form.Item>
               </Form>
             </ModalComponent>
+            
             <Drawer
               title="Cập nhật sản phẩm"
               onClose={onClose}
               open={OpenDrawer}
-              width="90%"
+              loading={loadingDrawer}
+              width="60%"
             >
               <Form
                 name="basic"
@@ -613,11 +624,9 @@ const Admin = () => {
                   name="description"
                   rules={[{ required: true, message: "Hãy nhập mô tả!" }]}
                 >
-                  <InputComponent
-                    value={stateProductDetail.description}
+                  <TextArea rows={4} value={stateProductDetail.description}
                     onChange={hanleOnChangeDetail}
-                    name="description"
-                  />
+                    name="description"/>
                 </Form.Item>
 
                 <Form.Item
@@ -638,6 +647,7 @@ const Admin = () => {
                   rules={[{ required: true, message: "Hãy nhập thể loại!" }]}
                 >
                   <InputComponent
+                    size={50}
                     value={stateProductDetail.type}
                     onChange={hanleOnChangeDetail}
                     name="type"
@@ -782,6 +792,7 @@ const Admin = () => {
         </Content>
       </Layout>
     </Layout>
+    </LoadingComponent>
   );
 };
 
