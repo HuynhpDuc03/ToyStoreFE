@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { orderContant } from "../../contant";
 import { converPrice } from "../../utils";
 
@@ -120,8 +120,8 @@ const OrderSuccess = () => {
                               <img
                                 width={100}
                                 height={100}
-                                src={require("../../img/product/" +
-                                  order?.image[0])}
+                                src={
+                                  order?.image[0]}
                                 alt=""
                               />
                             </div>
@@ -158,8 +158,13 @@ const OrderSuccess = () => {
               
 
               <div className="row">
-                <div className="col-md-12">
-                    <span style={{float: "right", color:"red", width:"25%",fontSize:"18px",border:"1px solid", borderRadius:"5px", textAlign:"center", padding:"8px 0" }}>Tổng tiền: {converPrice(state?.totalPriceMemo)}</span>
+                <div className="col-md-6">
+                <div className="continue__btn">
+                    <Link to={"/products"}>Continue Shopping</Link>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                    <span style={{float: "right", color:"green", width:"50%",fontSize:"18px",border:"1px solid", borderRadius:"5px", textAlign:"center", padding:"8px 0" }}>Tổng tiền: {converPrice(state?.totalPriceMemo)}</span>
                 </div>
               </div>
             </form>

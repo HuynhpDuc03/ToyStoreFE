@@ -1,4 +1,4 @@
-import { Form, Button, Drawer, theme, Layout, Select } from "antd";
+import { Form, Button,  theme, Layout, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import InputComponent from "../../components/InputComponent/InputComponent";
 import * as UserService from "../../services/UserService";
@@ -188,42 +188,54 @@ const UserAdmin = () => {
   };
   const columns = [
     {
-      title: "name",
+      title: "Họ tên",
       dataIndex: "name",
+      width: "15%",
+      responsive: ["lg"],
     },
     {
-      title: "email",
+      title: "Email",
       dataIndex: "email",
-    },
-    {
-      title: "isAdmin",
-      dataIndex: "isAdmin",
-    },
-    {
-      title: "phone",
-      dataIndex: "phone",
-    },
-    {
-      title: "address",
-      dataIndex: "address",
-    },
-    {
-      title: "ward",
-      dataIndex: "ward",
-    },
-    {
-      title: "district",
-      dataIndex: "district",
-    },
-    {
-      title: "city",
-      dataIndex: "city",
+      width: "15%",
+      responsive: ["lg"],
     },
 
+    {
+      title: "Số điện thoại",
+      dataIndex: "phone",
+      width: "10%",
+      responsive: ["lg"],
+    },
+    {
+      title: "Địa chỉ",
+      dataIndex: "address",      
+      width: "20%",
+      responsive: ["lg"],
+    },
+    {
+      title: "Phường/Xã",
+      dataIndex: "ward",
+      width: "10%",
+      responsive: ["lg"],
+    },
+    {
+      title: "Quận/Huyện",
+      dataIndex: "district",
+      width: "10%",
+      responsive: ["lg"],
+    },
+    {
+      title: "Tỉnh/Thành",
+      dataIndex: "city",
+      width: "10%",
+      responsive: ["lg"],
+    },
     {
       title: "Chức năng",
       dataIndex: "Action",
       render: renderAction,
+      width: "10%",
+      responsive: ["md"],
     },
   ];
 
@@ -383,7 +395,7 @@ const UserAdmin = () => {
 
   return (
     <Layout>
-      <SiderComponent collapsed={collapsed} user={user} selectKey={"3"} />
+      <SiderComponent collapsed={collapsed} user={user} selectKey={"4"} />
       <Layout
         style={{
           height: "100%",
@@ -423,23 +435,28 @@ const UserAdmin = () => {
           }}
         >
           <div>
-            <Drawer
+            <ModalComponent
+              forceRender
               title="Chi tiết người dùng"
-              onClose={onClose}
+              onCancel={onClose}
               open={OpenDrawer} 
               loading={loadingDrawer}
-              width="70%"
+              width="60%"
+              style={{
+                top: 50,
+              }}
+              footer={null}
             >
               <Form
                 name="basic"
-                labelCol={{ span: 2 }}
-                wrapperCol={{ span: 22 }}
+                labelCol={{ span: 3 }}
+                wrapperCol={{ span: 21 }}
                 onFinish={onUpdateUser}
                 autoComplete="on"
                 form={form}
               >
                 <Form.Item
-                  label="name"
+                  label="Họ tên"
                   name="name"
                   rules={[
                     {
@@ -456,7 +473,7 @@ const UserAdmin = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="email"
+                  label="Email"
                   name="email"
                   rules={[{ required: true, message: "Hãy nhập Email!" }]}
                 >
@@ -468,7 +485,7 @@ const UserAdmin = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="phone"
+                  label="Số điện thoại"
                   name="phone"
                   rules={[
                     { required: true, message: "Hãy nhập số điện thoại!" },
@@ -482,7 +499,7 @@ const UserAdmin = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="address"
+                  label="Địa chỉ"
                   name="address"
                   rules={[{ required: true, message: "Hãy nhập địa chỉ!" }]}
                 >
@@ -494,7 +511,7 @@ const UserAdmin = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="city"
+                  label="Tỉnh/Thành"
                   name="city"
                   rules={[{ required: true, message: "Hãy nhập tỉnh thành!" }]}
                 >
@@ -513,7 +530,7 @@ const UserAdmin = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="district"
+                  label="Quận/Huyện"
                   name="district"
                   rules={[{ required: true, message: "Hãy nhập quận huyện!" }]}
                 >
@@ -532,7 +549,7 @@ const UserAdmin = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="ward"
+                  label="Phường/Xã"
                   name="ward"
                   rules={[
                     {
@@ -566,11 +583,11 @@ const UserAdmin = () => {
                     htmlType="submit"
                     style={{ width: "90%" }}
                   >
-                    Apply
+                    Lưu
                   </Button>
                 </Form.Item>
               </Form>
-            </Drawer>
+            </ModalComponent>
 
             <ModalComponent
               title="Xóa người dùng"

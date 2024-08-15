@@ -40,7 +40,7 @@ export const getAllProduct = async (search, limit, sort, priceFilter) => {
 //   return res.data;
 // };
 
-export const getProductType = async (type, limit, search, sortOrder) => {
+export const getProductType = async (type, limit, search, sortOrder, priceFilter) => {
   let res = {};
   const baseUrl = `${process.env.REACT_APP_API_URL}/product/get-all`;
 
@@ -52,6 +52,10 @@ export const getProductType = async (type, limit, search, sortOrder) => {
 
   if (search?.length > 0) {
       query += `&filter=name=${search}`;
+  }
+
+  if (priceFilter?.length > 0) {
+      query += `&filter=price=${priceFilter.join(',')}`;
   }
 
   if (sortOrder) {

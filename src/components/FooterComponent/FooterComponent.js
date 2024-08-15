@@ -21,7 +21,7 @@ const FooterComponent = () => {
                         marginBottom: "0px",
                       }}
                     >
-                      VÂN MỸ <span style={{ color: "#e50c50" }}>TOY STORE</span>
+                      <span style={{ color: "#e50c50" }}>TOY STORE</span>
                     </p>
                   </Link>
                 </div>

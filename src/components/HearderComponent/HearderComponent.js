@@ -71,7 +71,7 @@ const Menu = () => {
                 marginBottom: "0px",
               }}
             >
-              VÂN MỸ <span style={{ color: "#e50c50" }}>TOY STORE</span>
+               <span style={{ color: "#e50c50" }}>TOY STORE</span>
             </p>
           </Link>
         </div>
@@ -133,6 +133,7 @@ const Header = () => {
   const handleLogout = async () => {
     await UserService.logoutUser();
     dispatch(resetUser());
+    handleNavigatelogin()
   };
 
   useEffect(() => {
@@ -143,7 +144,7 @@ const Header = () => {
     <div className="user-menu">
       <p onClick={() => navigate("/profile-user")}>Thông tin người dùng</p>
       {user?.isAdmin && (
-        <p onClick={() => navigate("/Admin")}>Quản lí hệ thống</p>
+        <p onClick={() => navigate("/Dashboard")}>Quản lí hệ thống</p>
       )}
       <p onClick={handleLogout}>Đăng xuất tài khoản</p>
     </div>

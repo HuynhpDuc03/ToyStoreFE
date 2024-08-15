@@ -45,6 +45,7 @@ function App() {
     return { decoded, storageData };
   };
 
+
   UserService.axiosJWT.interceptors.request.use(
     async (config) => {
       // Do something before request is sent

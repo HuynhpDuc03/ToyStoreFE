@@ -1,7 +1,7 @@
 import React from 'react'
 // import Sider from "antd/es/layout/Sider";
 import { Layout,Menu } from 'antd';
-import { DollarOutlined, LogoutOutlined, ProductOutlined, TagsOutlined, UserOutlined } from '@ant-design/icons';
+import { BarChartOutlined, DollarOutlined, LogoutOutlined, ProductOutlined, TagsOutlined, UserOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import * as UserService from '../../../src/services/UserService';
@@ -28,7 +28,7 @@ const SiderComponent = ({collapsed,user,selectKey}) => {
         
       }} trigger={null} breakpoint="lg" collapsible collapsed={collapsed}>
       <p className="mt-3" style={{textAlign:"center", fontSize:"18px", color: "#fff", textTransform:"capitalize"}}>
-        Xin chào {user?.name}
+        {user?.name}
       </p>
     
       <Menu
@@ -39,23 +39,28 @@ const SiderComponent = ({collapsed,user,selectKey}) => {
         items={[
           {
             key: "1",
-            icon: <ProductOutlined />,
-            label: <Link to="/Admin">Quản lý Sản Phẩm</Link>,
+            icon: <BarChartOutlined />,
+            label: <Link to="/Dashboard">Trang chủ</Link>,
           },
           {
             key: "2",
+            icon: <ProductOutlined />,
+            label: <Link to="/AdminProduct">Quản lý Sản Phẩm</Link>,
+          },
+          {
+            key: "3",
             icon: <DollarOutlined />,
             label: <Link to="/AdminOrder">Quản Lý Đơn Hàng</Link>,
           },
           {
-            key: "3",
+            key: "4",
             icon: <UserOutlined />,
             label: <Link to="/AdminUser">Quản Lý Người Dùng</Link>,
           },
           {
-            key: "4",
+            key: "5",
             icon: <TagsOutlined />,
-            label: <Link to="/AdminUser">Quản Lý Giảm Giá</Link>,
+            label: <Link to="/AdminCoupon">Quản Lý Giảm Giá</Link>,
           },
         ]}
       />

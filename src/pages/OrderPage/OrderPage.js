@@ -139,6 +139,7 @@ const OrderPage = () => {
       description: "Khi mua hàng trên 3.000.000 Đ",
     },
   ];
+
   const [open, setOpen] = useState(false);
 
   const showDrawer = () => {
@@ -234,8 +235,7 @@ const OrderPage = () => {
                                 <img
                                   width={100}
                                   height={100}
-                                  src={require("../../img/product/" +
-                                    order?.image[0])}
+                                  src={order?.image[0]}
                                   alt=""
                                 />
                               </div>
@@ -327,26 +327,28 @@ const OrderPage = () => {
             <div className="col-lg-4 mt-3">
               {user?.address ? (
                 <div className="cart__discount">
-                  <h6>Địa chỉ giao hàng   <Button
-                        style={{
-                          fontSize: "15px",
-                          fontWeight: 500,
-                         
-                        }}
-                        onClick={showDrawer}
-                        type="link"
-                      >
-                        Thay đổi
-                      </Button></h6>
-                  <div style={{ textTransform: "capitalize",fontSize:"16px" }}>
+                  <h6>
+                    Địa chỉ giao hàng{" "}
+                    <Button
+                      style={{
+                        fontSize: "15px",
+                        fontWeight: 500,
+                      }}
+                      onClick={showDrawer}
+                      type="link"
+                    >
+                      Thay đổi
+                    </Button>
+                  </h6>
+                  <div
+                    style={{ textTransform: "capitalize", fontSize: "16px" }}
+                  >
                     Người nhận: {user?.name}
-                  
                   </div>
+                  <div>{user?.address}</div>
                   <div>
-                    {user?.address}
-         
+                    {ward}, {district}, {province}
                   </div>
-                  <div>{ward}, {district}, {province}</div>
                 </div>
               ) : (
                 <div></div>
@@ -411,7 +413,7 @@ const CheckOut = (props) => {
             handleClickCheckOut();
           }}
         >
-          Proceed to checkout
+          Tiến hành mua hàng
         </NavLink>
       </div>
     </div>

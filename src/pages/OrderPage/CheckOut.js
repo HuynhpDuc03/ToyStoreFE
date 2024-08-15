@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { converPrice } from "../../utils";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import * as OrderService from "../../services/OrderService";
-import { message } from "antd";
+import { Button, Input, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { removeAllOrderProduct } from "../../redux/slides/orderSlide";
 import VnProvinces from "vn-local-plus";
-
+import { ArrowRightOutlined } from "@ant-design/icons";
+import * as CouponService from "../../services/CouponService";
 
 const CheckOut = () => {
   const order = useSelector((state) => state.order);
@@ -19,6 +20,11 @@ const CheckOut = () => {
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
+
+  const [couponCode, setCouponCode] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [isCouponApplied, setIsCouponApplied] = useState(false);
+  const [couponError, setCouponError] = useState("");
 
   const handleCheckboxChange = (e) => {
     setPayment(e.target.id);
@@ -37,12 +43,12 @@ const CheckOut = () => {
   }, [order]);
 
   const priceDiscountMemo = useMemo(() => {
-    if (isNaN(priceMemo)) return 0;
-    if (priceMemo > 1000000 && priceMemo < 2000000) {
+    if (isNaN(priceMemo) || priceMemo === 0) return 0;
+    if (priceMemo > 1000000 && priceMemo <= 2000000) {
       return 100000;
-    } else if (priceMemo > 2000000 && priceMemo < 3000000) {
+    } else if (priceMemo > 2000000 && priceMemo <= 3000000) {
       return 250000;
-    } else if (priceMemo >= 3000000) {
+    } else if (priceMemo > 3000000) {
       return 350000;
     } else {
       return 0;
@@ -59,10 +65,17 @@ const CheckOut = () => {
     return 0;
   }, [priceMemo, deliveryMethod]);
 
+  const priceCoupon = useMemo(() => {
+    if (discountAmount > 0) {
+      return priceMemo * (discountAmount / 100);
+    }
+    return 0;
+  }, [priceMemo, discountAmount]);
+
   const totalPriceMemo = useMemo(() => {
-    const totalPrice = priceMemo - priceDiscountMemo + diliveryPriceMemo;
-    return isNaN(Number(totalPrice)) ? 0 : Number(totalPrice);
-  }, [priceMemo, priceDiscountMemo, diliveryPriceMemo]);
+    const totalPrice = priceMemo - priceDiscountMemo + diliveryPriceMemo - priceCoupon;
+    return isNaN(totalPrice) ? 0 : totalPrice;
+  }, [priceMemo, priceDiscountMemo, diliveryPriceMemo, priceCoupon]);
 
   useEffect(() => {
     const fetchLocationData = async () => {
@@ -129,10 +142,9 @@ const CheckOut = () => {
         shippingPrice: diliveryPriceMemo,
         totalPrice: totalPriceMemo,
         discountPrice: Number(priceDiscountMemo),
-
       });
       console.log("Order Data:", mutationAddOrder);
-    }  
+    }
   };
 
   const mutationAddOrder = useMutationHooks((data) => {
@@ -164,6 +176,27 @@ const CheckOut = () => {
       message.error();
     }
   }, [isSuccess, isError]);
+
+  const handleApplyCoupon = async () => {
+    try {
+      const res = await CouponService.applyCoupon(couponCode);
+      const { status, message: couponMessage, discount } = res;
+      if (status === "OK") {
+        setDiscountAmount(discount);
+        setIsCouponApplied(true);
+        setCouponError("");
+        message.success("Áp dụng mã giảm giá thành công!");
+      } else {
+        setCouponError(
+            "Mã giảm giá không hợp lệ hoặc đã hết hạn." || couponMessage
+        );
+        message.error("Mã giảm giá không hợp lệ hoặc đã hết hạn."||couponMessage );
+      }
+    } catch (error) {
+      setCouponError("Có lỗi xảy ra khi áp dụng mã giảm giá.");
+      message.error("Có lỗi xảy ra khi áp dụng mã giảm giá.");
+    }
+  };
 
   return (
     <div>
@@ -265,17 +298,24 @@ const CheckOut = () => {
                       Sản phẩm <span>Tổng tiền</span>
                     </div>
                     <ul className="checkout__total__products">
-                      {order?.orderItemsSelected?.map((order) => {
+                      {order?.orderItemsSelected?.map((order, index) => {
+                        const formattedIndex = (index + 1)
+                          .toString()
+                          .padStart(2, "0");
                         return (
-                          <li>
+                          <li key={index}>
                             <span
                               className="checkout__total__products-name"
                               style={{
                                 whiteSpace: "nowrap",
+                                display: "inline-block",
+                                maxWidth: "180px",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
                               }}
                             >
                               {" "}
-                              01. {order?.name}
+                              {`${formattedIndex}. ${order?.name}`}
                             </span>
 
                             <span className="checkout__total__products-price">
@@ -285,7 +325,6 @@ const CheckOut = () => {
                         );
                       })}
                     </ul>
-
                     <ul className="checkout__total__all">
                       <li>
                         Tạm tính <span>{converPrice(priceMemo)}</span>
@@ -293,6 +332,14 @@ const CheckOut = () => {
                       <li>
                         Giảm giá <span>{converPrice(priceDiscountMemo)}</span>
                       </li>
+                      {isCouponApplied && (
+                        <li>
+                          Mã giảm giá{" "}
+                          <span>
+                            {converPrice(priceCoupon)}
+                          </span>
+                        </li>
+                      )}
                       <li>
                         Phí vận chuyển{" "}
                         <span>{converPrice(diliveryPriceMemo)}</span>
@@ -301,16 +348,32 @@ const CheckOut = () => {
                         Thành tiền <span>{converPrice(totalPriceMemo)}</span>
                       </li>
                     </ul>
-
-                    <p>{`Địa chỉ:  ${user?.address}, ${ward}, ${district}, ${province}`}</p>
-              
-                      <button
-                        type="button"
-                        onClick={() => handleAddOrder()}
-                        className="site-btn"
-                      >
-                        ĐẶT HÀNG
-                      </button>
+                    <Input
+                      style={{ display: "inline-block", width: "87%" }}
+                      placeholder="Nhập mã giảm giá (nếu có)"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      disabled={isCouponApplied}
+                    />{" "}
+                    <Button
+                      style={{ display: "inline", background: "#000" }}
+                      type="primary"
+                      shape="square"
+                      icon={<ArrowRightOutlined />}
+                      onClick={handleApplyCoupon}
+                      disabled={isCouponApplied}
+                    />
+                    {couponError && (
+                      <p style={{ color: "red" }}>{couponError}</p>
+                    )}
+                    <p className="mt-3">{`Địa chỉ:  ${user?.address}, ${ward}, ${district}, ${province}`}</p>
+                    <button
+                      type="button"
+                      onClick={() => handleAddOrder()}
+                      className="site-btn"
+                    >
+                      ĐẶT HÀNG
+                    </button>
                   </div>
                 </div>
               </div>

@@ -7,15 +7,18 @@ import CheckOut from "../pages/OrderPage/CheckOut";
 import Signin from "../pages/Form/Signin";
 import Register from "../pages/Form/Register";
 import ProfilePage from "../pages/profile/ProfilePage";
-import Admin from "../../src/pages/Admin/admin";
+import ProductAdmin from "../../src/pages/Admin/ProductAdmin";
 
-import Order from "../../src/pages/Admin/order";
+import OrderAdmin from "../pages/Admin/OrderAdmin";
 import ProductType from "../pages/ProductPage/productType";
 import OrderSuccess from "../pages/OrderPage/OrderSuccess";
 import MyOrderPage from "../pages/profile/MyOrderPage";
 import DetailsOrderPage from "../pages/profile/DetailsOrderPage";
 import UserAdmin from "../pages/Admin/UserAdmin";
 import ProductFavorite from "../pages/ProductPage/ProductFavourite";
+import OrderDetails from "../pages/Admin/OrderDetails";
+import CouponAdmin from "../pages/Admin/CouponAdmin";
+import Dashboard from "../pages/Admin/Dashboard";
 
 
 export const routes = [
@@ -92,20 +95,44 @@ export const routes = [
     isShowHearder: true,
   },
   {
-    path: "/Admin",
-    page: Admin,
+    path: "/AdminProduct",
+    page: ProductAdmin,
+    isShowHearder: false,
+    isPrivate: true,
+  },
+  {
+    path: "/Dashboard",
+    page: Dashboard,
     isShowHearder: false,
     isPrivate: true,
   },
   {
     path: "/AdminOrder",
-    page: Order,
+    page: OrderAdmin,
     isShowHearder: false,
+    isPrivate: true,
+
+  },
+  {
+    path: "/AdminOrderDetails/:id",
+    page: OrderDetails,
+    isShowHearder: false,
+    isPrivate: true,
+
   },
   {
     path: "/AdminUser",
     page: UserAdmin,
     isShowHearder: false,
+    isPrivate: true,
+
+  },
+  {
+    path: "/AdminCoupon",
+    page: CouponAdmin,
+    isShowHearder: false,
+    isPrivate: true,
+
   },
   {
     path: "*",

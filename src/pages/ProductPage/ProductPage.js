@@ -4,10 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import * as ProductService from "../../services/ProductService";
 import { useDispatch, useSelector } from "react-redux";
 import { searchProduct } from "../../redux/slides/productSlide";
-import { Checkbox, Select } from "antd";
+import { Select } from "antd";
 import { useDebounce } from "../../hooks/useDebounce";
 import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 import ProductComponent from "../../components/ProductComponent/ProductComponent";
+import CategoryComponent from "../../components/CategoryComponent/CategoryComponent";
+
 
 const ProductPage = () => {
   const dispatch = useDispatch();
@@ -26,7 +28,7 @@ const ProductPage = () => {
   };
 
   const Productsearch = useSelector((state) => state?.product?.search);
-  const searchDebounce = useDebounce(Productsearch, 200);
+  const searchDebounce = useDebounce(Productsearch, 400);
   const [limit, setLimit] = useState(4); //mac dinh web 8sp
   const [typeProducts, setTypeProducts] = useState([]);
   const [sortOrder, setSortOrder] = useState();
@@ -73,9 +75,11 @@ const ProductPage = () => {
       }
     });
   };
+
   const handleClearAllPrices = () => {
     setSelectedPrices([]);
   };
+  
   return (
     <div>
       {/* <!-- Breadcrumb Section Begin --> */}
@@ -101,195 +105,14 @@ const ProductPage = () => {
         <div className="container">
           <div className="row">
             <div className="col-lg-3">
-              <div className="shop__sidebar">
-                <div className="shop__sidebar__search">
-                  <form>
-                    <input
-                      type="text"
-                      placeholder="Tìm kiếm"
-                      onChange={onSearch}
-                    />
-                    <button type="submit">
-                      <span className="icon_search"></span>
-                    </button>
-                  </form>
-                </div>
-
-                <div className="shop__sidebar__accordion">
-                  <div className="accordion" id="accordionExample">
-                    <div class="card">
-                      <div class="card-heading">
-                        <Link data-toggle="collapse" data-target="#collapseOne">
-                          Danh Mục ({typeProducts.length})
-                        </Link>
-                      </div>
-                      <div
-                        id="collapseOne"
-                        class="collapse show"
-                        data-parent="#accordionExample"
-                      >
-                        <div class="card-body">
-                          <div class="shop__sidebar__categories">
-                            <ul class="nice-scroll">
-                              {typeProducts.map((item) => {
-                                return (
-                                  <li>
-                                    <Link
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        handleNavigatetype(item);
-                                      }}
-                                    >
-                                      {item}
-                                    </Link>
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <hr />
-                  <div className="accordion" id="accordionExample1">
-                    <div class="card">
-                      <div class="card-heading">
-                        <Link data-toggle="collapse" data-target="#collapseTwo">
-                          Giá
-                        </Link>
-                      </div>
-                      <div
-                        id="collapseTwo"
-                        class="collapse show"
-                        data-parent="#accordionExample1"
-                      >
-                        <div class="card-body">
-                          <div class="shop__sidebar__categories">
-                            <ul class="nice-scroll">
-                              <li>
-                                <Checkbox
-                                  onChange={() =>
-                                    handlePriceFilterChange("0-200000")
-                                  }
-                                  checked={selectedPrices.includes("0-200000")}
-                                  className="slidebar-checkbox"
-                                  style={{
-                                    fontSize: "15px",
-                                    lineHeight: "32px",
-                                    transition: "all,0.3s",
-                                  }}
-                                >
-                                  Dưới 200.000 Đ
-                                </Checkbox>
-                              </li>
-                              <li>
-                                <Checkbox
-                                  onChange={() =>
-                                    handlePriceFilterChange("200000-500000")
-                                  }
-                                  checked={selectedPrices.includes(
-                                    "200000-500000"
-                                  )}
-                                  className="slidebar-checkbox"
-                                  style={{
-                                    fontSize: "15px",
-                                    lineHeight: "32px",
-                                    transition: "all,0.3s",
-                                  }}
-                                >
-                                  200.000 Đ - 500.000 Đ
-                                </Checkbox>
-                              </li>
-                              <li>
-                                <Checkbox
-                                  onChange={() =>
-                                    handlePriceFilterChange("500000-1000000")
-                                  }
-                                  checked={selectedPrices.includes(
-                                    "500000-1000000"
-                                  )}
-                                  className="slidebar-checkbox"
-                                  style={{
-                                    fontSize: "15px",
-                                    lineHeight: "32px",
-                                    transition: "all,0.3s",
-                                  }}
-                                >
-                                  500.000 Đ - 1.000.000 Đ
-                                </Checkbox>
-                              </li>
-                              <li>
-                                <Checkbox
-                                  onChange={() =>
-                                    handlePriceFilterChange("1000000-2000000")
-                                  }
-                                  checked={selectedPrices.includes(
-                                    "1000000-2000000"
-                                  )}
-                                  className="slidebar-checkbox"
-                                  style={{
-                                    fontSize: "15px",
-                                    lineHeight: "32px",
-                                    transition: "all,0.3s",
-                                  }}
-                                >
-                                  1.000.000 Đ - 2.000.000 Đ
-                                </Checkbox>
-                              </li>
-                              <li>
-                                <Checkbox
-                                  onChange={() =>
-                                    handlePriceFilterChange("2000000-4000000")
-                                  }
-                                  checked={selectedPrices.includes(
-                                    "2000000-4000000"
-                                  )}
-                                  className="slidebar-checkbox"
-                                  style={{
-                                    fontSize: "15px",
-                                    lineHeight: "32px",
-                                    transition: "all,0.3s",
-                                  }}
-                                >
-                                  2.000.000 Đ - 4.000.000 Đ
-                                </Checkbox>
-                              </li>
-                              <li>
-                                <Checkbox
-                                  onChange={() =>
-                                    handlePriceFilterChange("4000000-Infinity")
-                                  }
-                                  checked={selectedPrices.includes(
-                                    "4000000-Infinity"
-                                  )}
-                                  className="slidebar-checkbox"
-                                  style={{
-                                    fontSize: "15px",
-                                    lineHeight: "32px",
-                                    transition: "all,0.3s",
-                                  }}
-                                >
-                                  Trên 4.000.000 Đ
-                                </Checkbox>
-                              </li>
-                            </ul>
-                            {selectedPrices.length > 0 && (
-                              <Link
-                                onClick={handleClearAllPrices}
-                                className="btn-delete-all-price"
-                              >
-                                Xóa tất cả
-                              </Link>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <hr />
-                </div>
-              </div>
+            <CategoryComponent
+                onSearch={onSearch}
+                typeProducts={typeProducts}
+                handleNavigatetype={handleNavigatetype}
+                handlePriceFilterChange={handlePriceFilterChange}
+                selectedPrices={selectedPrices}
+                handleClearAllPrices={handleClearAllPrices}
+              />
             </div>
             <div className="col-lg-9">
               <div className="shop__product__option">
@@ -396,4 +219,3 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
-

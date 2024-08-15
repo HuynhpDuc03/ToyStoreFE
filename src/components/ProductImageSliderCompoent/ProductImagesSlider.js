@@ -23,7 +23,7 @@ const ProductImagesSlider = props => {
             {
                 props.images.map((item, index) => (
                     <SwiperSlide key={index}>
-                        <Image style={{width:"100%", height:"100%"}} src={require('../../img/product/'+item)} alt="product images" />
+                        <Image style={{width:"100%", height:"100%"}} src={item} alt="product images" />
                     </SwiperSlide>
                 ))
             }
@@ -40,7 +40,7 @@ const ProductImagesSlider = props => {
                 props.images.map((item, index) => (
                     <SwiperSlide key={index}>
                         <div className="product-images-slider-thumbs-wrapper">
-                            <img src={require('../../img/product/'+item)} alt="product images" />
+                            <img src={item} alt="product images" />
                         </div>
                     </SwiperSlide>
                 ))

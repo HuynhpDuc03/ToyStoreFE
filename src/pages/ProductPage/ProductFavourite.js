@@ -1,10 +1,15 @@
+import { Button, Empty } from "antd";
 import ProductComponent from "../../components/ProductComponent/ProductComponent";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ProductFavorite = () => {
   const products = useSelector((state) => state.favorite.favoriteItems);
-  console.log("favorite", products);
+  const navigate = useNavigate();
+
+  const handleClickNavigate = () => {
+    navigate("/products")
+  }
 
   return (
     <div>
@@ -31,9 +36,9 @@ const ProductFavorite = () => {
             <div className="col-lg-12">
               <div className="row">
                 {products.length === 0 ? (
-                  <h5 className="mt-5" style={{ textAlign: "center", fontWeight: "bold" }}>
-                    Không có sản phẩm yêu thích
-                  </h5>
+                  <Empty className="mt-5" description={"Không có sản phẩm yêu thích!"} image={Empty.PRESENTED_IMAGE_SIMPLE}>
+                    <Button type="primary" onClick={handleClickNavigate}>Thêm ngay</Button>
+                  </Empty>
                 ) : (
                   products.map((product) => (
                     <ProductComponent

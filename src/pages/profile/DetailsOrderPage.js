@@ -1,10 +1,13 @@
-import { Avatar, List } from "antd";
+import { Avatar, List, Steps } from "antd";
 import React, { useEffect, useState } from "react";
 import { orderContant } from "../../contant";
 import {
   EnvironmentOutlined,
+  FileProtectOutlined,
+  InboxOutlined,
   PhoneOutlined,
   SmileOutlined,
+  SolutionOutlined,
   TruckOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -14,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import VnProvinces from "vn-local-plus";
 import { converPrice } from "../../utils";
 import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
+import StepComponent from "../../components/StepComponent/StepComponent";
 
 const DetailsOrderPage = () => {
   const params = useParams();
@@ -36,8 +40,8 @@ const DetailsOrderPage = () => {
     queryFn: fetchGetDetailsOrder,
     enabled: !!id,
   });
-  
-  console.log("orderDetails",orderDetails)
+
+  console.log("orderDetails", orderDetails);
 
   useEffect(() => {
     if (orderDetails?.shippingAddress) {
@@ -78,11 +82,32 @@ const DetailsOrderPage = () => {
   const handleDetailsProduct = (id) => {
     navigate(`/productsDetail/${id}`);
   };
+  const itemsStatus = [
+    {
+      title: "Đơn hàng đã đặt",
 
+      icon: <SolutionOutlined />,
+    },
+    {
+      title: "Đã xác nhận",
+
+      icon: <FileProtectOutlined />,
+    },
+    {
+      title: "Đang vận chuyển",
+
+      icon: <TruckOutlined />,
+    },
+    {
+      title: "Đã nhận được hàng",
+
+      icon: <InboxOutlined />,
+    },
+  ];
+  
   return (
     <LoadingComponent isLoading={isLoading}>
-    <div className="container pt-5" style={{ marginBottom: 200 }}>
-      
+      <div className="container pt-5" style={{ marginBottom: 200 }}>
         <div className="row">
           <h2
             style={{
@@ -93,8 +118,9 @@ const DetailsOrderPage = () => {
           >
             CHI TIẾT ĐƠN HÀNG
           </h2>
-
+          
           <div className="col-3 col-sm-3 col-md-3">
+            
             <div
               className="card border-0 shadow mt-3"
               style={{ borderRadius: "5px" }}
@@ -145,7 +171,11 @@ const DetailsOrderPage = () => {
             </div>
           </div>
           <div className="col-9 col-sm-9 col-md-9 ">
-       
+          <StepComponent
+                items={itemsStatus}
+                curent={orderDetails?.orderStatus}
+              />
+        
             <div className="card border-1 mt-3">
               <div
                 style={{
@@ -183,13 +213,19 @@ const DetailsOrderPage = () => {
                             avatar={
                               <Avatar
                                 size={80}
-                                src={require(`../../img/product/${item?.image[0]}`)}
+                                src={item?.image[0]}
                               />
                             }
-                            title={<Link  onClick={(e) => {
-                              e.preventDefault();
-                              handleDetailsProduct(item?.product);
-                            }}>{item.name}</Link>}
+                            title={
+                              <Link
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleDetailsProduct(item?.product);
+                                }}
+                              >
+                                {item.name}
+                              </Link>
+                            }
                             description={"Đồ chơi siêu trí tuệ"}
                           />
                           <p>{`${item.amount} x  ${converPrice(
@@ -265,12 +301,9 @@ const DetailsOrderPage = () => {
                 </div>
               </div>
             </div>
-            
           </div>
-    
         </div>
-     
-    </div>
+      </div>
     </LoadingComponent>
   );
 };

@@ -61,7 +61,9 @@ const ProductComponent = (props) => {
         <div
           className="product__item__pic set-bg"
           style={{
-            backgroundImage: `url(${require("../../img/product/" + image)})`,
+            // backgroundImage: `url(${require("../../img/product/" + image)})`,
+            backgroundImage: `url(${image})`,
+
             cursor: "pointer",
           }}
           onClick={() => handleDetailsProduct(id)}

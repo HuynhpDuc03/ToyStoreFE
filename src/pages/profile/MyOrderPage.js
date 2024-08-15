@@ -1,5 +1,5 @@
 import { SmileOutlined, TruckOutlined, UserOutlined } from "@ant-design/icons";
-import { Avatar, Button, List, Modal } from "antd";
+import { Avatar, Button, Empty, List, Modal } from "antd";
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as OrderService from "../../services/OrderService";
@@ -16,6 +16,7 @@ const MyOrderPage = () => {
   const queryClient = useQueryClient();
   const fetchMyOrder = async () => {
     const res = await OrderService.getOrderByUserId(state?.id, state?.token);
+    console.log("Res",res)
     return res.data;
   };
 
@@ -34,7 +35,7 @@ const MyOrderPage = () => {
           avatar={
             <Avatar
               size={80}
-              src={require(`../../img/product/${product?.image[0]}`)}
+              src={product?.image[0]}
             />
           }
           title={
@@ -111,6 +112,34 @@ const MyOrderPage = () => {
     setOpen(false);
   };
 
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [confirmLoadingUpdate, setConfirmLoadingUpdate] = useState(false);
+  const [currentOrderUpdate, setCurrentOrderUpdate] = useState(null);
+
+  const [modalTextUpdate, setModalTextUpdate] = useState(
+    "Vui lòng xác nhận đã nhận được hàng"
+  );
+  const showModalUpdate = (order) => {
+    setOpenUpdate(true);
+    setCurrentOrderUpdate(order)
+  };
+  const handleOkUpdate = (order) => {
+    setModalTextUpdate("Đang xác nhận đơn hàng vui lòng chờ trong giây lát !");
+    setConfirmLoadingUpdate(true);
+    OrderService.markOrderAsReceived({ orderId: currentOrderUpdate?._id, isPaid: true, isDelivered: true }, state?.token)
+        .then(() => {
+            queryClient.refetchQueries(["order", state?.id]); // Làm mới dữ liệu đơn hàng
+            setOpenUpdate(false);
+            setConfirmLoadingUpdate(false);
+        })
+        .catch(() => {
+            setConfirmLoadingUpdate(false);
+        });
+};
+  const handleCancelUpdate = () => {
+    setOpenUpdate(false);
+  };
+
   return (
     <div className="container pt-5" style={{ marginBottom: 200 }}>
       <div className="row">
@@ -170,7 +199,7 @@ const MyOrderPage = () => {
         <div className="col-9 col-sm-9 col-md-9 ">
           {isLoading ? (
             <LoadingComponent isLoading={isLoading} />
-          ) : Array.isArray(data) ? (
+          ) : Array.isArray(data) && data.length > 0  ? (
             data.map((order) => (
               <div className="card border-1 mt-3" key={order?._id}>
                 <div
@@ -182,8 +211,19 @@ const MyOrderPage = () => {
                 >
                   Ngày đặt: <span>{formatDate(order?.createdAt)} </span>| Thanh
                   toán:{" "}
-                  <span>{orderContant.payment[order?.paymentMethod]}</span> |{" "}
-                  Giao hàng: <span>chờ giao hàng</span>
+                  <span>{orderContant.payment[order?.paymentMethod]}</span>
+                  <span
+                    style={{
+                      fontSize: "16px",
+                      color: "red",
+                      float: "right",
+                      borderRadius: "5px",
+                      padding: "5px",
+                      backgroundColor: "#feeeea",
+                    }}
+                  >
+                    {orderContant.status[order?.orderStatus]}
+                  </span>
                 </div>
 
                 <div
@@ -207,6 +247,7 @@ const MyOrderPage = () => {
                       danger
                       onClick={() => showModal(order)}
                       style={{ marginRight: "10px" }}
+                      disabled={order?.orderStatus >= 3}
                     >
                       Hủy đơn hàng
                     </Button>
@@ -223,12 +264,36 @@ const MyOrderPage = () => {
                     <Button onClick={() => handleDetailsOrder(order?._id)}>
                       Xem chi tiết
                     </Button>
+
+                    {order?.orderStatus >= 4 ? (
+                      <Button
+                      type="primary"
+                        onClick={()=>showModalUpdate(order)}
+                        style={{ float: "right", marginRight: "16px" }}
+                        disabled={order?.isPaid && order?.isDelivered}
+                      >
+                        Đã nhận được hàng
+                      </Button>
+                    ) : (
+                      <></>
+                    )}
+                    <Modal
+                      title="Xác nhận đơn hàng"
+                      open={openUpdate}
+                      onOk={handleOkUpdate}
+                      mask={false}
+
+                      confirmLoading={confirmLoadingUpdate}
+                      onCancel={handleCancelUpdate}
+                    >
+                      <p>{modalTextUpdate}</p>
+                    </Modal>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div>No orders found</div>
+            <Empty className="mt-5" description={"Không có đơn hàng nào !"}/>
           )}
         </div>
       </div>
