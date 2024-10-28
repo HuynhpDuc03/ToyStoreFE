@@ -84,11 +84,14 @@ export const orderSlide = createSlice({
         };
       });
       state.orderItemsSelected = orderSelected
-    }
+    },
+    addProductToOrder: (state, action) => {
+      state.orderItemsSelected.push(action.payload);
+    },
   },
 })
 
 
-export const { addOrderProduct,increaseAmount,decreaseAmount,removeOrderProduct,removeAllOrderProduct, selectedOrder,resetOrder } = orderSlide.actions
+export const { addOrderProduct,increaseAmount,decreaseAmount,removeOrderProduct,removeAllOrderProduct, selectedOrder,resetOrder,addProductToOrder } = orderSlide.actions
 
 export default orderSlide.reducer

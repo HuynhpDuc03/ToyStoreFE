@@ -5,7 +5,7 @@ import {
   TruckOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Form, Input, Select, message } from "antd";
+import { Button, Form, Input, Menu, Select, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,8 +14,10 @@ import { useMutationHooks } from "../../hooks/useMutationHook";
 import { updateUser } from "../../redux/userSlide";
 
 import VnProvinces from "vn-local-plus";
+import { useTranslation } from "react-i18next";
 
 const ProfilePage = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -71,10 +73,6 @@ const ProfilePage = () => {
         try {
           const res = VnProvinces.getDistrictsByProvinceCode(city);
           setDistricts(res);
-          const currentDistrict = res.find((d) => d.code === district);
-          if (currentDistrict) {
-            setDistrict(currentDistrict.code);
-          }
         } catch (error) {
           console.error("Error fetching districts:", error);
         }
@@ -89,10 +87,6 @@ const ProfilePage = () => {
         try {
           const res = VnProvinces.getWardsByDistrictCode(district);
           setWards(res);
-          const currentWard = res.find((w) => w.code === ward);
-          if (currentWard) {
-            setWard(currentWard.code);
-          }
         } catch (error) {
           console.error("Error fetching wards:", error);
         }
@@ -147,10 +141,10 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      message.success("Cập nhật thành công");
+      message.success(t("pageProfile.updateSuccess"));
       handleGetDetailUser(user?.id, user?.access_token);
     } else if (isError) {
-      message.error("Cập nhật thất bại");
+      message.error(t("pageProfile.updateFailure"));
     }
   }, [isSuccess, isError]);
 
@@ -175,187 +169,177 @@ const ProfilePage = () => {
       },
     });
   };
+
+  const items = [
+    {
+      key: "profile",
+      label: "Profile",
+      type: "group",
+      children: [
+        {
+          key: "1",
+          label: (
+            <span>
+              <UserOutlined /> {t("pageProfile.account1")}
+            </span>
+          ),
+        },
+
+        {
+          key: "2",
+          label: (
+            <span>
+              <TruckOutlined /> {t("pageProfile.orderInfo")}
+            </span>
+          ),
+          onClick: handleClickNavigate,
+        },
+      ],
+    },
+  ];
   return (
     <div className="container pt-5" style={{ marginBottom: 200 }}>
       <div className="row">
-        <h2
-          style={{
-            textAlign: "center",
-            fontWeight: "bold",
-            marginBottom: "20px",
-          }}
-        >
-          TÀI KHOẢN
-        </h2>
-        <div className="col-3 col-sm-3 col-md-3 m-auto">
-          <div className="card border-0 shadow" style={{ borderRadius: "5px" }}>
-            <div
-              style={{
-                width: "100%",
-                height: "40px",
-                textAlign: "center",
-                backgroundColor: "#000",
-                borderTopLeftRadius: "5px",
-                borderTopRightRadius: "5px",
-              }}
-            >
-              <p
-                style={{
-                  fontSize: "18px",
-                  lineHeight: "40px",
-                  color: "#fff",
-                  fontWeight: "700",
-                }}
-              >
-                <SmileOutlined /> Thông tin của bạn
-              </p>
-            </div>
-            <div className="card-body">
-              <div className="shop__sidebar__categories">
-                <ul>
-                  <li>
-                    <Link style={{ color: "#000" }}>
-                      <UserOutlined /> Tài khoản
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleClickNavigate();
-                      }}
-                    >
-                      <TruckOutlined /> Thông tin đơn hàng
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+        <div className="col-2 col-sm-2 col-md-2">
+          <Menu
+            style={{
+              width: "100%",
+            }}
+            defaultSelectedKeys={"1"}
+            mode="inline"
+            items={items}
+          />
         </div>
-        <div className="col-9 col-sm-9 col-md-9 m-auto">
-          <div className="card border-0 shadow">
-            <div className="card-body">
+        <div className="col-10 col-sm-10 col-md-10 m-auto">
+          <div className="card border-0 shadow rounded">
+            <div className="card-body p-4">
+              <h3>{t("pageProfile.accountTitle")}</h3>
+              <p>{t("pageProfile.subTitle")}</p>
+              <hr />
               <Form action="">
-                <label style={{ display: "inline-block", width: "10%" }}>
-                  Email:
+                <label className="mb-2 font-weight-bold">
+                  {t("pageProfile.Email")}: {email}
                 </label>
-                <span>{email}</span>
-                <br />
-                <label style={{ display: "inline-block", width: "10%" }}>
-                  Họ tên:
-                </label>
-                <Input
-                  className="mt-3"
-                  style={{ width: "88%" }}
-                  type="text"
-                  size="large"
-                  value={name}
-                  onChange={handleOnchangeName}
-                  placeholder="Họ và Tên"
-                  prefix={<UserOutlined />}
-                  disabled={!editMode}
-                />
-                <br />
-                <label style={{ display: "inline-block", width: "10%" }}>
-                  Điện thoại:
-                </label>
-                <Input
-                  className="mt-3"
-                  type="number"
-                  style={{ width: "88%" }}
-                  size="large"
-                  value={phone}
-                  onChange={handleOnchangePhone}
-                  placeholder="Số điện thoại"
-                  prefix={<PhoneOutlined />}
-                  disabled={!editMode}
-                />
-                <div className="container">
-                  <div className="row">
-                    <div
-                      className="col-md-4 mt-3"
-                      style={{ paddingLeft: "0px" }}
-                    >
-                      <Select
-                        defaultValue="Chọn tỉnh thành"
-                        value={city || undefined}
-                        style={{ width: "100%" }}
-                        onChange={handleProvinceChange}
-                        options={[
-                          { value: "", label: "Chọn tỉnh thành" },
-                          ...provinces.map((province) => ({
-                            value: province.code,
-                            label: province.name,
-                          })),
-                        ]}
-                        disabled={!editMode}
-                      />
-                    </div>
-                    <div className="col-md-4 mt-3">
-                      <Select
-                        defaultValue="Chọn quận huyện"
-                        style={{ width: "100%" }}
-                        onChange={handleDistrictChange}
-                        value={district || undefined}
-                        options={[
-                          { value: "", label: "Chọn quận huyện" },
-                          ...districts.map((district) => ({
-                            value: district.code,
-                            label: district.name,
-                          })),
-                        ]}
-                        disabled={!editMode || !city}
-                      />
-                    </div>
-                    <div className="col-md-4 mt-3">
-                      <Select
-                        defaultValue="Chọn phường xã"
-                        value={ward || undefined}
-                        style={{ width: "100%" }}
-                        onChange={handleWardChange}
-                        options={[
-                          { value: "", label: "Chọn phường xã" },
-                          ...wards.map((ward) => ({
-                            value: ward.code,
-                            label: ward.name,
-                          })),
-                        ]}
-                        disabled={!editMode || !district}
-                      />
-                    </div>
+
+                <Form.Item className="mb-4">
+                  <label className="mb-2 font-weight-bold">
+                    {t("pageProfile.name")}:
+                  </label>
+                  <Input
+                    className="mt-2"
+                    style={{ width: "100%" }}
+                    type="text"
+                    size="large"
+                    value={name}
+                    onChange={handleOnchangeName}
+                    placeholder={t("pageProfile.name")}
+                    prefix={<UserOutlined />}
+                    disabled={!editMode}
+                  />
+                </Form.Item>
+
+                <Form.Item className="mb-4">
+                  <label className="mb-2 font-weight-bold">
+                    {t("pageProfile.phone")}:
+                  </label>
+                  <Input
+                    className="mt-2"
+                    type="number"
+                    style={{ width: "100%" }}
+                    size="large"
+                    value={phone}
+                    onChange={handleOnchangePhone}
+                    placeholder={t("pageProfile.phone")}
+                    prefix={<PhoneOutlined />}
+                    disabled={!editMode}
+                  />
+                </Form.Item>
+
+                <div className="row">
+                  <div className="col-md-4 mb-3">
+                    <Select
+                      placeholder={t("pageProfile.city")}
+                      value={city || undefined}
+                      style={{ width: "100%" }}
+                      onChange={handleProvinceChange}
+                      options={[
+                        { value: "", label: t("pageProfile.city") },
+                        ...provinces.map((province) => ({
+                          value: province.code,
+                          label: province.name,
+                        })),
+                      ]}
+                      disabled={!editMode}
+                    />
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <Select
+                      placeholder={t("pageProfile.district")}
+                      style={{ width: "100%" }}
+                      onChange={handleDistrictChange}
+                      value={district || undefined}
+                      options={[
+                        { value: "", label: t("pageProfile.district") },
+                        ...districts.map((district) => ({
+                          value: district.code,
+                          label: district.name,
+                        })),
+                      ]}
+                      disabled={!editMode || !city}
+                    />
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <Select
+                      placeholder={t("pageProfile.street")}
+                      value={ward || undefined}
+                      style={{ width: "100%" }}
+                      onChange={handleWardChange}
+                      options={[
+                        { value: "", label: t("pageProfile.street") },
+                        ...wards.map((ward) => ({
+                          value: ward.code,
+                          label: ward.name,
+                        })),
+                      ]}
+                      disabled={!editMode || !district}
+                    />
                   </div>
                 </div>
-                <label style={{ display: "inline-block", width: "10%" }}>
-                  Địa chỉ:
-                </label>
-                <Input
-                  className="mt-3"
-                  type="text"
-                  size="large"
-                  style={{ width: "88%" }}
-                  value={address}
-                  onChange={handleOnchangeAddress}
-                  placeholder="Địa chỉ"
-                  prefix={<EnvironmentOutlined />}
-                  disabled={!editMode}
-                />
-                <div className="text-left mt-3">
-                  {editMode ? (
+
+                <Form.Item className="mb-4">
+                  <label className="mb-2 font-weight-bold">
+                    {t("pageProfile.address")}:
+                  </label>
+                  <Input
+                    className="mt-2"
+                    type="text"
+                    style={{ width: "100%" }}
+                    size="large"
+                    value={address}
+                    onChange={handleOnchangeAddress}
+                    placeholder={t("pageProfile.address")}
+                    prefix={<EnvironmentOutlined />}
+                    disabled={!editMode}
+                  />
+                </Form.Item>
+
+                <div className="d-flex justify-content-end mt-4">
+                  {!editMode && (
                     <Button
+                      size="large"
                       type="primary"
-                      style={{ width: "20%", float: "right" }}
-                      onClick={handleSaveClick}
-                    >
-                      Lưu thông tin
-                    </Button>
-                  ) : (
-                    <Button
-                      type="primary"
-                      style={{ width: "20%" }}
                       onClick={handleUpdateClick}
                     >
-                      Cập nhật
+                      {t("pageProfile.update")}
+                    </Button>
+                  )}
+                  {editMode && (
+                    <Button
+                      size="large"
+                      type="primary"
+                      onClick={handleSaveClick}
+                    >
+                      {t("pageProfile.save")}
                     </Button>
                   )}
                 </div>

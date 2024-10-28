@@ -22,10 +22,13 @@ import * as OrderService from "../../services/OrderService";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import VnProvinces from "vn-local-plus";
 import { useMutationHooks } from "../../hooks/useMutationHook";
-import { orderContant } from "../../contant";
+import { Contant } from "../../contant";
+import { useTranslation } from "react-i18next";
 
 const OrderDetails = () => {
   const user = useSelector((state) => state?.user);
+  const { t } = useTranslation();
+  const orderContant = Contant(t);
   const { id } = useParams();
   const [marginLeft, setMarginLeft] = useState(200);
   const [province, setProvince] = useState("");
@@ -104,9 +107,7 @@ const OrderDetails = () => {
       title: "Ảnh",
       dataIndex: "image",
       key: "image",
-      render: (text) => (
-        <Image width={60} src={text} />
-      ),
+      render: (text) => <Image width={60} src={text} />,
     },
     {
       title: "Tên Sản Phẩm",
@@ -130,18 +131,18 @@ const OrderDetails = () => {
     },
   ];
 
-
-  const mutationUpdate = useMutationHooks(({orderId, status }) => {
-    const res = OrderService.updateOrderStatus({ orderId, status }, user.access_token);
+  const mutationUpdate = useMutationHooks(({ orderId, status }) => {
+    const res = OrderService.updateOrderStatus(
+      { orderId, status },
+      user.access_token
+    );
 
     return res;
   });
 
-  const {
-    isSuccess: isSuccessUpdated,
-    isError: isErrorUpdated,
-  } = mutationUpdate;
- 
+  const { isSuccess: isSuccessUpdated, isError: isErrorUpdated } =
+    mutationUpdate;
+
   useEffect(() => {
     if (isSuccessUpdated) {
       message.success("Cập nhật thành công trạng thái đơn hàng!");
@@ -151,11 +152,8 @@ const OrderDetails = () => {
     }
   }, [isSuccessUpdated, isErrorUpdated, queryClient, id]);
 
-
   const handleStatusChange = (value) => {
-    mutationUpdate.mutate(
-      { orderId: id, status: value }
-    );
+    mutationUpdate.mutate({ orderId: id, status: value });
   };
 
   const Delivery = () => {
@@ -227,13 +225,16 @@ const OrderDetails = () => {
                 <span
                   style={{
                     fontSize: "18px",
-                    color: "red",
+                    color:
+                      orderContant.status[orderDetails?.orderStatus]?.color,
+                    backgroundColor:
+                      orderContant.status[orderDetails?.orderStatus]
+                        ?.backgroundColor,
                     borderRadius: "5px",
                     padding: "5px",
-                    backgroundColor: "#feeeea",
                   }}
                 >
-                  {orderContant.status[orderDetails?.orderStatus]}
+                  {orderContant.status[orderDetails?.orderStatus]?.label}
                 </span>
               </Col>
             </Row>
@@ -249,7 +250,8 @@ const OrderDetails = () => {
                   Họ và tên: {orderDetails?.shippingAddress?.fullName}
                 </h5>
                 <div className="mt-3">
-                  Địa chỉ: {`${orderDetails?.shippingAddress.address} , ${ward}, ${district}, ${province}`}
+                  Địa chỉ:{" "}
+                  {`${orderDetails?.shippingAddress.address} , ${ward}, ${district}, ${province}`}
                 </div>
                 <div className="mt-3">
                   Số điện thoại: {orderDetails?.shippingAddress?.phone}
@@ -280,6 +282,7 @@ const OrderDetails = () => {
                     { value: "2", label: "Đã xác nhận" },
                     { value: "3", label: "Đang vận chuyển" },
                     { value: "4", label: "Đã giao hàng" },
+                    { value: "5", label: "Đã hủy" },
                   ]}
                   onChange={handleStatusChange}
                 />

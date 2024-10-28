@@ -8,6 +8,7 @@ import {
   InputNumber,
   Col,
   Row,
+  Table,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import InputComponent from "../../components/InputComponent/InputComponent";
@@ -36,12 +37,7 @@ import { useSelector } from "react-redux";
 import ModalComponent from "../../components/ModalComponent/ModalComponent";
 import { Content, Header } from "antd/es/layout/layout";
 
-import {
-  converPrice,
-  getBase64,
-  renderOptions,
-  truncateDescription,
-} from "../../utils";
+import { converPrice, renderOptions, truncateDescription } from "../../utils";
 import SiderComponent from "../../components/SiderComponent/SiderComponent";
 import TextArea from "antd/es/input/TextArea";
 import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
@@ -52,10 +48,13 @@ const ProductAdmin = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rowSelected, setRowSelected] = useState("");
   const [OpenDrawer, setOpenDrawer] = useState(false);
-  // eslint-disable-next-line no-unused-vars
+
   const [isLoadingUpdate, setIsLoaddingUpdate] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const [loadingDrawer, setLoadingDrawer] = useState(true);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(7);
 
   const inittial = () => ({
     name: "",
@@ -142,9 +141,6 @@ const ProductAdmin = () => {
     }
   }, [rowSelected, OpenDrawer]);
 
-  console.log("stateproducts", stateProduct);
-  console.log("stateproductsDetails", stateProductDetail);
-
   const showDrawer = () => {
     setOpenDrawer(true);
     setLoadingDrawer(true);
@@ -158,10 +154,9 @@ const ProductAdmin = () => {
   };
 
   const getAllProducts = async () => {
-    const res = await ProductService.getAllProduct();
-    return res;
+    return ProductService.getAllProduct("", pageSize, "", "", currentPage-1);
   };
-  
+
   const fetchAllTypeProduct = async () => {
     const res = await ProductService.getAllTypeProduct();
     return res;
@@ -180,8 +175,9 @@ const ProductAdmin = () => {
   console.log("dataUpdated", dataUpdated);
 
   const queryProduct = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", { page: currentPage, limit: pageSize }],
     queryFn: getAllProducts,
+    keepPreviousData: true,
   });
   const typeProduct = useQuery({
     queryKey: ["type-product"],
@@ -189,6 +185,11 @@ const ProductAdmin = () => {
   });
   const { isLoading: isLoadingProducts, data: products } = queryProduct;
 
+  const handleTableChange = (pagination) => {
+    setCurrentPage(pagination.current);
+  };
+
+  console.log("currentPage", currentPage);
   const renderAction = () => {
     return (
       <div>
@@ -404,22 +405,6 @@ const ProductAdmin = () => {
       image: base64Images,
     });
   };
-
-  // const handleOnchangeAvatar = async ({ fileList }) => {
-  //   const fileNames = fileList.map((file) => file.name);
-  //   setStateProduct({
-  //     ...stateProduct,
-  //     image: fileNames,
-  //   });
-  // };
-
-  // const handleOnchangeAvatarDetails = async ({ fileList }) => {
-  //   const fileNames = fileList.map((file) => file.name);
-  //   setStateProductDetail({
-  //     ...stateProductDetail,
-  //     image: fileNames,
-  //   });
-  // };
 
   const onUpdateProducts = () => {
     mutationUpdate.mutate(
@@ -952,21 +937,18 @@ const ProductAdmin = () => {
               </ModalComponent>
             </div>
 
-            <TableComponent
+            <Table
               columns={columns}
-              isLoading={isLoadingProducts}
+              dataSource={dataTable || []}
+              loading={isLoadingProducts}
+              rowKey="_id"
               pagination={{
+                current: currentPage,
+                pageSize: pageSize,
+                total: products?.total || 0,
                 position: ["bottomCenter"],
-                pageSize: 5,
               }}
-              data={dataTable}
-              onRow={(record, rowIndex) => {
-                return {
-                  onClick: (event) => {
-                    setRowSelected(record._id);
-                  },
-                };
-              }}
+              onChange={handleTableChange}
             />
           </Content>
         </Layout>

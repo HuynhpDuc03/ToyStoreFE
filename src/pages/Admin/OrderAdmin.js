@@ -3,26 +3,25 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import * as OrderService from "../../services/OrderService";
 import { converPrice } from "../../utils";
-import { orderContant } from "../../contant";
+import { Contant } from "../../contant";
 //import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from 'recharts';
 
 import VnProvinces from "vn-local-plus";
-import {
-
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-} from "@ant-design/icons";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 import { Button, Layout, theme } from "antd";
 import SiderComponent from "../../components/SiderComponent/SiderComponent";
 import { Content, Header } from "antd/es/layout/layout";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import moment from "moment/moment";
 //import { formatTimeStr } from 'antd/es/statistic/utils';
 
 const OrderAdmin = () => {
   const user = useSelector((state) => state?.user);
-
+  const { t } = useTranslation();
+  const orderContant = Contant(t);
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
@@ -108,8 +107,12 @@ const OrderAdmin = () => {
       dataIndex: "shipStatus",
     },
     {
-      title: "Phương Thức Thanh Toán",
-      dataIndex: "paymentMethod",
+      title: "Ngày đặt hàng",
+      dataIndex: "orderDate",
+    },
+    {
+      title: "Trạng thái đơn hàng",
+      dataIndex: "orderStatus",
     },
     {
       title: "Tổng tiền",
@@ -128,11 +131,26 @@ const OrderAdmin = () => {
     phone: order?.shippingAddress.phone,
     address: `${order.shippingAddress.address}, ${ward}, ${district}, ${province}`,
     paidStatus: order?.isPaid ? "Đã thanh toán" : "Chưa thanh toán",
+    orderStatus: (
+      <span
+        style={{
+          fontSize: "18px",
+          color: orderContant.status[order?.orderStatus]?.color,
+          backgroundColor:
+            orderContant.status[order?.orderStatus]?.backgroundColor,
+          borderRadius: "5px",
+          padding: "5px",
+        }}
+      >
+        {orderContant.status[order?.orderStatus]?.label}
+      </span>
+    ),
     shipStatus: order?.isDelivered ? "Đã giao" : "Chưa giao",
     paymentMethod: orderContant.payment[order?.paymentMethod],
+    orderDate: moment(order?.createdAt).format('DD/MM/yyyy'),
     total: converPrice(order?.totalPrice),
   }));
-  
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -200,7 +218,7 @@ const OrderAdmin = () => {
                   },
                 };
               }}
-            />         
+            />
           </Content>
         </Layout>
       </Layout>

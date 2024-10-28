@@ -1,4 +1,4 @@
-import { message, Modal, Rate } from "antd";
+import { Button, message, Modal, Rate } from "antd";
 import { converPrice } from "../../utils";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import { ShoppingCartOutlined } from "@ant-design/icons";
@@ -7,10 +7,14 @@ import ProductDetailsContent from "../../pages/ProductPage/ProductDetailsModal";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addFavoriteProduct, removeFavoriteProduct } from "../../redux/slides/favoriteSlide";
+import {
+  addFavoriteProduct,
+  removeFavoriteProduct,
+} from "../../redux/slides/favoriteSlide";
 
 const ProductComponent = (props) => {
-  const { image, name, price, rating, discount, selled, id, countInStock } = props;
+  const { image, name, price, rating, discount, selled, id, countInStock } =
+    props;
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -35,18 +39,20 @@ const ProductComponent = (props) => {
       dispatch(removeFavoriteProduct({ idProduct: id }));
       message.info("Đã xóa khỏi danh sách yêu thích", 1.5);
     } else {
-      dispatch(addFavoriteProduct({
-        favoriteItem: {
-          name,
-          image,
-          price,
-          product: id,
-          discount,
-          countInStock,
-          rating,
-          selled
-        },
-      }));
+      dispatch(
+        addFavoriteProduct({
+          favoriteItem: {
+            name,
+            image,
+            price,
+            product: id,
+            discount,
+            countInStock,
+            rating,
+            selled,
+          },
+        })
+      );
       message.success("Đã thêm vào danh sách yêu thích", 1.5);
     }
   };
@@ -88,30 +94,36 @@ const ProductComponent = (props) => {
                 <strong style={{ color: "rgb(255, 123, 2)", fontSize: "15px" }}>
                   {converPrice(discountedPrice)}
                 </strong>
-                <span
-                  style={{
-                    color: "rgba(0, 0, 0, .54)",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    fontSize: "12px",
-                    maxWidth: "62px", // Adjust this value based on your needs
-                    textDecoration: "line-through",
-                    marginLeft: "3px",
-                    marginRight: "2px",
-                  }}
-                >
-                  {converPrice(price)}
-                </span>
-                <span
-                  style={{
-                    fontSize: "14px",
-                    color: "red",
-                    backgroundColor: "#feeeea",
-                  }}
-                >
-                  -{discount}%
-                </span>
+                {discount > 0 ? (
+                  <>
+                    <span
+                      style={{
+                        color: "rgba(0, 0, 0, .54)",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        fontSize: "12px",
+                        maxWidth: "62px", // Adjust this value based on your needs
+                        textDecoration: "line-through",
+                        marginLeft: "3px",
+                        marginRight: "2px",
+                      }}
+                    >
+                      {converPrice(price)}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "14px",
+                        color: "red",
+                        backgroundColor: "#feeeea",
+                      }}
+                    >
+                      -{discount}%
+                    </span>
+                  </>
+                ) : (
+                  <></>
+                )}
               </>
             ) : (
               <strong style={{ color: "rgb(255, 123, 2)" }}>Liên hệ</strong>
@@ -124,9 +136,10 @@ const ProductComponent = (props) => {
         </div>
         <div className="row">
           <div className="col-md-6">
-            <ButtonComponent
+            <Button
+              type="primary"
               onClick={() => setOpen(true)}
-              style={{ paddingTop: "8px" }}
+              style={{ padding:"14px 30px" }}
             >
               <ShoppingCartOutlined
                 style={{
@@ -134,7 +147,7 @@ const ProductComponent = (props) => {
                   fontSize: "16px",
                 }}
               />
-            </ButtonComponent>
+            </Button>
           </div>
           <div className="col-md-6">
             <ButtonFavouriteComponent

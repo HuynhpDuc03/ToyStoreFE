@@ -1,15 +1,34 @@
-import { Button, Empty } from "antd";
+import { Button, Empty, Pagination } from "antd";
 import ProductComponent from "../../components/ProductComponent/ProductComponent";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 const ProductFavorite = () => {
+  const { t } = useTranslation();
   const products = useSelector((state) => state.favorite.favoriteItems);
   const navigate = useNavigate();
 
+  // Pagination state
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    pageSize: 12, // Number of products per page
+  });
+
+  // Calculate the products to display for the current page
+  const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
+  const endIndex = startIndex + pagination.pageSize;
+  const currentProducts = products.slice(startIndex, endIndex);
+
+  // Handle page change
+  const handlePageChange = (page, pageSize) => {
+    setPagination({ currentPage: page, pageSize });
+  };
+
   const handleClickNavigate = () => {
-    navigate("/products")
-  }
+    navigate("/products");
+  };
 
   return (
     <div>
@@ -18,11 +37,11 @@ const ProductFavorite = () => {
           <div className="row">
             <div className="col-lg-12">
               <div className="breadcrumb__text">
-                <h4>Wishlist</h4>
+                <h4>{t("shopPage.Wishlist")}</h4>
                 <div className="breadcrumb__links">
-                  <Link to="/">Home</Link>
-                  <Link to="/product">Shop</Link>
-                  <span>Wishlist</span>
+                  <Link to="/">{t("header.home")}</Link>
+                  <Link to="/product">{t("header.shop")}</Link>
+                  <span>{t("shopPage.Wishlist")}</span>
                 </div>
               </div>
             </div>
@@ -32,29 +51,50 @@ const ProductFavorite = () => {
       <section className="shop spad">
         <div className="container">
           <div className="row">
-            <h3 style={{ textAlign: "center" }}>DANH MỤC YÊU THÍCH</h3>
+            <h3 style={{ textAlign: "center" }}>{t("shopPage.Favorite")}</h3>
             <div className="col-lg-12">
               <div className="row">
                 {products.length === 0 ? (
-                  <Empty className="mt-5" description={"Không có sản phẩm yêu thích!"} image={Empty.PRESENTED_IMAGE_SIMPLE}>
-                    <Button type="primary" onClick={handleClickNavigate}>Thêm ngay</Button>
+                  <Empty
+                    className="mt-5"
+                    description={t("shopPage.noFavorites")}
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  >
+                    <Button type="primary" onClick={handleClickNavigate}>
+                      {t("pageHome.readMore")}
+                    </Button>
                   </Empty>
                 ) : (
-                  products.map((product) => (
-                    <ProductComponent
-                      key={product.product} // Sử dụng ID sản phẩm
-                      countInStock={product.countInStock}
-                      image={product.image}
-                      name={product.name}
-                      price={product.price}
-                      rating={product.rating}
-                      discount={product.discount}
-                      id={product.product}
-                      selled={product.selled}
-                    />
-                  ))
+                  <>
+                    {currentProducts.map((product) => (
+                      <ProductComponent
+                        key={product.product}
+                        countInStock={product.countInStock}
+                        image={product.image}
+                        name={product.name}
+                        price={product.price}
+                        rating={product.rating}
+                        discount={product.discount}
+                        id={product.product}
+                        selled={product.selled}
+                      />
+                    ))}
+                  </>
                 )}
               </div>
+              {/* Pagination Component */}
+              {products.length > pagination.pageSize && (
+                <Pagination
+                  current={pagination.currentPage}
+                  pageSize={pagination.pageSize}
+                  total={products.length}
+                  align="center"
+                  onChange={handlePageChange}
+                  showSizeChanger
+                  pageSizeOptions={["6", "12", "24"]}
+                  showTotal={(total) => `${t("pagination.total")} ${total} ${t("pagination.items")}`}
+                />
+              )}
             </div>
           </div>
         </div>

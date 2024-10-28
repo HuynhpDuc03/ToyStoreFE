@@ -1,16 +1,16 @@
-
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import * as UserService from '../../../src/services/UserService'
-import { useMutationHooks } from '../../hooks/useMutationHook'
-import { Input, message } from "antd";
+import { Link, useNavigate } from 'react-router-dom';
+import * as UserService from '../../../src/services/UserService';
+import { useMutationHooks } from '../../hooks/useMutationHook';
+import { Button, Checkbox, Input, message } from "antd";
 import { jwtDecode } from 'jwt-decode';
-import { useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux';
 import { updateUser } from '../../redux/userSlide';
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
-
+import { useTranslation } from 'react-i18next';
 
 const Signin = () => {
+    const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loginError, setLoginError] = useState(null);
@@ -18,29 +18,20 @@ const Signin = () => {
     const navigate = useNavigate();
 
     const mutation = useMutationHooks((data) => UserService.loginUser(data));
-  
     const { data, isSuccess, isError, error } = mutation;
 
     useEffect(() => {
         if (isSuccess && data?.status === "OK") {
-            message
-                .open({
-                    type: "loading",
-                    content: "Loading...",
-                    duration: 0.75,
-                })
-                .then(() =>
-                    setTimeout(() => {
-                        message.success("Đăng nhập thành công", 1.5);
-                        const redirectURL = localStorage.getItem("redirectURL");
-                        if (redirectURL) {
-                            localStorage.removeItem("redirectURL");
-                            navigate(redirectURL);
-                        } else {
-                            navigate("/");
-                        }
-                    }, 750)
-                );
+            message.loading("Loading...", 0.75).then(() => {
+                message.success(t("pageLogin.loginSuccess"), 1.5);
+                const redirectURL = localStorage.getItem("redirectURL");
+                if (redirectURL) {
+                    localStorage.removeItem("redirectURL");
+                    navigate(redirectURL);
+                } else {
+                    navigate("/");
+                }
+            });
 
             localStorage.setItem("access_token", JSON.stringify(data?.access_token));
             if (data?.access_token) {
@@ -50,95 +41,100 @@ const Signin = () => {
                 }
             }
         } else if (isError || (isSuccess && data?.status === "ERR")) {
-            setLoginError(data?.message || error?.message || "Đăng nhập thất bại");
+            setLoginError(data?.message || error?.message || t("pageLogin.loginFailure"));
         }
     }, [isSuccess, isError, error, data, navigate]);
-      
-
-
 
     const handleGetDetailUser = async (id, token) => {
-      const res = await UserService.getDetailsUser(id, token);
-      dispatch(updateUser({ ...res?.data, access_token: token }));
+        const res = await UserService.getDetailsUser(id, token);
+        dispatch(updateUser({ ...res?.data, access_token: token }));
     };
-  
-    const handleOnchangeEmail = (e) => {
-      setEmail(e.target.value);
-    };
-  
-    const handleOnchangePassword = (e) => {
-      setPassword(e.target.value);
-    };
-  
-    const handleSignIn = (e) => {
-      e.preventDefault();
-      setLoginError(null);
-      mutation.mutate({
-        email,
-        password,
-      });
-    };
-  
-    const handleNavigateSignUp = () => {
-      navigate("/Register");
-    };
-  
 
+    const handleSignIn = (e) => {
+        e.preventDefault();
+        setLoginError(null);
+        mutation.mutate({ email, password });
+    };
 
     return (
-        <div className='container mt-5 pt-5' style={{ marginBottom: 200}}>
-            <div className='row'>
-                <div className='col-12 col-sm-8 col-md-6 m-auto'>
-                    <div className='card border-0 shadow'>
-                        <div className='card-body'>
-                            <div className='text-center'>
-                              <h2 className='mb-3' style={{fontWeight:"bold"}}>Đăng Nhập</h2>
-                                <svg
-                                    className='mx-auto'
-                                    xmlns='http://www.w3.org/2000/svg'
-                                    width='50'
-                                    height='50'
-                                    fill='currentColor'
-                                    class='bi bi-person-circle'
-                                    viewBox='0 0 16 16'
-                                >
-                                    <path d='M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0' />
-                                    <path
-                                        fill-rule='evenodd'
-                                        d='M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1'
-                                    />
-                                </svg>
+        <div className="bg-light py-3 py-md-5">
+            <div className="container">
+                <div className="row justify-content-md-center">
+                    <div className="col-12 col-md-11 col-lg-8 col-xl-7 col-xxl-6">
+                        <div className="bg-white p-4 p-md-5 rounded shadow-sm">
+                            <div className="row gy-3 mb-5">
+                                <div className="col-12">
+                                    <div className="text-center">
+                                        <h2>{t("pageLogin.login")}</h2>
+                                    </div>
+                                </div>
                             </div>
-                            <form>
-                              <Input className='mt-3' type='email' size="large"  value={email}
-                                    onChange={handleOnchangeEmail} placeholder="Email" prefix={<MailOutlined />} />
-                                <br/>
-                              <Input.Password className='mt-3'  size="large"  value={password}
-                                    onChange={handleOnchangePassword} placeholder="Password" prefix={<LockOutlined />} />
-
-                             
-                                <div className='text-center mt-3'>
-                                
-                                {loginError && <span  className='nav-link' style={{ color: 'red' }}>Email hoặc Mật khẩu không đúng, Vui lòng thử lại!</span>}
-                                    <button
-
-                                        className='btn btn-primary'
-                                        onClick={handleSignIn}
-                                        disabled={!email.length || !password.length}
-                                        style={{width:"50%"}}
-                                    >
-                                        Đăng Nhập
-                                    </button>
-
-                                    <hr width="100%" />
-                                    <span
-                                        className='nav-link'
-                                    
-                                    >
-                                        Bạn chưa có tài khoản? <span style={{ cursor: 'pointer', fontWeight:"bold", textDecoration:"underline"}} onClick={handleNavigateSignUp}>Đăng ký tài khoản</span>
-                                    </span>
+                            <form onSubmit={handleSignIn}>
+                                <div className="row gy-3 gy-md-4 overflow-hidden">
+                                    <div className="col-12">
+                                        <label htmlFor="email" className="form-label">
+                                            {t("pageLogin.email")} <span className="text-danger">*</span>
+                                        </label>
+                                        <Input
+                                            size="large"
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            placeholder={t("pageForgotPassword.emailPlaceholder")}
+                                            prefix={<MailOutlined />}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="col-12">
+                                        <label htmlFor="password" className="form-label">
+                                            {t("pageLogin.password")} <span className="text-danger">*</span>
+                                        </label>
+                                        <Input.Password
+                                            size="large"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            placeholder={t("pageForgotPassword.passwordPlaceholder")}
+                                            prefix={<LockOutlined />}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="col-12">
+                                        <div className="d-flex justify-content-between">
+                                            <Checkbox>{t("pageLogin.rememberMe")}</Checkbox>
+                                            <Link to="/forgotPassword" className="link-secondary">
+                                                {t("pageLogin.forgotPassword")}
+                                            </Link>
+                                        </div>
+                                    </div>
+                                    <div className="col-12">
+                                        <div className="d-grid">
+                                            <Button
+                                                type="primary"
+                                                size="large"
+                                                htmlType="submit"
+                                                disabled={!email.length || !password.length}
+                                            >
+                                                {t("pageLogin.login")}
+                                            </Button>
+                                        </div>
+                                    </div>
                                 </div>
                             </form>
+                            <div className="row">
+                                <div className="col-12">
+                                    <hr className="mt-5 mb-4 border-secondary-subtle" />
+                                    <div className="d-flex gap-4 justify-content-center">
+                                        <Link to="/Register" className="link-secondary">
+                                            {t("pageLogin.noAccount")} {t("pageLogin.createAccount")}
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                            {loginError && (
+                                <div className="text-center text-danger mt-3">
+                                    {t("pageLogin.wrongPassword")}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -148,7 +144,3 @@ const Signin = () => {
 };
 
 export default Signin;
-
-
-
-

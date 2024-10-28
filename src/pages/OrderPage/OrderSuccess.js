@@ -1,14 +1,54 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { orderContant } from "../../contant";
+import { Contant } from "../../contant";
 import { converPrice } from "../../utils";
+import { useTranslation } from "react-i18next";
+import { EnvironmentTwoTone, InfoCircleTwoTone } from "@ant-design/icons";
+import VnProvinces from "vn-local-plus";
 
 const OrderSuccess = () => {
+  const { t } = useTranslation();
+  const orderContant = Contant(t);
   const order = useSelector((state) => state.order);
   const location = useLocation();
-  console.log("location", location)
   const {state} = location;
+  const [province, setProvince] = useState("");
+  const [district, setDistrict] = useState("");
+  const [ward, setWard] = useState("");
+  useEffect(() => {
+    const fetchLocationData = async () => {
+      try {
+        const provinceData = VnProvinces.getProvinces();
+        const userProvince = provinceData.find(
+          (prov) => prov.code === state.city
+        );
+        setProvince(userProvince?.name || "");
+
+        if (state.city) {
+          const districtData = VnProvinces.getDistrictsByProvinceCode(
+            state.city
+          );
+          const userDistrict = districtData.find(
+            (dist) => dist.code === state.district
+          );
+          setDistrict(userDistrict?.name || "");
+        }
+
+        if (state.district) {
+          const wardData = VnProvinces.getWardsByDistrictCode(state.district);
+          const userWard = wardData.find((ward) => ward.code === state.ward);
+          setWard(userWard?.name || "");
+        }
+      } catch (error) {
+        console.error("Error fetching location data:", error);
+      }
+    };
+
+    fetchLocationData();
+  }, [state.city, state.district, state.ward]);
+  console.log("state",state)
+
   return (
     <div>
       {/* <!-- Breadcrumb Section Begin --> */}
@@ -17,11 +57,11 @@ const OrderSuccess = () => {
           <div className="row">
             <div className="col-lg-12">
               <div className="breadcrumb__text">
-                <h4>Check Out</h4>
+              <h4>{t("pageCheckOut.checkout")}</h4>
                 <div className="breadcrumb__links">
-                  <a href="/">Home</a>
-                  <a href="/">Shop</a>
-                  <span>Check Out</span>
+                <a href="/">{t("header.home")}</a>
+                <a href="/products">{t("header.shop")}</a>
+                  <span>{t("pageCheckOut.checkout")}</span>
                 </div>
               </div>
             </div>
@@ -36,22 +76,56 @@ const OrderSuccess = () => {
           <div className="checkout__form">
             <form action="/">
               <div className="row">
-                <div className="col-lg-12 col-md-12">
-                  <h6
+              <h4
                     style={{ textAlign: "center" }}
                     className="checkout__title"
                   >
-                    thanh toán sản phẩm
-                  </h6>
+                    {t("pageCheckOut.productPayment")}
+                  </h4>
+                <div className="col-lg-6 col-md-6">
+                <div style={{ marginBottom: "24px" }}>
+                    <h5
+                      className="coupon__code"
+                      style={{ marginBottom: "24px", borderTop:"2px solid #189eff" }}
+                    >
+                      <InfoCircleTwoTone />{t("pageOrderSuccess.infoUser")} 
+                    </h5>
+                    <div className="checkout__input__checkbox" style={{paddingLeft:"10px"}}>
+                     
+
+                       <span style={{textTransform:"capitalize"}}>Họ tên: {state.fullName}</span> <br/>
+                       <span>Số điện thoại: {state.phone}</span> <br/>
+                       <span>Email: {state.email}</span> <br/>
+                  
+                    </div>
+                  </div>
 
                   <div style={{ marginBottom: "24px" }}>
-                    <h6
+                    <h5
+                      className="coupon__code"
+                      style={{ marginBottom: "24px", borderTop:"2px solid #189eff" }}
+                    >
+                      <EnvironmentTwoTone />{t("pageOrderSuccess.infoAddress")}
+                    </h5>
+                    <div className="checkout__input__checkbox" style={{paddingLeft:"10px"}}>
+                     
+                       <span>
+
+                      {`${t("pageCheckOut.address")}:  ${state?.address}, ${ward}, ${district}, ${province}`}
+                       </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-lg-6 col-md-6">
+                 
+
+                  <div style={{ marginBottom: "24px" }}>
+                    <h5
                       className="coupon__code"
                       style={{ marginBottom: "24px" }}
                     >
-                      <span className="icon_gift_alt"></span>Phương thức
-                      giao hàng
-                    </h6>
+                      <span className="icon_gift_alt"></span>{t("pageOrderSuccess.deliveryMethod")}
+                    </h5>
                     <div className="checkout__input__checkbox">
                       <label
                         for="fast"
@@ -73,13 +147,12 @@ const OrderSuccess = () => {
                   </div>
 
                   <div style={{ marginBottom: "24px" }}>
-                    <h6
+                    <h5
                       className="coupon__code"
                       style={{ marginBottom: "24px" }}
                     >
-                      <span className="icon_creditcard"></span>Phương thức
-                      thanh toán
-                    </h6>
+                      <span className="icon_creditcard"></span>{t("pageOrderSuccess.paymentMethod")}
+                    </h5>
                     <div className="checkout__input__checkbox">
                       <label
                         for="paymentincash"
@@ -106,9 +179,9 @@ const OrderSuccess = () => {
                 <table>
                   <thead>
                     <tr>
-                      <th>Sản phẩm</th>
-                      <th>Số lượng</th>
-                      <th>Giá</th>
+                      <th>{t("pageCart.product")}</th>
+                      <th>{t("pageCart.quantity")}</th>
+                      <th>{t("pageCart.price")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -160,11 +233,11 @@ const OrderSuccess = () => {
               <div className="row">
                 <div className="col-md-6">
                 <div className="continue__btn">
-                    <Link to={"/products"}>Continue Shopping</Link>
+                    <Link to={"/products"}>{t("pageOrderSuccess.buttonContinueShopping")}</Link>
                   </div>
                 </div>
                 <div className="col-md-6">
-                    <span style={{float: "right", color:"green", width:"50%",fontSize:"18px",border:"1px solid", borderRadius:"5px", textAlign:"center", padding:"8px 0" }}>Tổng tiền: {converPrice(state?.totalPriceMemo)}</span>
+                    <span style={{float: "right", color:"green", width:"50%",fontSize:"18px",border:"1px solid", borderRadius:"5px", textAlign:"center", padding:"8px 0" }}>{t("pageOrderSuccess.orderTotal")}: {converPrice(state?.totalPriceMemo)}</span>
                 </div>
               </div>
             </form>

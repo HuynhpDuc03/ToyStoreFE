@@ -1,4 +1,4 @@
-import { Form, Button,  theme, Layout, Select } from "antd";
+import { Form, Button, theme, Layout, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import InputComponent from "../../components/InputComponent/InputComponent";
 import * as UserService from "../../services/UserService";
@@ -24,19 +24,20 @@ import {
   getWardByCode,
   getWardsByDistrictCode,
 } from "vn-local-plus";
+import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 
 const UserAdmin = () => {
-    const {
-        token: { colorBgContainer, borderRadiusLG },
-      } = theme.useToken();
-      const [marginLeft, setMarginLeft] = useState(200);
-      const [collapsed, setCollapsed] = useState(false);
-    
-      const toggleCollapsed = () => {
-        setCollapsed(!collapsed);
-        setMarginLeft(collapsed ? 200 : 80);
-      };
-    
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
+  const [marginLeft, setMarginLeft] = useState(200);
+  const [collapsed, setCollapsed] = useState(false);
+
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed);
+    setMarginLeft(collapsed ? 200 : 80);
+  };
+
   const user = useSelector((state) => state?.user);
   const [rowSelected, setRowSelected] = useState("");
   const [OpenDrawer, setOpenDrawer] = useState(false);
@@ -53,7 +54,6 @@ const UserAdmin = () => {
   const [selectedWard, setSelectedWard] = useState("");
   const [dataTable, setDataTable] = useState([]);
   const [loadingDrawer, setLoadingDrawer] = useState(false);
-
 
   const inittial = () => ({
     name: "",
@@ -126,15 +126,13 @@ const UserAdmin = () => {
     }
   }, [rowSelected, OpenDrawer]);
 
-
   const showDrawer = () => {
     setOpenDrawer(true);
     setLoadingDrawer(true);
 
     setTimeout(() => {
-        setLoadingDrawer(false);
-      }, 1000);
-
+      setLoadingDrawer(false);
+    }, 1000);
   };
 
   const onClose = () => {
@@ -164,7 +162,6 @@ const UserAdmin = () => {
     isSuccess: isSuccessDeleted,
     isError: isErrorDeleted,
   } = mutationDeleted;
-
 
   const queryUser = useQuery({
     queryKey: ["users"],
@@ -208,7 +205,7 @@ const UserAdmin = () => {
     },
     {
       title: "Địa chỉ",
-      dataIndex: "address",      
+      dataIndex: "address",
       width: "20%",
       responsive: ["lg"],
     },
@@ -238,7 +235,6 @@ const UserAdmin = () => {
       responsive: ["md"],
     },
   ];
-
 
   useEffect(() => {
     const fetchNames = async () => {
@@ -270,7 +266,6 @@ const UserAdmin = () => {
     fetchNames();
   }, [users]);
 
-
   useEffect(() => {
     if (isSuccessDeleted && dataDeleted?.status === "OK") {
       message.success();
@@ -279,7 +274,6 @@ const UserAdmin = () => {
       message.error();
     }
   }, [isSuccessDeleted]);
-
 
   const handleCloseDrawer = () => {
     setOpenDrawer(false);
@@ -315,7 +309,6 @@ const UserAdmin = () => {
     );
   };
 
-
   const hanleOnChangeDetail = (e) => {
     setStateUserDetails({
       ...stateUserDetails,
@@ -333,8 +326,6 @@ const UserAdmin = () => {
       }
     );
   };
-
- 
 
   useEffect(() => {
     const fetchProvinces = async () => {
@@ -394,230 +385,242 @@ const UserAdmin = () => {
   };
 
   return (
-    <Layout>
-      <SiderComponent collapsed={collapsed} user={user} selectKey={"4"} />
-      <Layout
-        style={{
-          height: "100%",
-          minHeight: "750px",
-          marginLeft: marginLeft,
-          transition: "margin-left 0.4s ease",
-        }}
-      >
-        <Header
+    <LoadingComponent isLoading={isLoadingUsers}>
+      <Layout>
+        <SiderComponent collapsed={collapsed} user={user} selectKey={"4"} />
+        <Layout
           style={{
-            padding: 0,
-            background: colorBgContainer,
+            height: "100%",
+            minHeight: "750px",
+            marginLeft: marginLeft,
+            transition: "margin-left 0.4s ease",
           }}
         >
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => toggleCollapsed()}
+          <Header
             style={{
-              fontSize: "16px",
-              width: 64,
-              height: 64,
+              padding: 0,
+              background: colorBgContainer,
             }}
-          />
-          <h5 style={{ display: "inline-block", marginLeft: "20px" }}>
-            QUẢN LÝ NGƯỜI DÙNG
-          </h5>
-        </Header>
-
-        <Content
-          style={{
-            margin: "24px 16px",
-            padding: 24,
-            minHeight: 280,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
-        >
-          <div>
-            <ModalComponent
-              forceRender
-              title="Chi tiết người dùng"
-              onCancel={onClose}
-              open={OpenDrawer} 
-              loading={loadingDrawer}
-              width="60%"
+          >
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => toggleCollapsed()}
               style={{
-                top: 50,
+                fontSize: "16px",
+                width: 64,
+                height: 64,
               }}
-              footer={null}
-            >
-              <Form
-                name="basic"
-                labelCol={{ span: 3 }}
-                wrapperCol={{ span: 21 }}
-                onFinish={onUpdateUser}
-                autoComplete="on"
-                form={form}
+            />
+            <h5 style={{ display: "inline-block", marginLeft: "20px" }}>
+              QUẢN LÝ NGƯỜI DÙNG
+            </h5>
+          </Header>
+
+          <Content
+            style={{
+              margin: "24px 16px",
+              padding: 24,
+              minHeight: 280,
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+            }}
+          >
+            <div>
+              <ModalComponent
+                forceRender
+                title="Chi tiết người dùng"
+                onCancel={onClose}
+                open={OpenDrawer}
+                loading={loadingDrawer}
+                width="60%"
+                style={{
+                  top: 50,
+                }}
+                footer={null}
               >
-                <Form.Item
-                  label="Họ tên"
-                  name="name"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Hãy nhập họ tên !",
-                    },
-                  ]}
+                <Form
+                  name="basic"
+                  labelCol={{ span: 3 }}
+                  wrapperCol={{ span: 21 }}
+                  onFinish={onUpdateUser}
+                  autoComplete="on"
+                  form={form}
                 >
-                  <InputComponent
-                    value={stateUserDetails.name}
-                    onChange={hanleOnChangeDetail}
+                  <Form.Item
+                    label="Họ tên"
                     name="name"
-                  />
-                </Form.Item>
+                    rules={[
+                      {
+                        required: true,
+                        message: "Hãy nhập họ tên !",
+                      },
+                    ]}
+                  >
+                    <InputComponent
+                      value={stateUserDetails.name}
+                      onChange={hanleOnChangeDetail}
+                      name="name"
+                    />
+                  </Form.Item>
 
-                <Form.Item
-                  label="Email"
-                  name="email"
-                  rules={[{ required: true, message: "Hãy nhập Email!" }]}
-                >
-                  <InputComponent
-                    value={stateUserDetails.email}
-                    onChange={hanleOnChangeDetail}
+                  <Form.Item
+                    label="Email"
                     name="email"
-                  />
-                </Form.Item>
+                    rules={[{ required: true, message: "Hãy nhập Email!" }]}
+                  >
+                    <InputComponent
+                      value={stateUserDetails.email}
+                      onChange={hanleOnChangeDetail}
+                      name="email"
+                    />
+                  </Form.Item>
 
-                <Form.Item
-                  label="Số điện thoại"
-                  name="phone"
-                  rules={[
-                    { required: true, message: "Hãy nhập số điện thoại!" },
-                  ]}
-                >
-                  <InputComponent
-                    value={stateUserDetails.phone}
-                    onChange={hanleOnChangeDetail}
+                  <Form.Item
+                    label="Số điện thoại"
                     name="phone"
-                  />
-                </Form.Item>
+                    rules={[
+                      { required: true, message: "Hãy nhập số điện thoại!" },
+                    ]}
+                  >
+                    <InputComponent
+                      value={stateUserDetails.phone}
+                      onChange={hanleOnChangeDetail}
+                      name="phone"
+                    />
+                  </Form.Item>
 
-                <Form.Item
-                  label="Địa chỉ"
-                  name="address"
-                  rules={[{ required: true, message: "Hãy nhập địa chỉ!" }]}
-                >
-                  <InputComponent
-                    value={stateUserDetails.address}
-                    onChange={hanleOnChangeDetail}
+                  <Form.Item
+                    label="Địa chỉ"
                     name="address"
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label="Tỉnh/Thành"
-                  name="city"
-                  rules={[{ required: true, message: "Hãy nhập tỉnh thành!" }]}
-                >
-                  <Select
-                    showSearch
-                    placeholder="Select a city"
-                    onChange={handleProvinceChange}
-                    value={stateUserDetails.city}
+                    rules={[{ required: true, message: "Hãy nhập địa chỉ!" }]}
                   >
-                    {provinces.map((province) => (
-                      <Select.Option key={province.code} value={province.code}>
-                        {province.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
+                    <InputComponent
+                      value={stateUserDetails.address}
+                      onChange={hanleOnChangeDetail}
+                      name="address"
+                    />
+                  </Form.Item>
 
-                <Form.Item
-                  label="Quận/Huyện"
-                  name="district"
-                  rules={[{ required: true, message: "Hãy nhập quận huyện!" }]}
-                >
-                  <Select
-                    showSearch
-                    placeholder="Select a district"
-                    onChange={handleDistrictChange}
-                    value={stateUserDetails.district}
+                  <Form.Item
+                    label="Tỉnh/Thành"
+                    name="city"
+                    rules={[
+                      { required: true, message: "Hãy nhập tỉnh thành!" },
+                    ]}
                   >
-                    {districts.map((district) => (
-                      <Select.Option key={district.code} value={district.code}>
-                        {district.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
+                    <Select
+                      showSearch
+                      placeholder="Select a city"
+                      onChange={handleProvinceChange}
+                      value={stateUserDetails.city}
+                    >
+                      {provinces.map((province) => (
+                        <Select.Option
+                          key={province.code}
+                          value={province.code}
+                        >
+                          {province.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
 
-                <Form.Item
-                  label="Phường/Xã"
-                  name="ward"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Hãy nhập phường xã!",
-                    },
-                  ]}
-                >
-                  <Select
-                    showSearch
-                    placeholder="Select a ward"
-                    onChange={(value) => {
-                      form.setFieldsValue({ ward: value });
-                      setStateUserDetails((prevState) => ({
-                        ...prevState,
-                        ward: value,
-                      }));
-                    }}
-                    value={stateUserDetails.ward}
+                  <Form.Item
+                    label="Quận/Huyện"
+                    name="district"
+                    rules={[
+                      { required: true, message: "Hãy nhập quận huyện!" },
+                    ]}
                   >
-                    {wards.map((ward) => (
-                      <Select.Option key={ward.code} value={ward.code}>
-                        {ward.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-                <Form.Item wrapperCol={{ offset: 20, span: 20 }}>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    style={{ width: "90%" }}
+                    <Select
+                      showSearch
+                      placeholder="Select a district"
+                      onChange={handleDistrictChange}
+                      value={stateUserDetails.district}
+                    >
+                      {districts.map((district) => (
+                        <Select.Option
+                          key={district.code}
+                          value={district.code}
+                        >
+                          {district.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Phường/Xã"
+                    name="ward"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Hãy nhập phường xã!",
+                      },
+                    ]}
                   >
-                    Lưu
-                  </Button>
-                </Form.Item>
-              </Form>
-            </ModalComponent>
+                    <Select
+                      showSearch
+                      placeholder="Select a ward"
+                      onChange={(value) => {
+                        form.setFieldsValue({ ward: value });
+                        setStateUserDetails((prevState) => ({
+                          ...prevState,
+                          ward: value,
+                        }));
+                      }}
+                      value={stateUserDetails.ward}
+                    >
+                      {wards.map((ward) => (
+                        <Select.Option key={ward.code} value={ward.code}>
+                          {ward.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                  <Form.Item wrapperCol={{ offset: 20, span: 20 }}>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      style={{ width: "90%" }}
+                    >
+                      Lưu
+                    </Button>
+                  </Form.Item>
+                </Form>
+              </ModalComponent>
 
-            <ModalComponent
-              title="Xóa người dùng"
-              open={isModalOpenDelete}
-              onCancel={handleCancelDelete}
-              onOk={handleDeleteUser}
-            >
-              <div>Bạn có chắc xóa tài khoản này không</div>
-            </ModalComponent>
-          </div>
+              <ModalComponent
+                title="Xóa người dùng"
+                open={isModalOpenDelete}
+                onCancel={handleCancelDelete}
+                onOk={handleDeleteUser}
+              >
+                <div>Bạn có chắc xóa tài khoản này không</div>
+              </ModalComponent>
+            </div>
 
-          <TableComponent
-            columns={columns}
-            isLoading={isLoadingUsers}
-            data={dataTable}
-            pagination={{
-              position: ["bottomCenter"],
-              pageSize: 7,
-            }}
-            onRow={(record, rowIndex) => {
-              return {
-                onClick: (event) => {
-                  setRowSelected(record._id);
-                },
-              };
-            }}
-          />
-        </Content>
+            <TableComponent
+              columns={columns}
+              isLoading={isLoadingUsers}
+              data={dataTable}
+              pagination={{
+                position: ["bottomCenter"],
+                pageSize: 7,
+              }}
+              onRow={(record, rowIndex) => {
+                return {
+                  onClick: (event) => {
+                    setRowSelected(record._id);
+                  },
+                };
+              }}
+            />
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
+    </LoadingComponent>
   );
 };
 

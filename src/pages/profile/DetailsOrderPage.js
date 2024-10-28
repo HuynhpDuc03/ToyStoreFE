@@ -1,6 +1,6 @@
-import { Avatar, List, Steps } from "antd";
+import { Avatar, List, Menu, Skeleton, Steps } from "antd";
 import React, { useEffect, useState } from "react";
-import { orderContant } from "../../contant";
+import { Contant } from "../../contant";
 import {
   EnvironmentOutlined,
   FileProtectOutlined,
@@ -18,13 +18,17 @@ import VnProvinces from "vn-local-plus";
 import { converPrice } from "../../utils";
 import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 import StepComponent from "../../components/StepComponent/StepComponent";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 
 const DetailsOrderPage = () => {
   const params = useParams();
+  const user = useSelector((state) => state?.user);
+  const { t } = useTranslation();
+  const orderContant = Contant(t);
   const location = useLocation();
   const { state } = location;
   const { id } = params;
-  console.log("id", params);
   const navigate = useNavigate();
   const [provinceName, setProvinceName] = useState("");
   const [districtName, setDistrictName] = useState("");
@@ -40,8 +44,6 @@ const DetailsOrderPage = () => {
     queryFn: fetchGetDetailsOrder,
     enabled: !!id,
   });
-
-  console.log("orderDetails", orderDetails);
 
   useEffect(() => {
     if (orderDetails?.shippingAddress) {
@@ -65,8 +67,8 @@ const DetailsOrderPage = () => {
   const handleClickNavigate = () => {
     navigate("/my-order", {
       state: {
-        id: state?.userid,
-        token: state?.token,
+        id: user?.id,
+        token: user?.access_token,
       },
     });
   };
@@ -74,237 +76,233 @@ const DetailsOrderPage = () => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
 
-  const handleDetailsProduct = (id) => {
-    navigate(`/productsDetail/${id}`);
-  };
   const itemsStatus = [
     {
-      title: "Đơn hàng đã đặt",
-
+      title: t("pageProfile.orderPlaced"),
       icon: <SolutionOutlined />,
     },
     {
-      title: "Đã xác nhận",
-
+      title: t("pageProfile.confirmed"),
       icon: <FileProtectOutlined />,
     },
     {
-      title: "Đang vận chuyển",
-
+      title: t("pageProfile.shipping"),
       icon: <TruckOutlined />,
     },
     {
-      title: "Đã nhận được hàng",
-
+      title: t("pageProfile.received"),
       icon: <InboxOutlined />,
     },
   ];
-  
+
+  const items = [
+    {
+      key: "profile",
+      label: "Profile",
+      type: "group",
+      children: [
+        {
+          key: "1",
+          label: (
+            <span>
+              <UserOutlined /> {t("pageProfile.account1")}
+            </span>
+          ),
+          onClick: () => navigate("/profile-user"),
+        },
+        {
+          key: "2",
+          label: (
+            <span>
+              <TruckOutlined /> {t("pageProfile.orderInfo")}
+            </span>
+          ),
+          onClick: handleClickNavigate,
+        },
+      ],
+    },
+  ];
+
   return (
-    <LoadingComponent isLoading={isLoading}>
-      <div className="container pt-5" style={{ marginBottom: 200 }}>
-        <div className="row">
-          <h2
+    <div className="container pt-5" style={{ marginBottom: 200 }}>
+      <div className="row">
+        <div className="col-2 col-sm-2 col-md-2">
+          <Menu
             style={{
-              textAlign: "center",
-              fontWeight: "bold",
-              marginBottom: "20px",
+              width: "100%",
+              borderRadius: "8px",
             }}
-          >
-            CHI TIẾT ĐƠN HÀNG
-          </h2>
-          
-          <div className="col-3 col-sm-3 col-md-3">
-            
-            <div
-              className="card border-0 shadow mt-3"
-              style={{ borderRadius: "5px" }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  height: "40px",
-                  textAlign: "center",
-                  backgroundColor: "#000",
-                  borderTopLeftRadius: "5px",
-                  borderTopRightRadius: "5px",
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: "18px",
-                    lineHeight: "40px",
-                    color: "#fff",
-                    fontWeight: "700",
-                  }}
-                >
-                  <SmileOutlined /> Thông tin của bạn
-                </p>
-              </div>
-              <div className="card-body">
-                <div className="shop__sidebar__categories">
-                  <ul>
-                    <li>
-                      <Link to={"/profile-user"}>
-                        <UserOutlined /> Tài khoản
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleClickNavigate();
-                        }}
-                        style={{ color: "#000" }}
-                      >
-                        <TruckOutlined /> Thông tin đơn hàng
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-9 col-sm-9 col-md-9 ">
-          <StepComponent
+            defaultSelectedKeys={"2"}
+            mode="inline"
+            items={items}
+          />
+        </div>
+        <div className="col-10 col-sm-10 col-md-10">
+          {isLoading ? (
+            <>
+              <Skeleton active avatar paragraph={{ rows: 1 }} />
+              <Skeleton active avatar paragraph={{ rows: 1 }} />
+              <Skeleton active avatar paragraph={{ rows: 1 }} />
+              <Skeleton active avatar paragraph={{ rows: 1 }} />
+              <Skeleton active avatar paragraph={{ rows: 1 }} />
+            </>
+          ) : (
+            <>
+              <StepComponent
                 items={itemsStatus}
                 curent={orderDetails?.orderStatus}
               />
-        
-            <div className="card border-1 mt-3">
-              <div
-                style={{
-                  width: "100%",
-                  backgroundColor: "#c3d2bd",
-                  padding: "8px",
-                }}
-              >
-                Mã đơn hàng: <span>{orderDetails?._id}</span> | Ngày đặt:{" "}
-                <span>{formatDate(orderDetails?.createdAt)} </span> |{" "}
-                {orderContant.payment[orderDetails?.paymentMethod]}:
-                <span>
-                  {" "}
-                  {orderDetails?.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
-                </span>{" "}
-                | Giao hàng:{" "}
-                <span>
-                  {orderDetails?.isDelivered ? "Đã giao hàng" : "Chờ giao hàng"}
-                </span>
-              </div>
 
               <div
-                className="card-body"
-                style={{ paddingTop: "10px", paddingBottom: "10px" }}
+                className="card border-1 mt-3 shadow-sm"
+                style={{ borderRadius: "8px" }}
               >
-                {orderDetails?.orderItems?.map((orderItem, index) => {
-                  return (
-                    <List
-                      key={orderItem._id}
-                      itemLayout="horizontal"
-                      dataSource={[orderItem]}
-                      renderItem={(item) => (
-                        <List.Item>
-                          <List.Item.Meta
-                            avatar={
-                              <Avatar
-                                size={80}
-                                src={item?.image[0]}
-                              />
-                            }
-                            title={
-                              <Link
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleDetailsProduct(item?.product);
-                                }}
-                              >
-                                {item.name}
-                              </Link>
-                            }
-                            description={"Đồ chơi siêu trí tuệ"}
-                          />
-                          <p>{`${item.amount} x  ${converPrice(
-                            item.price
-                          )}`}</p>
-                        </List.Item>
-                      )}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-lg-6">
-                <div className="card border-1 mt-3">
-                  <div className="card-body">
-                    <h5>Thông tin địa chỉ</h5>
-                    <hr style={{ height: "0px" }} />
-                    <span
-                      style={{ fontSize: "14px", textTransform: "capitalize" }}
-                    >
-                      <UserOutlined /> {orderDetails?.shippingAddress?.fullName}{" "}
-                      - <PhoneOutlined /> {orderDetails?.shippingAddress?.phone}
-                    </span>
-                    <div style={{ fontSize: "14px" }}>
-                      <EnvironmentOutlined />{" "}
-                      {orderDetails?.shippingAddress?.address}, {wardName},{" "}
-                      {districtName}, {provinceName}
-                    </div>
-                  </div>
+                <div
+                  style={{
+                    width: "100%",
+                    borderBottom: "2px solid #f0f0f0",
+                    padding: "10px",
+                    fontWeight: "500",
+                    backgroundColor: "#fafafa",
+                    color: "#555",
+                    borderTopLeftRadius: "8px",
+                    borderTopRightRadius: "8px",
+                  }}
+                >
+                  {t("pageProfile.orderID")}: <span>{orderDetails?._id}</span> |{" "}
+                  {t("pageProfile.orderDate")}:{" "}
+                  <span>{formatDate(orderDetails?.createdAt)} </span> |{" "}
+                  {orderContant.payment[orderDetails?.paymentMethod]}:
+                  <span>
+                    {" "}
+                    {orderDetails?.isPaid
+                      ? t("pageProfile.paid")
+                      : t("pageProfile.notPaid")}
+                  </span>{" "}
+                  | {t("pageProfile.delivery")}:{" "}
+                  <span>
+                    {orderDetails?.isDelivered
+                      ? t("pageProfile.delivered")
+                      : t("pageProfile.waitingForDelivery")}
+                  </span>
+                </div>
+
+                <div className="card-body" style={{ padding: "10px" }}>
+                  {orderDetails?.orderItems?.map((orderItem) => {
+                    return (
+                      <List
+                        key={orderItem?.product}
+                        itemLayout="horizontal"
+                        dataSource={[orderItem]}
+                        renderItem={(item) => (
+                          <List.Item>
+                            <List.Item.Meta
+                              avatar={
+                                <Avatar size={80} src={orderItem?.image[0]} />
+                              }
+                              title={
+                                <Link
+                                  to={`/productsDetail/${orderItem?.product}`}
+                                >
+                                  {item?.name}
+                                </Link>
+                              }
+                            />
+                            <p>{`${item?.amount} x  ${converPrice(
+                              item?.price
+                            )}`}</p>
+                          </List.Item>
+                        )}
+                      />
+                    );
+                  })}
                 </div>
               </div>
-
-              <div className="col-lg-6">
-                <div className="card border-1 mt-3">
-                  <div className="card-body">
-                    <h5 style={{ paddingBottom: "10px" }}>Tóm tắt tổng tiền</h5>
-                    <div>
-                      <ul className="checkout__total__all">
-                        <li>
-                          Tạm tính{" "}
-                          <span>{converPrice(orderDetails?.itemsPrice)}</span>
-                        </li>
-                        <li>
-                          Giảm giá{" "}
-                          <span>
-                            {!orderDetails?.discountPrice
-                              ? converPrice(0)
-                              : converPrice(orderDetails?.discountPrice)}
-                          </span>
-                        </li>
-                        <li>
-                          Phí vận chuyển{" "}
-                          <span>
-                            {converPrice(orderDetails?.shippingPrice)}
-                          </span>
-                        </li>
-                      </ul>
-                      <span>
-                        Tổng tiền{" "}
-                        <span
-                          style={{
-                            float: "right",
-                            color: "#e53637",
-                            fontWeight: "700",
-                          }}
-                        >
-                          {converPrice(orderDetails?.totalPrice)}
-                        </span>
+              <div className="row">
+                <div className="col-lg-6">
+                  <div
+                    className="card border-1 mt-3 shadow-sm"
+                    style={{ borderRadius: "8px" }}
+                  >
+                    <div className="card-body">
+                      <h5>{t("pageProfile.infoAddress")}</h5>
+                      <hr style={{ height: "0px" }} />
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        <UserOutlined />{" "}
+                        {orderDetails?.shippingAddress?.fullName} -{" "}
+                        <PhoneOutlined /> {orderDetails?.shippingAddress?.phone}
                       </span>
+                      <div style={{ fontSize: "14px" }}>
+                        <EnvironmentOutlined />{" "}
+                        {orderDetails?.shippingAddress?.address}, {wardName},{" "}
+                        {districtName}, {provinceName}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-lg-6">
+                  <div
+                    className="card border-1 mt-3 shadow-sm"
+                    style={{ borderRadius: "8px" }}
+                  >
+                    <div className="card-body">
+                      <h5 style={{ paddingBottom: "10px" }}>
+                        {t("pageProfile.summaryOfTotalAmount")}
+                      </h5>
+                      <div>
+                        <ul className="checkout__total__all">
+                          <li>
+                            {t("pageCheckOut.temporary")}{" "}
+                            <span>{converPrice(orderDetails?.itemsPrice)}</span>
+                          </li>
+                          <li>
+                            {t("pageCheckOut.Discount")}{" "}
+                            <span>
+                              {!orderDetails?.discountPrice
+                                ? converPrice(0)
+                                : converPrice(orderDetails?.discountPrice)}
+                            </span>
+                          </li>
+                          <li>
+                            {t("pageCheckOut.ShippingFee")}{" "}
+                            <span>
+                              {converPrice(orderDetails?.shippingPrice)}
+                            </span>
+                          </li>
+                        </ul>
+                        <span>
+                          {t("pageCheckOut.orderTotal")}{" "}
+                          <span
+                            style={{
+                              float: "right",
+                              color: "#e53637",
+                              fontWeight: "700",
+                            }}
+                          >
+                            {converPrice(orderDetails?.totalPrice)}
+                          </span>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </div>
-    </LoadingComponent>
+    </div>
   );
 };
 

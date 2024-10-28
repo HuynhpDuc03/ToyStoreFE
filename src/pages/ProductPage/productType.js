@@ -7,12 +7,13 @@ import { useQuery } from "@tanstack/react-query";
 import { searchProduct } from "../../redux/slides/productSlide";
 import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 import ProductComponent from "../../components/ProductComponent/ProductComponent";
-import { Select } from "antd";
+import { Select, Skeleton } from "antd";
 import CategoryComponent from "../../components/CategoryComponent/CategoryComponent";
-
+import { useTranslation } from "react-i18next";
 
 const ProductType = () => {
   const { state } = useLocation();
+  const { t } = useTranslation();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -32,20 +33,27 @@ const ProductType = () => {
     );
   };
 
-  const [limit, setLimit] = useState(4); //mac dinh web 8sp
+  const [limit, setLimit] = useState(8); //mac dinh web 8sp
   const [typeProducts, setTypeProducts] = useState([]);
   const [sortOrder, setSortOrder] = useState();
   const [selectedPrices, setSelectedPrices] = useState([]);
+  const [totalProducts, setTotalProducts] = useState([]);
 
   const fetchProductType = async (context) => {
     const limit = context?.queryKey && context?.queryKey[1];
     const type = context?.queryKey && context?.queryKey[2];
     const sort = context?.queryKey && context?.queryKey[3];
-    const price = context?.queryKey && context?.queryKey[4];  
-    const res = await ProductService.getProductType(type, limit, searchDebounce, sort, price);
+    const price = context?.queryKey && context?.queryKey[4];
+    const res = await ProductService.getProductType(
+      type,
+      limit,
+      searchDebounce,
+      sort,
+      price
+    );
+    setTotalProducts(res.total);
     return res;
   };
-
 
   const fetchAllTypeProduct = async () => {
     const res = await ProductService.getAllTypeProduct();
@@ -66,7 +74,7 @@ const ProductType = () => {
     keepPreviousData: true,
   });
 
-  const handlePriceRangersChange = (value) => {
+  const handleSortingChange = (value) => {
     setSortOrder(value);
   };
 
@@ -85,31 +93,28 @@ const ProductType = () => {
   };
 
   return (
-    <LoadingComponent isLoading={isLoading}>
-      {/* <!-- Breadcrumb Section Begin --> */}
+    <>
       <section className="breadcrumb-option">
         <div className="container">
           <div className="row">
             <div className="col-lg-12">
               <div className="breadcrumb__text">
-                <h4>Shop</h4>
+                <h4>{t("header.shop")}</h4>
                 <div className="breadcrumb__links">
-                  <Link to="/">Home</Link>
-                  <span>Shop</span>
+                  <Link to="/">{t("header.home")}</Link>
+                  <span>{t("header.shop")}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-      {/* <!-- Breadcrumb Section End --> */}
 
-      {/* <!-- Shop Section Begin --> */}
       <section className="shop spad">
         <div className="container">
           <div className="row">
             <div className="col-lg-3">
-            <CategoryComponent
+              <CategoryComponent
                 onSearch={onSearch}
                 typeProducts={typeProducts}
                 handleNavigatetype={handleNavigatetype}
@@ -123,109 +128,122 @@ const ProductType = () => {
                 <div className="row">
                   <div className="col-lg-6 col-md-6 col-sm-6">
                     <div className="shop__product__option__left">
-                      <p>Tổng: {products?.data?.length} kết quả</p>
+                      <p>
+                        {t("shopPage.total")} {totalProducts}{" "}
+                        {t("shopPage.result")}
+                      </p>
                     </div>
                   </div>
                   <div class="col-lg-6 col-md-6 col-sm-6">
                     <div class="shop__product__option__right">
-                      <p>Xếp theo: {"     "}</p>
-                      <Select 
+                      <p>{t("shopPage.sort")}</p>
+                      <Select
                         defaultValue="lowtohigh"
-                        dropdownStyle={{width:"120px"}}
-                        
-                        onChange={handlePriceRangersChange}
+                        dropdownStyle={{ width: "140px" }}
+                        onChange={handleSortingChange}
                         options={[
                           {
                             value: "lowtohigh",
-                            label: "Giá tăng dần",
+                            label: t("shopPage.lowToHigh"),
                           },
                           {
                             value: "hightolow",
-                            label: "Giá giảm dần",
+                            label: t("shopPage.highToLow"),
                           },
                           {
                             value: "name-asc",
-                            label: "Tên A-Z",
+                            label: t("shopPage.nameatoz"),
                           },
                           {
                             value: "name-desc",
-                            label: "Tên Z-A",
+                            label: t("shopPage.nameztoa"),
                           },
                           {
                             value: "bestSeller",
-                            label: "Bán chạy",
+                            label: t("pageHome.bestSeller"),
                           },
                           {
-                            value: "hotSale",
-                            label: "Giảm giá",
+                            value: "popular",
+                            label: t("pageHome.hotSale"),
                           },
                           {
                             value: "newArrivals",
-                            label: "Hàng mới",
+                            label: t("pageHome.newArrivals"),
                           },
                         ]}
                       />
-                     
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="row">
-                {products?.data
-                  ?.filter((pro) => {
-                    if (searchDebounce === "") {
-                      return pro;
-                    } else if (
-                      pro?.name
-                        ?.toLowerCase()
-                        ?.includes(searchDebounce?.toLowerCase())
-                    ) {
-                      return pro;
-                    }
-                  })
-                  .map((product) => {
-                    return (
-                      <ProductComponent
-                        key={product._id}
-                        countInStock={product.countInStock}
-                        description={product.description}
-                        image={product.image[0]}
-                        name={product.name}
-                        price={product.price}
-                        rating={product.rating}
-                        type={product.type}
-                        discount={product.discount}
-                        id={product._id}
-                        selled={product.selled}
-                      />
-                    );
-                  })}
-              </div>
-              <div className="row">
-                <div className="col-lg-12">
-                  <div className="product__pagination">
-                  <button
-                      type="button"
-                      style={{ width: "30%", background:"#000", color: "#fff" }}
-                      className="btn btn-primary"
-                      disabled={
-                        products?.total === products?.data?.length ||
-                        products?.totalPage === 1
-                      }
-                      onClick={() => setLimit((prev) => prev + 4)}
-                    >
-                      Xem Thêm
-                    </button>
+              {isLoading ? (
+                <>
+                  <Skeleton active paragraph={{ rows: 2 }} />
+                  <Skeleton active paragraph={{ rows: 2 }} />
+                  <Skeleton active paragraph={{ rows: 2 }} />
+                  <Skeleton active paragraph={{ rows: 2 }} />
+                  <Skeleton active paragraph={{ rows: 2 }} />
+                </>
+              ) : (
+                <>
+                  <div className="row">
+                    {products?.data
+                      ?.filter((pro) => {
+                        if (searchDebounce === "") {
+                          return pro;
+                        } else if (
+                          pro?.name
+                            ?.toLowerCase()
+                            ?.includes(searchDebounce?.toLowerCase())
+                        ) {
+                          return pro;
+                        }
+                      })
+                      .map((product) => {
+                        return (
+                          <ProductComponent
+                            key={product._id}
+                            countInStock={product.countInStock}
+                            description={product.description}
+                            image={product.image[0]}
+                            name={product.name}
+                            price={product.price}
+                            rating={product.rating}
+                            type={product.type}
+                            discount={product.discount}
+                            id={product._id}
+                            selled={product.selled}
+                          />
+                        );
+                      })}
                   </div>
-                </div>
-              </div>
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <div className="product__pagination">
+                        <button
+                          type="button"
+                          style={{
+                            width: "30%",
+                          }}
+                          className="btn btn-primary"
+                          disabled={
+                            products?.total === products?.data?.length ||
+                            products?.totalPage === 1
+                          }
+                          onClick={() => setLimit((prev) => prev + 4)}
+                        >
+                          {t("pageHome.readMore")}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
       </section>
-      {/* <!-- Shop Section End --> */}
-    </LoadingComponent>
+    </>
   );
 };
 export default ProductType;
-

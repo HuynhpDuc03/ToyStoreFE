@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import * as ProductService from "../../services/ProductService";
 import { useQuery } from "@tanstack/react-query";
-import { InputNumber, Rate, message } from "antd";
+import { Button, InputNumber, Rate, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { addOrderProduct } from "../../redux/slides/orderSlide";
 import favoriteSlide, {
@@ -17,11 +17,12 @@ import ButtonFavouriteComponent from "../../components/ButtonFavouriteComponent/
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import LikeButtonComponent from "../../components/LikeButtonComponent/LikeButtonComponent";
 import CommentComponent from "../../components/CommentComponent/CommentComponent";
+import { useTranslation } from "react-i18next";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   const [numProduct, setNumProduct] = useState(1);
   const user = useSelector((state) => state.user);
 
@@ -105,9 +106,11 @@ const ProductDetail = () => {
             content: "Loading...",
             duration: 0.75,
           })
-          .then(() => message.success("Đã thêm vào giỏ hàng", 1.5));
+          .then(() =>
+            message.success(t("pageProductDetails.addedToCart"), 1.5)
+          );
       } else {
-        message.error("Có lỗi khi thêm vào giỏ hàng", 1.5);
+        message.error(t("pageProductDetails.errorToCart"), 1.5);
       }
     }
   };
@@ -119,7 +122,7 @@ const ProductDetail = () => {
     } else {
       if (favourite) {
         dispatch(removeFavoriteProduct({ idProduct: productDetails?._id }));
-        message.success("Đã xóa khỏi danh sách yêu thích", 1.5);
+        message.success(t("pageProductDetails.removeFavorite"), 1.5);
       } else {
         dispatch(
           addFavoriteProduct({
@@ -135,7 +138,7 @@ const ProductDetail = () => {
             },
           })
         );
-        message.success("Đã thêm vào danh sách yêu thích", 1.5);
+        message.success(t("pageProductDetails.addToFavorite"), 1.5);
       }
       setFavourite(!favourite);
     }
@@ -156,7 +159,7 @@ const ProductDetail = () => {
   const [favourite, setFavourite] = useState(false);
 
   useEffect(() => {
-    initFacebookSDK()
+    initFacebookSDK();
   }, []);
 
   return (
@@ -178,7 +181,7 @@ const ProductDetail = () => {
                       navigate("/");
                     }}
                   >
-                    Home
+                    {t("header.home")}
                   </Link>
                   <Link
                     onClick={(e) => {
@@ -186,9 +189,9 @@ const ProductDetail = () => {
                       navigate("/products");
                     }}
                   >
-                    Shop
+                    {t("header.shop")}
                   </Link>
-                  <span>Product Details</span>
+                  <span> {t("header.productDetail")}</span>
                 </div>
               </div>
             </div>
@@ -226,25 +229,38 @@ const ProductDetail = () => {
                           |
                           <span>
                             {" "}
-                            {formatSelled(productDetails?.selled)} Đã Bán
+                            {formatSelled(productDetails?.selled)}{" "}
+                            {t("pageProductDetails.selled")}{" "}
+                          </span>
+                          |
+                          <span>
+                            {" "}
+                            {formatSelled(productDetails?.viewCount)}{" "}
+                            {t("pageProductDetails.viewCount")}
                           </span>
                           <h3>
                             {converPrice(discountedPrice)}
-                            <span style={{ fontSize: "16px" }}>
-                              {converPrice(productDetails?.price)}
-                            </span>
-                            <span
-                              style={{
-                                fontSize: "16px",
-                                color: "#fff",
-                                backgroundColor: "#d0011b",
-                                textDecoration: "none",
-                                borderRadius: "2px",
-                                padding: "2px 4px",
-                              }}
-                            >
-                              {productDetails?.discount}% GIẢM
-                            </span>
+
+                            {productDetails?.discount > 0 && (
+                              <>
+                                <span style={{ fontSize: "16px" }}>
+                                  {converPrice(productDetails?.price)}
+                                </span>
+                                <span
+                                  style={{
+                                    fontSize: "16px",
+                                    color: "#fff",
+                                    backgroundColor: "#d0011b",
+                                    textDecoration: "none",
+                                    borderRadius: "2px",
+                                    padding: "2px 4px",
+                                  }}
+                                >
+                                  {productDetails?.discount}%{" "}
+                                  {t("pageProductDetails.discount")}
+                                </span>
+                              </>
+                            )}
                           </h3>
                           <p>
                             Siêu chiến giáp của Cole có buồng lái và được trang
@@ -261,31 +277,38 @@ const ProductDetail = () => {
                           />
                           <div className="product__details__cart__option">
                             {productDetails?.countInStock > 0 ? (
-                              <>
-                                <span>Số lượng </span>
-                                <InputNumber
-                                  style={{ marginRight: "10px" }}
-                                  min={1}
-                                  max={productDetails?.countInStock}
-                                  defaultValue={1}
-                                  value={numProduct}
-                                  onChange={onChange}
-                                />
-                                <span>
-                                  {productDetails?.countInStock} sản phẩm có sẵn
-                                </span>
-                              </>
+                              <div className="row">
+                                <div className="col-md-7">
+                                  <InputNumber
+                                    style={{ marginRight: "10px" }}
+                                    min={1}
+                                    max={productDetails?.countInStock}
+                                    defaultValue={1}
+                                    value={numProduct}
+                                    onChange={onChange}
+                                  />
+                                  <span>
+                                    {productDetails?.countInStock}{" "}
+                                    {t("pageProductDetails.countInStock")}
+                                  </span>
+                                </div>
+                                <div className="col-md-5">
+                                  <ButtonComponent style={{ height: "48px", width: "100%" }}>MUA NGAY</ButtonComponent>
+                                </div>
+                              </div>
                             ) : (
                               <h5 style={{ color: "rgb(255, 123, 2)" }}>
-                                Sản phẩm hết hàng vui lòng liên hệ
+                                {t("pageProductDetails.countOutstanding")}
                               </h5>
                             )}
                           </div>
                           <div className="row">
                             <div className="col-md-6">
-                              <ButtonComponent
+                              <Button
+                                size="large"
+                                type="primary"
                                 onClick={handleAddOrderProduct}
-                                style={{ height: "48px" }}
+                                style={{ height: "48px", width: "100%" }}
                               >
                                 <ShoppingCartOutlined
                                   style={{
@@ -293,8 +316,8 @@ const ProductDetail = () => {
                                     marginRight: "5px",
                                   }}
                                 />{" "}
-                                ADD TO CART
-                              </ButtonComponent>
+                                {t("pageProductDetails.addToCart")}
+                              </Button>
                             </div>
                             <div className="col-md-6">
                               <ButtonFavouriteComponent
@@ -307,17 +330,21 @@ const ProductDetail = () => {
                                 }}
                                 isFavourite={favourite}
                               >
-                                Yêu thích
+                                {t("pageProductDetails.favorite")}
                               </ButtonFavouriteComponent>
                             </div>
                           </div>
                           <div className="product__details__last__option">
                             <ul>
                               <li>
-                                <span>Mã sản phẩm:</span> {productDetails?._id}
+                                <span>
+                                  {t("pageProductDetails.idProduct")}:
+                                </span>{" "}
+                                {productDetails?._id}
                               </li>
                               <li>
-                                <span>Thể loại:</span> {productDetails?.type}
+                                <span>{t("pageProductDetails.type")}:</span>{" "}
+                                {productDetails?.type}
                               </li>
                             </ul>
                           </div>
@@ -346,7 +373,7 @@ const ProductDetail = () => {
                         href="#tabs-5"
                         role="tab"
                       >
-                        Description
+                        {t("pageProductDetails.description")}
                       </a>
                     </li>
                     <li className="nav-item">
@@ -356,7 +383,7 @@ const ProductDetail = () => {
                         href="#tabs-6"
                         role="tab"
                       >
-                        Customer Previews(5)
+                        {t("pageProductDetails.customerPreviews")}(5)
                       </a>
                     </li>
                     <li className="nav-item">
@@ -366,7 +393,7 @@ const ProductDetail = () => {
                         href="#tabs-7"
                         role="tab"
                       >
-                        Additional information
+                        {t("pageProductDetails.additionalInformation")}
                       </a>
                     </li>
                   </ul>

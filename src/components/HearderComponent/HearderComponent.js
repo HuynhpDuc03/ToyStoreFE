@@ -1,11 +1,48 @@
-import { FloatButton, Popover } from "antd";
-import React, { useEffect, useState } from "react";
+import { Button, FloatButton, Input, Popover } from "antd";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import * as UserService from "../../../src/services/UserService";
+
 import { resetUser } from "../../redux/userSlide";
+import {
+  HeartOutlined,
+  SearchOutlined,
+  ShoppingCartOutlined,
+} from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
+import i18n from "i18next";
+import { useDebounce } from "../../hooks/useDebounce";
+import { converPrice } from "../../utils";
+import SearchComponent from "../SearchComponent/SearchComponent";
 
 const HearderComponent = () => {
+  const { t } = useTranslation();
+  const [activeItem, setActiveItem] = useState("home");
+  const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === "/") {
+      setActiveItem("home");
+    } else if (
+      path.startsWith("/products") ||
+      path.startsWith("/productsDetail")
+    ) {
+      setActiveItem("shop");
+    } else if (path.startsWith("/blogs") || path.startsWith("/blogDetails")) {
+      setActiveItem("blog");
+    } else if (path.startsWith("/contact")) {
+      setActiveItem("contact");
+    } else {
+      setActiveItem("");
+    }
+  }, [location.pathname]);
+
+  const handleClick = (item) => {
+    setActiveItem(item);
+  };
+
   return (
     <div>
       <FloatButton.BackTop duration={100} />
@@ -19,21 +56,56 @@ const HearderComponent = () => {
             <i className="fa fa-bars"></i>
           </div>
         </div>
-      </header>
-      {/* <!-- Search Begin --> */}
-      <div className="search-model">
-        <div className="h-100 d-flex align-items-center justify-content-center">
-          <div className="search-close-switch">+</div>
-          <form className="search-model-form">
-            <input
-              type="text"
-              id="search-input"
-              placeholder="Search here....."
-            />
-          </form>
+        <div className="header__bottom">
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-12 col-md-12">
+                <nav className="header__menu mobile-menu">
+                  <ul>
+                    <li className={activeItem === "home" ? "active" : ""}>
+                      <NavLink
+                        exact
+                        to="/"
+                        activeClassName="active"
+                        onClick={() => handleClick("home")}
+                      >
+                        {t("header.home")}
+                      </NavLink>
+                    </li>
+                    <li className={activeItem === "shop" ? "active" : ""}>
+                      <NavLink
+                        to="/products"
+                        activeClassName="active"
+                        onClick={() => handleClick("shop")}
+                      >
+                        {t("header.shop")}
+                      </NavLink>
+                    </li>
+                    <li className={activeItem === "blog" ? "active" : ""}>
+                      <NavLink
+                        to="/blogs"
+                        activeClassName="active"
+                        onClick={() => handleClick("blog")}
+                      >
+                        {t("header.blog")}
+                      </NavLink>
+                    </li>
+                    <li className={activeItem === "contact" ? "active" : ""}>
+                      <NavLink
+                        to="/contact"
+                        activeClassName="active"
+                        onClick={() => handleClick("contact")}
+                      >
+                        {t("header.contact")}
+                      </NavLink>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      {/* <!-- Search End --> */}
+      </header>
     </div>
   );
 };
@@ -41,11 +113,13 @@ const HearderComponent = () => {
 export default HearderComponent;
 
 const Menu = () => {
+
   const [activeItem, setActiveItem] = useState("home");
   const order = useSelector((state) => state.order.orderItems);
   const location = useLocation();
+
+
   useEffect(() => {
-    // Kiểm tra đường dẫn và đặt activeItem tương ứng
     if (
       location.pathname === "/products" ||
       location.pathname.startsWith("/products/") ||
@@ -53,72 +127,70 @@ const Menu = () => {
     ) {
       setActiveItem("shop");
     }
-  }, [location.pathname]); // Theo dõi thay đổi trong location.pathname
+  }, [location.pathname]);
+
   const handleClick = (item) => {
     setActiveItem(item);
   };
+
+ 
   return (
     <div className="row">
-      {/* style={{paddingBottom:0,paddingTop:"20px"}} */}
-      <div className="col-lg-3 col-md-3">
+      <div className="col-lg-2 col-md-2">
         <div className="header__logo">
           <Link to="/">
-            <p
-              style={{
-                fontSize: 25,
-                textAlign: "center",
-                fontWeight: "bold",
-                marginBottom: "0px",
-              }}
-            >
-               <span style={{ color: "#e50c50" }}>TOY STORE</span>
-            </p>
+            <img width={150} height={53} src={require("../../img/logo.webp")} />
           </Link>
         </div>
       </div>
-      <div className="col-lg-6 col-md-6">
-        <nav className="header__menu mobile-menu">
-          <ul>
-            <li className={activeItem === "home" ? "active" : ""}>
-              <NavLink
-                exact
-                to="/"
-                activeClassName="active"
-                onClick={() => handleClick("home")}
+      <div className="col-lg-6 col-md-6" style={{ position: 'relative' }} >
+      <SearchComponent></SearchComponent>
+    </div>
+      <div className="col-lg-4 col-md-4">
+        <div className="row">
+          <div className="col-lg-8 col-md-8" style={{ padding: "30px 0px" }}>
+            <span>
+              <a
+                rel="nofollow"
+                href="tel:1900 6750"
+                title="Hotline"
+                className="tracking-order"
               >
-                Home
-              </NavLink>
-            </li>
-            <li className={activeItem === "shop" ? "active" : ""}>
-              <NavLink
-                to="/products"
-                activeClassName="active"
-                onClick={() => handleClick("shop")}
+                Hotline: 1900 6750
+              </a>
+              <br />
+              <a
+                rel="nofollow"
+                href="mailto:support@sapo.vn"
+                title="Email"
+                className="tracking-order index-mails"
               >
-                Shop
-              </NavLink>
-            </li>
-          </ul>
-        </nav>
-      </div>
-      <div className="col-lg-3 col-md-3">
-        <div className="header__nav__option">
-          <div className={activeItem === "shop" ? "active" : ""}>
-            <NavLink
-              to="/productFavorite"
-              activeClassName="active"
-              onClick={() => handleClick("shop")}
-            >
-              <img src={require("../../img/icon/heart.png")} alt="cart" />
-            </NavLink>
-            <NavLink
-              to="/Order"
-              activeClassName="active"
-              onClick={() => handleClick("shop")}
-            >
-              <img src={require("../../img/icon/cart.png")} alt="cart" />
-              <span>{order.length}</span>
-            </NavLink>
+                Email: support@sapo.vn
+              </a>
+            </span>
+          </div>
+          <div className="col-lg-4 col-md-4">
+            <div className="header__nav__option">
+              <div className={activeItem === "shop" ? "active" : ""}>
+                <NavLink
+                  to="/productFavorite"
+                  activeClassName="active"
+                  onClick={() => handleClick("shop")}
+                >
+                  <HeartOutlined style={{ color: "#fff", fontSize: "24px" }} />
+                </NavLink>
+                <NavLink
+                  to="/Order"
+                  activeClassName="active"
+                  onClick={() => handleClick("shop")}
+                >
+                  <ShoppingCartOutlined
+                    style={{ color: "#fff", fontSize: "24px" }}
+                  />
+                  <span className="number-cart">{order.length}</span>
+                </NavLink>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -127,13 +199,14 @@ const Menu = () => {
 };
 
 const Header = () => {
+  const { t } = useTranslation();
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [userName, setUserName] = useState("");
   const handleLogout = async () => {
     await UserService.logoutUser();
     dispatch(resetUser());
-    handleNavigatelogin()
+    handleNavigatelogin();
   };
 
   useEffect(() => {
@@ -142,16 +215,19 @@ const Header = () => {
 
   const content = (
     <div className="user-menu">
-      <p onClick={() => navigate("/profile-user")}>Thông tin người dùng</p>
+      <p onClick={() => navigate("/profile-user")}> {t("header.myAccount")}</p>
       {user?.isAdmin && (
-        <p onClick={() => navigate("/Dashboard")}>Quản lí hệ thống</p>
+        <p onClick={() => navigate("/Dashboard")}> {t("header.Admin")}</p>
       )}
-      <p onClick={handleLogout}>Đăng xuất tài khoản</p>
+      <p onClick={handleLogout}> {t("header.signOut")}</p>
     </div>
   );
   const navigate = useNavigate();
   const handleNavigatelogin = () => {
     navigate("/SignIn");
+  };
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
   };
 
   return (
@@ -159,27 +235,26 @@ const Header = () => {
       <div className="row">
         <div className="col-lg-6 col-md-7">
           <div className="header__top__left">
-            <p>
-              Miễn phí vận chuyển, đảm bảo hoàn trả hoặc hoàn tiền trong 30
-              ngày.
-            </p>
+            <p>{t("header.freeShipping")}</p>
           </div>
         </div>
         <div className="col-lg-6 col-md-5">
-          <div className="header__top__right" style={{ textAlign: "center" }}>
+          <div className="header__top__right">
             {userName ? (
               <>
-                <Popover content={content} trigger="click">
-                  <div
-                    style={{
-                      color: "#ffff",
-                      textTransform: "uppercase",
-                      fontWeight: "700",
-                      fontStyle: "italic",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Xin chào {userName}
+                <Popover content={content} trigger="hover">
+                  <div className="header__top__links">
+                    <span
+                      style={{
+                        color: "#ffff",
+                        textTransform: "uppercase",
+                        fontWeight: "700",
+                        cursor: "pointer",
+                        marginRight: "28px",
+                      }}
+                    >
+                      {t("header.welcome")} {userName}
+                    </span>
                   </div>
                 </Popover>
               </>
@@ -194,12 +269,25 @@ const Header = () => {
                     color: "#ffff",
                     textTransform: "uppercase",
                     fontWeight: "700",
+                    cursor: "pointer",
+                    marginRight: "28px",
                   }}
                 >
-                  Đăng nhập/Đăng ký
+                  {t("header.signIn")}
                 </span>
               </div>
             )}
+
+            <div class="header__top__hover">
+              <span>
+                {i18n.language === "en" ? "EN" : "VN"}{" "}
+                <i class="arrow_carrot-down"></i>
+              </span>
+              <ul>
+                <li onClick={() => changeLanguage("en")}>EN</li>
+                <li onClick={() => changeLanguage("vn")}>VN</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

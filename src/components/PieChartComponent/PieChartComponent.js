@@ -1,13 +1,15 @@
 import React from "react";
 import { Chart } from "react-google-charts";
 import { convertDataChart } from "../../utils";
+import { useTranslation } from "react-i18next";
 
-const PieChartPrice = ({ data, dateRange }) => {
+const PieChartPrice = ({ data, dateRange,isLoading }) => {
   let chartData = [];
   let chartOptions = {};
-
+  const { t } = useTranslation();
+  console.log("data", data)
   if (data && data.length > 0) {
-    chartData = convertDataChart(data, "paymentMethod", dateRange);
+    chartData = convertDataChart(data, "paymentMethod", dateRange, t);
     chartData = [
       ["Payment Method", "Value"],
       ...chartData.map((item) => [item.name, item.value]),
@@ -29,6 +31,7 @@ const PieChartPrice = ({ data, dateRange }) => {
   return (
     <div style={{ width: "100%", height: 515 }}>
       <Chart
+        loader={isLoading}
         width={"100%"}
         height={"100%"}
         chartType="PieChart"

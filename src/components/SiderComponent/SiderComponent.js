@@ -1,7 +1,7 @@
 import React from 'react'
 // import Sider from "antd/es/layout/Sider";
 import { Layout,Menu } from 'antd';
-import { BarChartOutlined, DollarOutlined, LogoutOutlined, ProductOutlined, TagsOutlined, UserOutlined } from '@ant-design/icons';
+import { BarChartOutlined, DollarOutlined, LogoutOutlined, ProductOutlined, SignatureOutlined, TagsOutlined, UserOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import * as UserService from '../../../src/services/UserService';
@@ -61,6 +61,11 @@ const SiderComponent = ({collapsed,user,selectKey}) => {
             key: "5",
             icon: <TagsOutlined />,
             label: <Link to="/AdminCoupon">Quản Lý Giảm Giá</Link>,
+          },
+          {
+            key: "6",
+            icon: <SignatureOutlined />,
+            label: <Link to="/AdminBlog">Quản Lý Bài Viết</Link>,
           },
         ]}
       />

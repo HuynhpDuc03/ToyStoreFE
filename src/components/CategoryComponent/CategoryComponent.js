@@ -1,5 +1,6 @@
 import { Checkbox } from "antd";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 const CategoryComponent = ({
@@ -10,11 +11,13 @@ const CategoryComponent = ({
   selectedPrices,
   handleClearAllPrices,
 }) => {
+  const {t} = useTranslation();
+
   return (
     <div className="shop__sidebar">
       <div className="shop__sidebar__search">
         <form>
-          <input type="text" placeholder="Tìm kiếm" onChange={onSearch} />
+          <input type="text" placeholder={t('Category.Search')} onChange={onSearch} />
           <button type="submit">
             <span className="icon_search"></span>
           </button>
@@ -22,24 +25,24 @@ const CategoryComponent = ({
       </div>
 
       <div className="shop__sidebar__accordion">
-        <div className="accordion" id="accordionExample">
-          <div class="card">
-            <div class="card-heading">
+      <div className="accordion" id="accordionExample">
+          <div className="card">
+            <div className="card-heading">
               <Link data-toggle="collapse" data-target="#collapseOne">
-                Danh Mục ({typeProducts.length})
+                {t('Category.Categories')} ({typeProducts.length})
               </Link>
             </div>
             <div
               id="collapseOne"
-              class="collapse show"
+              className="collapse show"
               data-parent="#accordionExample"
             >
-              <div class="card-body">
-                <div class="shop__sidebar__categories">
-                  <ul class="nice-scroll">
-                    {typeProducts.map((item) => {
+              <div className="card-body">
+                <div className="shop__sidebar__categories">
+                  <ul className="nice-scroll category-list">
+                    {typeProducts.map((item, index) => {
                       return (
-                        <li>
+                        <li key={index} style={{textTransform:"capitalize"}}>
                           <Link
                             onClick={(e) => {
                               e.preventDefault();
@@ -57,12 +60,14 @@ const CategoryComponent = ({
             </div>
           </div>
         </div>
+
         <hr />
+
         <div className="accordion" id="accordionExample1">
           <div class="card">
             <div class="card-heading">
               <Link data-toggle="collapse" data-target="#collapseTwo">
-                Giá
+              {t('shopPage.price')}
               </Link>
             </div>
             <div
@@ -84,7 +89,7 @@ const CategoryComponent = ({
                           transition: "all,0.3s",
                         }}
                       >
-                        Dưới 200.000 Đ
+                        {t('shopPage.below')} 200.000 Đ
                       </Checkbox>
                     </li>
                     <li>
@@ -164,7 +169,7 @@ const CategoryComponent = ({
                           transition: "all,0.3s",
                         }}
                       >
-                        Trên 4.000.000 Đ
+                        {t('shopPage.above')} 4.000.000 Đ
                       </Checkbox>
                     </li>
                   </ul>
@@ -173,7 +178,7 @@ const CategoryComponent = ({
                       onClick={handleClearAllPrices}
                       className="btn-delete-all-price"
                     >
-                      Xóa tất cả
+                      {t('Category.removeAll')}
                     </Link>
                   )}
                 </div>

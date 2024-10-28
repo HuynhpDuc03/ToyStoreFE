@@ -1,9 +1,11 @@
 import { ArrowUpOutlined } from "@ant-design/icons";
 import { FloatButton } from "antd";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 const FooterComponent = () => {
+  const { t } = useTranslation();
   return (
     <div>
       <footer className="footer">
@@ -13,21 +15,11 @@ const FooterComponent = () => {
               <div className="footer__about">
                 <div className="footer__logo">
                   <Link to="/">
-                    <p
-                      style={{
-                        fontSize: 25,
-                        textAlign: "center",
-                        fontWeight: "bold",
-                        marginBottom: "0px",
-                      }}
-                    >
-                      <span style={{ color: "#e50c50" }}>TOY STORE</span>
-                    </p>
+                  <img width={150} height={53} src={require("../../img/logo.webp")} />
                   </Link>
                 </div>
                 <p>
-                  The customer is at the heart of our unique business model,
-                  which includes design.
+                  {t('footer.Description')}
                 </p>
                 <a href="/">
                   <img src={require("../../img/payment.png")} alt="" />
@@ -36,38 +28,38 @@ const FooterComponent = () => {
             </div>
             <div className="col-lg-2 offset-lg-1 col-md-3 col-sm-6">
               <div className="footer__widget">
-                <h6>Shopping</h6>
+                <h6> {t('footer.Shopping')}</h6>
                 <ul>
                   <li>
-                    <a href="/">Clothing Store</a>
+                  <a href="/">{t('footer.blog')}</a>
                   </li>
                   <li>
-                    <a href="/">Trending Shoes</a>
+                  <a href="/">{t('footer.payment')}</a>
                   </li>
                   <li>
-                    <a href="/">Accessories</a>
+                  <a href="/">{t('footer.terms')}</a>
                   </li>
                   <li>
-                    <a href="/">Sale</a>
+                  <a href="/">{t('footer.returnPolicy')}</a>
                   </li>
                 </ul>
               </div>
             </div>
             <div className="col-lg-2 col-md-3 col-sm-6">
               <div className="footer__widget">
-                <h6>Shopping</h6>
+              <h6> {t('footer.privacy')}</h6>
                 <ul>
                   <li>
-                    <a href="/">Contact Us</a>
+                    <a href="/">{t('footer.contactUs')}</a>
                   </li>
                   <li>
-                    <a href="/">Payment Methods</a>
+                  <a href="/">{t('footer.payment')}</a>
                   </li>
                   <li>
-                    <a href="/">Delivary</a>
+                  <a href="/">{t('footer.terms')}</a>
                   </li>
                   <li>
-                    <a href="/">Return & Exchanges</a>
+                  <a href="/">{t('footer.returnPolicy')}</a>
                   </li>
                 </ul>
               </div>
@@ -77,11 +69,10 @@ const FooterComponent = () => {
                 <h6>NewLetter</h6>
                 <div className="footer__newslatter">
                   <p>
-                    Be the first to know about new arrivals, look books, sales &
-                    promos!
+                   {t('footer.SubLetterDescription')}
                   </p>
                   <form action="#">
-                    <input type="text" placeholder="Your email" />
+                    <input type="text" placeholder={t('footer.yourEmail')} />
                     <button type="submit">
                       <span className="icon_mail_alt"></span>
                     </button>
@@ -94,9 +85,7 @@ const FooterComponent = () => {
             <div className="col-lg-12 text-center">
               <div className="footer__copyright__text">
                 <p>
-                  Copyright &copy;
-                  {new Date().getFullYear()} Bản quyền thuộc về Huỳnh Phú Đức -
-                  Nguyễn Trọng Hiếu | Đại Học Nguyễn Tất Thành
+                {t('footer.copyright')}
                 </p>
               </div>
             </div>

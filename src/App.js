@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, Suspense  } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { routes } from "./routes";
 import DefaultComponent from "./components/DefaultComponent/DefaultComponent";
@@ -22,7 +22,7 @@ import "../src/css/userMenu.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
-
+import LoadingComponent from "./components/LoadingComponent/LoadingCompoent";
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -76,6 +76,7 @@ function App() {
 
   return (
     <div>
+      <Suspense fallback={<LoadingComponent/>}>
       <Router>
         <Routes>
           {routes.map((route) => {
@@ -96,6 +97,7 @@ function App() {
           })}
         </Routes>
       </Router>
+      </Suspense>
     </div>
   );
 }

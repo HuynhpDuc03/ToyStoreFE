@@ -348,11 +348,11 @@ ol {
 -----------------------*/
 
 .header {
-  background: #ffffff;
+  background: #189eff;
 }
 
 .header__top {
-  background: #111111;
+  background: #0084e4;
   padding: 10px 0;
 }
 
@@ -445,7 +445,7 @@ ol {
 
 .header__menu {
   text-align: center;
-  padding: 26px 0 25px;
+  padding: 15px 0 20px;
 }
 
 .header__menu ul li {
@@ -510,6 +510,18 @@ ol {
   display: none;
 }
 
+.tracking-order {
+    color: #fff;
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.index-mails {
+    font-size: 13px !important;
+    text-transform: none;
+    font-weight: 400;
+}
+
 .header__menu ul li a {
   font-size: 18px;
   color: #111111;
@@ -525,7 +537,7 @@ ol {
   bottom: 0;
   width: 100%;
   height: 2px;
-  background: #e53637;
+  background: #189eff;
   content: "";
   -webkit-transition: all, 0.5s;
   -o-transition: all, 0.5s;
@@ -535,9 +547,15 @@ ol {
   transform: scale(0);
 }
 
+
+.header__bottom{ 
+  background: #fff;
+  height: 60px;
+}
+
 .header__nav__option {
   text-align: right;
-  padding: 30px 0;
+  padding: 35px 0;
 }
 
 .header__nav__option a {
@@ -546,18 +564,20 @@ ol {
   position: relative;
 }
 
-.header__nav__option a span {
-  color: #0d0d0d;
-  font-size: 11px;
+.header__nav__option .number-cart {
   position: absolute;
-  left: 5px;
-  top: 8px;
+  top: -10px; /* Adjust the value to center vertically */
+  right: -10px; /* Adjust the value to center horizontally */
+  background-color: #fdd835; /* Color for the number background */
+  color: white; /* Color for the number text */
+  border-radius: 50%; /* Makes the background a circle */
+  width: 20px; /* Adjust size */
+  height: 20px; /* Adjust size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px; /* Adjust the size of the number */
 }
-
-.header__nav__option a:last-child {
-  margin-right: 0;
-}
-
 .header__nav__option .price {
   font-size: 15px;
   color: #111111;
@@ -1300,6 +1320,27 @@ ol {
   color: #111111;
 }
 
+
+.shop__sidebar__categories .category-list {
+  max-height: 200px; /* Adjust this value to control the height */
+  overflow-y: auto;
+  padding-right: 10px; /* Optional: to avoid hiding content under scrollbar */
+}
+
+/* Optional styling for scrollbar */
+.shop__sidebar__categories .category-list::-webkit-scrollbar {
+  width: 6px; /* Adjust scrollbar width */
+}
+
+.shop__sidebar__categories .category-list::-webkit-scrollbar-thumb {
+  background-color: #888; /* Scrollbar color */
+  border-radius: 10px;
+}
+
+.shop__sidebar__categories .category-list::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
 .shop__sidebar__brand ul {
   height: auto;
 }
@@ -1833,7 +1874,13 @@ ol {
 .product__details__btns__option {
   margin-bottom: 40px;
 }
-
+.multi-line-ellipsis {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .product__details__btns__option a {
   display: inline-block;
   font-size: 13px;
@@ -3458,6 +3505,83 @@ ol {
     transition: box-shadow 0.2s, border-color 0.2s;
 }
 
+.search-results {
+  position: absolute;
+  z-index: 255;
+  background-color: #fff;
+  margin-top: 4px;
+  width: 95%;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Softer shadow */
+  max-height: 555px;
+  overflow-y: auto;
+  padding: 12px;
+  transition: opacity 0.3s ease; /* Smooth opening/closing */
+}
+
+.search-result-item a {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  padding: 15px;
+  transition: background-color 0.3s ease;
+  border-radius: 6px;
+}
+
+.search-result-item a:hover {
+  background-color: #f1f1f1; /* Lighter hover effect */
+}
+
+.img-search {
+  margin-right: 10px;
+  width: 100px;
+}
+
+.img-search img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px; /* Rounded images */
+}
+
+.search-item-price {
+  flex-grow: 1;
+}
+
+.search-result-item p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.search-result-item p:first-child {
+  font-weight: 600;  
+}
+
+.view-all .view-all-btn {
+  width: 100%;
+ 
+  
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.view-all .view-all-btn:hover {
+  background-color: #ff6201; /* Darker on hover */
+}
+
+.sub-title-search {
+  font-size: 14px;
+  font-weight: 700;
+  color: #888;
+  margin: 16px 0;
+}
+
 
 
 /*--------------------------------- Responsive Media Quaries -----------------------------*/
@@ -3760,6 +3884,12 @@ ol {
     width: 100%;
     font-size: 24px;
   }
+
+  .view-all-btn {
+    margin-top: 15px;
+    display: inline-block;
+  }
+
   .hero__slider.owl-carousel .owl-nav button {
     left: 15px;
     top: 80%;

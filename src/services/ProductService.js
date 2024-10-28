@@ -2,7 +2,7 @@ import axios from "axios";
 import { axiosJWT } from "./UserService";
 
 
-export const getAllProduct = async (search, limit, sort, priceFilter) => {
+export const getAllProduct = async (search, limit, sort, priceFilter,page) => {
   let res = {};
   const baseUrl = `${process.env.REACT_APP_API_URL}/product/get-all`;
 
@@ -20,6 +20,22 @@ export const getAllProduct = async (search, limit, sort, priceFilter) => {
     query += `&sort=${sort}`;
   }
 
+  if (page) {
+    query += `&page=${page}`;
+  }
+  res = await axios.get(`${baseUrl}${query}`);
+  return res.data;
+};
+
+
+export const searchProduct = async (search) => {
+  let res = {};
+  const baseUrl = `${process.env.REACT_APP_API_URL}/product/get-all`;
+  let query = `?limit=6`;
+
+  if (search?.length > 0) {
+    query += `&filter=name=${search}`;
+  }
   res = await axios.get(`${baseUrl}${query}`);
   return res.data;
 };
@@ -67,9 +83,9 @@ export const getProductType = async (type, limit, search, sortOrder, priceFilter
 };
 
 
-export const getAllBestSellerProduct = async (limit) => {
+export const getAllSpecialProducts = async (limit) => {
   const res = await axios.get(
-    `${process.env.REACT_APP_API_URL}/product/get-all-bestseller?limit=${limit}`
+    `${process.env.REACT_APP_API_URL}/product/get-SpecialProducts?limit=${limit}`
   );
   return res.data;
 };

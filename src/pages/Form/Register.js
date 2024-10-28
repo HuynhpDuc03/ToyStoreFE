@@ -3,190 +3,168 @@ import { useNavigate } from "react-router-dom";
 import * as UserService from "../../../src/services/UserService";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 
-import { Input, message } from "antd";
+import { Input, message, Button } from "antd";
 import {
   LockOutlined,
   MailOutlined,
   PhoneOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 const Register = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
   const navigate = useNavigate();
-  const handleOnchangeEmail = (e) => {
-    setEmail(e.target.value);
-  };
+
+  const handleOnchangeEmail = (e) => setEmail(e.target.value);
+  const handleOnchangeUsername = (e) => setName(e.target.value);
+  const handleOnchangePassword = (e) => setPassword(e.target.value);
+  const handleOnchangeConfirmPassword = (e) => setConfirmPassword(e.target.value);
+  const handleOnchangePhone = (e) => setPhone(e.target.value);
 
   const mutation = useMutationHooks((data) => UserService.signupUser(data));
 
-  const handleOnchangeUsername = (e) => {
-    setName(e.target.value);
-  };
-
-  const handleOnchangePassword = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const handleOnchangeConfirmPassword = (e) => {
-    setConfirmPassword(e.target.value);
-  };
-
-  const handleOnchangePhone = (e) => {
-    setPhone(e.target.value);
-  };
-
   const handleSignUp = (e) => {
     e.preventDefault();
-    mutation.mutate({
-      email,
-      name,
-      password,
-      confirmPassword,
-      phone,
-    });
+    mutation.mutate({ email, name, password, confirmPassword, phone });
   };
 
   const { data, isSuccess, isError, error } = mutation;
+
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
       message
-        .open({
-          type: "loading",
-          content: "Loading...",
-          duration: 1,
-        })
-        .then(() =>
+        .open({ type: "loading", content: "Loading...", duration: 1 })
+        .then(() => {
           setTimeout(() => {
-            message.success("Đăng ký thành công", 1.5);
-            message.info("Vui lòng đăng nhập", 1.5);
+            message.success(t("pageRegister.success"), 1.5);
+            message.info(t("pageRegister.pleaseLogin"), 1.5);
             navigate("/SignIn");
-          }, 1000)
-        );
+          }, 1000);
+        });
     } else if (isError || (data && data.status === "ERR")) {
-      message.error(data?.message || error?.message || "Đăng ký thất bại");
+      message.error(data?.message || error?.message || t("pageRegister.failure"));
     }
   }, [isSuccess, isError, data, error, navigate]);
-  const Navigate = useNavigate();
-  const handleNavigateSignIn = () => {
-    Navigate("/SignIn");
-  };
-  return (
-    <div className="container mt-5 pt-5" style={{ marginBottom: 200 }}>
-      <div className="row">
-        <div className="col-12 col-sm-8 col-md-6 m-auto">
-          <div className="card border-0 shadow">
-            <div className="card-body">
-              <div className="text-center">
-                <h2 className="mb-3" style={{ fontWeight: "bold" }}>
-                  Đăng Ký
-                </h2>
-                <svg
-                  className="mx-auto"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="50"
-                  height="50"
-                  fill="currentColor"
-                  class="bi bi-person-circle"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
-                  <path
-                    fill-rule="evenodd"
-                    d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"
-                  />
-                </svg>
-              </div>
-              <form action="">
-                <Input
-                  className="mt-3"
-                  type="text"
-                  size="large"
-                  value={name}
-                  onChange={handleOnchangeUsername}
-                  placeholder="Họ và Tên"
-                  prefix={<UserOutlined />}
-                />
-                <br />
-                <Input
-                  className="mt-3"
-                  type="email"
-                  size="large"
-                  value={email}
-                  onChange={handleOnchangeEmail}
-                  placeholder="Email"
-                  prefix={<MailOutlined />}
-                />
-                <br />
-                <Input.Password
-                  className="mt-3"
-                  
-                  size="large"
-                  value={password}
-                  onChange={handleOnchangePassword}
-                  placeholder="Mật khẩu"
-                  prefix={<LockOutlined />}
-                />
-                <br />
-                <Input.Password
-                  className="mt-3"
-                  
-                  size="large"
-                  value={confirmPassword}
-                  onChange={handleOnchangeConfirmPassword}
-                  placeholder="Nhập lại mật khẩu"
-                  prefix={<LockOutlined />}
-                />
-                <br />
-                <Input
-                  className="mt-3"
-                  type="number"
-                  size="large"
-                  value={phone}
-                  onChange={handleOnchangePhone}
-                  placeholder="Số điện thoại"
-                  prefix={<PhoneOutlined />}
-                />
 
-               
-                <div className="text-center mt-3">
-                {data?.status === "ERR" && (
-                  <span className="nav-link" style={{ color: "red" }}>{data?.message}</span>
-                )}
-                  <button
-                    className="btn btn-primary"
-                    onClick={handleSignUp}
-                    style={{ width: "50%" }}
-                    disabled={
-                      !email.length ||
-                      !name.length ||
-                      !password.length ||
-                      !confirmPassword.length ||
-                      !phone.length
-                    }
-                  >
-                    Đăng Ký
-                  </button>
-                  <hr width="100%" />
-                  <span className="nav-link">
-                    Bạn đã có tài khoản?{" "}
-                    <span
-                      style={{
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                        textDecoration: "underline",
-                      }}
-                      onClick={handleNavigateSignIn}
-                    >
-                      Đăng nhập
-                    </span>
-                  </span>
+  return (
+    <div className="bg-light py-3 py-md-5">
+      <div className="container">
+        <div className="row justify-content-md-center">
+          <div className="col-12 col-md-11 col-lg-8 col-xl-7 col-xxl-6">
+            <div className="bg-white p-4 p-md-5 rounded shadow-sm">
+              <div className="row gy-3 mb-5">
+                <div className="col-12">
+                  <div className="text-center">
+                    <h2>{t("pageRegister.register")}</h2>
+                  </div>
+                </div>
+              </div>
+              <form onSubmit={handleSignUp}>
+                <div className="row gy-3 gy-md-4 overflow-hidden">
+                  <div className="col-12">
+                    <label htmlFor="name" className="form-label">
+                      {t("pageRegister.name")} <span className="text-danger">*</span>
+                    </label>
+                    <Input
+                      size="large"
+                      type="text"
+                      value={name}
+                      onChange={handleOnchangeUsername}
+                      placeholder={t("pageRegister.name")}
+                      prefix={<UserOutlined />}
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label htmlFor="email" className="form-label">
+                      {t("pageRegister.email")} <span className="text-danger">*</span>
+                    </label>
+                    <Input
+                      size="large"
+                      type="email"
+                      value={email}
+                      onChange={handleOnchangeEmail}
+                      placeholder={t("pageRegister.email")}
+                      prefix={<MailOutlined />}
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label htmlFor="phone" className="form-label">
+                      {t("pageRegister.phone")} <span className="text-danger">*</span>
+                    </label>
+                    <Input
+                      size="large"
+                      type="number"
+                      value={phone}
+                      onChange={handleOnchangePhone}
+                      placeholder={t("pageRegister.phone")}
+                      prefix={<PhoneOutlined />}
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label htmlFor="password" className="form-label">
+                      {t("pageRegister.password")} <span className="text-danger">*</span>
+                    </label>
+                    <Input.Password
+                      size="large"
+                      value={password}
+                      onChange={handleOnchangePassword}
+                      placeholder={t("pageRegister.password")}
+                      prefix={<LockOutlined />}
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label htmlFor="confirmPassword" className="form-label">
+                      {t("pageRegister.confirmPassword")} <span className="text-danger">*</span>
+                    </label>
+                    <Input.Password
+                      size="large"
+                      value={confirmPassword}
+                      onChange={handleOnchangeConfirmPassword}
+                      placeholder={t("pageRegister.confirmPassword")}
+                      prefix={<LockOutlined />}
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <div className="d-grid">
+                      <Button
+                        type="primary"
+                        size="large"
+                        onClick={handleSignUp}
+                        disabled={!email || !name || !password || !confirmPassword || !phone}
+                      >
+                        {t("pageRegister.signUp")}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </form>
+              <div className="row">
+                <div className="col-12">
+                  <hr className="mt-5 mb-4 border-secondary-subtle" />
+                  <div className="d-flex gap-4 justify-content-center">
+                    <a href="/SignIn" className="link-secondary text-decoration-none">
+                      {t("pageRegister.haveAccount")} {t("pageRegister.login")}
+                    </a>
+                    <a href="/Register" className="link-secondary text-decoration-none">
+                      {t("pageRegister.register")}
+                    </a>
+                  </div>
+                </div>
+              </div>
+              {data?.status === "ERR" && (
+                <div className="text-center text-danger mt-3">{data?.message}</div>
+              )}
             </div>
           </div>
         </div>

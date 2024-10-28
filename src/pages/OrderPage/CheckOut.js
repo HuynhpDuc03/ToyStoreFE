@@ -4,16 +4,20 @@ import { converPrice } from "../../utils";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import * as OrderService from "../../services/OrderService";
 import { Button, Input, message } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { removeAllOrderProduct } from "../../redux/slides/orderSlide";
 import VnProvinces from "vn-local-plus";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import * as CouponService from "../../services/CouponService";
+import { useTranslation } from "react-i18next";
 
 const CheckOut = () => {
+  const {t} = useTranslation();
   const order = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
-
+  const { state } = useLocation(); // Lấy dữ liệu từ ProductDetail
+  const selectedOrderItems = state?.orderItemsSelected || order?.orderItemsSelected;
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [payment, setPayment] = useState("");
@@ -29,6 +33,9 @@ const CheckOut = () => {
   const handleCheckboxChange = (e) => {
     setPayment(e.target.id);
   };
+
+
+  
   const [deliveryMethod, setDeliveryMethod] = useState("");
 
   const handleDeliveryCheckboxChange = (e) => {
@@ -41,6 +48,13 @@ const CheckOut = () => {
     }, 0);
     return result;
   }, [order]);
+
+  // const priceMemo = useMemo(() => {
+  //   const result = selectedOrderItems?.reduce((total, cur) => {
+  //     return total + cur.price * cur.amount;
+  //   }, 0);
+  //   return result;
+  // }, [selectedOrderItems]);
 
   const priceDiscountMemo = useMemo(() => {
     if (isNaN(priceMemo) || priceMemo === 0) return 0;
@@ -111,11 +125,11 @@ const CheckOut = () => {
 
   const handleAddOrder = () => {
     if (!deliveryMethod) {
-      message.info("Vui lòng chọn phương thức giao hàng.");
+      message.info(t('pageCheckOut.noCheckDilyvery'));
       return;
     }
     if (!payment) {
-      message.info("Vui lòng chọn phương thức thanh toán.");
+      message.info(t('pageCheckOut.noCheckPaymentMethod'));
       return;
     }
     if (
@@ -137,6 +151,7 @@ const CheckOut = () => {
         ward: user?.ward,
         phone: user?.phone,
         user: user?.id,
+        email: user?.email,
         paymentMethod: payment,
         itemsPrice: priceMemo,
         shippingPrice: diliveryPriceMemo,
@@ -163,11 +178,18 @@ const CheckOut = () => {
       });
 
       dispatch(removeAllOrderProduct({ listChecked: arrayOrdered }));
-      message.success("Đặt hàng thành công");
+      message.success(t('pageCheckOut.orderSucces'));
       navigate("/OrderSuccess", {
         state: {
           deliveryMethod,
           payment,
+          fullName: user?.name,
+          address: user?.address,
+          city: user?.city,
+          district: user?.district,
+          ward: user?.ward,
+          phone: user?.phone,
+          email: user?.email,
           orders: order?.orderItemsSelected,
           totalPriceMemo,
         },
@@ -185,56 +207,54 @@ const CheckOut = () => {
         setDiscountAmount(discount);
         setIsCouponApplied(true);
         setCouponError("");
-        message.success("Áp dụng mã giảm giá thành công!");
+        message.success(t('pageCheckOut.applyCodeSuccess'));
       } else {
         setCouponError(
-            "Mã giảm giá không hợp lệ hoặc đã hết hạn." || couponMessage
+          t('pageCheckOut.applyCodeFailure') || couponMessage
         );
-        message.error("Mã giảm giá không hợp lệ hoặc đã hết hạn."||couponMessage );
+        message.error(t('pageCheckOut.applyCodeFailure')||couponMessage );
       }
     } catch (error) {
-      setCouponError("Có lỗi xảy ra khi áp dụng mã giảm giá.");
-      message.error("Có lỗi xảy ra khi áp dụng mã giảm giá.");
+      setCouponError(t('pageCheckOut.applyCodeError'));
+      message.error(t('pageCheckOut.applyCodeError'));
     }
   };
 
   return (
     <div>
-      {/* <!-- Breadcrumb Section Begin --> */}
+
       <section className="breadcrumb-option">
         <div className="container">
           <div className="row">
             <div className="col-lg-12">
               <div className="breadcrumb__text">
-                <h4>Check Out</h4>
+                <h4>{t("pageCheckOut.checkout")}</h4>
                 <div className="breadcrumb__links">
-                  <a href="/">Home</a>
-                  <a href="/">Shop</a>
-                  <span>Check Out</span>
+                <a href="/">{t("header.home")}</a>
+                <a href="/products">{t("header.shop")}</a>
+                  <span>{t("pageCheckOut.checkout")}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-      {/* <!-- Breadcrumb Section End --> */}
 
-      {/* <!-- Checkout Section Begin --> */}
+
       <section className="checkout spad">
         <div className="container">
           <div className="checkout__form">
             <form action="/">
               <div className="row">
                 <div className="col-lg-8 col-md-6">
-                  <h6 className="checkout__title">thanh toán sản phẩm</h6>
+                  <h6 className="checkout__title">{t("pageCheckOut.productPayment")}</h6>
 
                   <div style={{ marginBottom: "24px" }}>
                     <h6
                       className="coupon__code"
                       style={{ marginBottom: "24px" }}
                     >
-                      <span className="icon_gift_alt"></span>Chọn phương thức
-                      giao hàng
+                      <span className="icon_gift_alt"></span>{t("pageCheckOut.selectDelivery")}
                     </h6>
                     <div className="checkout__input__checkbox">
                       <label for="fast">
@@ -274,13 +294,12 @@ const CheckOut = () => {
                       className="coupon__code"
                       style={{ marginBottom: "24px" }}
                     >
-                      <span className="icon_creditcard"></span>Chọn phương thức
-                      thanh toán
+                      <span className="icon_creditcard"></span>{t("pageCheckOut.selectPayment")}
                     </h6>
                     <div className="checkout__input__checkbox">
                       <label for="paymentincash">
                         Thanh toán bằng tiền mặt
-                        <input
+                        <input 
                           onChange={handleCheckboxChange}
                           checked={payment === "paymentincash"}
                           type="checkbox"
@@ -293,9 +312,9 @@ const CheckOut = () => {
                 </div>
                 <div className="col-lg-4 col-md-6">
                   <div className="checkout__order">
-                    <h4 className="order__title">Đơn hàng của bạn</h4>
+                    <h4 className="order__title">{t("pageCheckOut.yourOrder")}</h4>
                     <div className="checkout__order__products">
-                      Sản phẩm <span>Tổng tiền</span>
+                      {t("pageCart.product")} <span>{t("pageCart.totalPrice")}</span>
                     </div>
                     <ul className="checkout__total__products">
                       {order?.orderItemsSelected?.map((order, index) => {
@@ -314,7 +333,6 @@ const CheckOut = () => {
                                 textOverflow: "ellipsis",
                               }}
                             >
-                              {" "}
                               {`${formattedIndex}. ${order?.name}`}
                             </span>
 
@@ -327,30 +345,30 @@ const CheckOut = () => {
                     </ul>
                     <ul className="checkout__total__all">
                       <li>
-                        Tạm tính <span>{converPrice(priceMemo)}</span>
+                      {t("pageCheckOut.temporary")} <span>{converPrice(priceMemo)}</span>
                       </li>
                       <li>
-                        Giảm giá <span>{converPrice(priceDiscountMemo)}</span>
+                      {t("pageCheckOut.Discount")} <span>{converPrice(priceDiscountMemo)}</span>
                       </li>
                       {isCouponApplied && (
                         <li>
-                          Mã giảm giá{" "}
+                           {t("pageCheckOut.DiscountCode")}{" "}
                           <span>
                             {converPrice(priceCoupon)}
                           </span>
                         </li>
                       )}
                       <li>
-                        Phí vận chuyển{" "}
+                      {t("pageCheckOut.ShippingFee")}{" "}
                         <span>{converPrice(diliveryPriceMemo)}</span>
                       </li>
                       <li>
-                        Thành tiền <span>{converPrice(totalPriceMemo)}</span>
+                       {t("pageCheckOut.makeMoney")} <span>{converPrice(totalPriceMemo)}</span>
                       </li>
                     </ul>
                     <Input
                       style={{ display: "inline-block", width: "87%" }}
-                      placeholder="Nhập mã giảm giá (nếu có)"
+                      placeholder={t("pageCheckOut.applyCode")}
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
                       disabled={isCouponApplied}
@@ -366,13 +384,13 @@ const CheckOut = () => {
                     {couponError && (
                       <p style={{ color: "red" }}>{couponError}</p>
                     )}
-                    <p className="mt-3">{`Địa chỉ:  ${user?.address}, ${ward}, ${district}, ${province}`}</p>
+                    <p className="mt-3">{`${t("pageCheckOut.address")}:  ${user?.address}, ${ward}, ${district}, ${province}`}</p>
                     <button
                       type="button"
                       onClick={() => handleAddOrder()}
                       className="site-btn"
                     >
-                      ĐẶT HÀNG
+                      {t("pageCheckOut.buttonCheckOut")}
                     </button>
                   </div>
                 </div>
@@ -381,7 +399,8 @@ const CheckOut = () => {
           </div>
         </div>
       </section>
-      {/* <!-- Checkout Section End --> */}
+
+
     </div>
   );
 };

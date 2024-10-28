@@ -8,6 +8,8 @@ import { Provider } from "react-redux";
 import { persistor, store } from "./redux/store";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { PersistGate } from "redux-persist/lib/integration/react";
+import './locales/i18n';
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const queryClient = new QueryClient();
 root.render(

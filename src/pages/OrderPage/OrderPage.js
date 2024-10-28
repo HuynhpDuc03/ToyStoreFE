@@ -13,17 +13,19 @@ import "./orderpage.css";
 import { Button, Checkbox, message } from "antd";
 import StepComponent from "../../components/StepComponent/StepComponent";
 import VnProvinces from "vn-local-plus";
+import { useTranslation } from "react-i18next";
 
 const OrderPage = () => {
   const order = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [listChecked, setListChecked] = useState([]);
   console.log(user);
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
-
+  const navigate = useNavigate();
   const onChange = (e) => {
     if (listChecked.includes(e.target.value)) {
       const newListChecked = listChecked.filter(
@@ -127,16 +129,16 @@ const OrderPage = () => {
 
   const itemsDiscount = [
     {
-      title: "Giảm 100.000 Đ",
-      description: "Khi mua hàng trên 1.000.000 Đ",
+      title: t("pageCart.Discount")+" 100.000 Đ",
+      description: t("pageCart.DiscountDescription")+" 1.000.000 Đ",
     },
     {
-      title: "Giảm 250.000 Đ",
-      description: "Khi mua hàng trên 2.000.000 Đ",
+      title: t("pageCart.Discount")+" 250.000 Đ",
+      description: t("pageCart.DiscountDescription")+" 2.000.000 Đ",
     },
     {
-      title: "Giảm 350.000 Đ",
-      description: "Khi mua hàng trên 3.000.000 Đ",
+      title: t("pageCart.Discount")+" 350.000 Đ",
+      description: t("pageCart.DiscountDescription")+" 3.000.000 Đ",
     },
   ];
 
@@ -156,11 +158,11 @@ const OrderPage = () => {
           <div className="row">
             <div className="col-lg-12">
               <div className="breadcrumb__text">
-                <h4>Shopping Cart</h4>
+                <h4>{t("pageCart.cart")}</h4>
                 <div className="breadcrumb__links">
-                  <a href="/">Home</a>
-                  <a href="/products">Shop</a>
-                  <span>Shopping Cart</span>
+                  <a href="/">{t("header.home")}</a>
+                  <a href="/products">{t("header.shop")}</a>
+                  <span>{t("pageCart.cart")}</span>
                 </div>
               </div>
             </div>
@@ -201,11 +203,11 @@ const OrderPage = () => {
                             listChecked?.length === order?.orderItems?.length
                           }
                         >
-                          Sản phẩm
+                         {t("pageCart.product")}
                         </Checkbox>
                       </th>
-                      <th>Số lượng</th>
-                      <th>Tổng cộng</th>
+                      <th>{t("pageCart.quantity")}</th>
+                      <th>{t("pageCart.total")}</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -216,7 +218,7 @@ const OrderPage = () => {
                           <h6
                             style={{ textAlign: "center", fontWeight: "bold" }}
                           >
-                            Không có sản phẩm trong giỏ hàng
+                           {t('pageCart.emtpy')}
                           </h6>
                         </td>
                       </tr>
@@ -240,13 +242,7 @@ const OrderPage = () => {
                                 />
                               </div>
                               <div className="product__cart__item__text">
-                                <h6
-                                  style={{
-                                    whiteSpace: "nowrap",
-                                    textOverflow: "ellipsis",
-                                    overflow: "hidden",
-                                  }}
-                                >
+                                <h6 className="multi-line-ellipsis">
                                   {order?.name}
                                 </h6>
                                 <h5>{converPrice(order?.price)}</h5>
@@ -319,7 +315,7 @@ const OrderPage = () => {
               <div className="row">
                 <div className="col-lg-6 col-md-6 col-sm-6 ">
                   <div className="continue__btn">
-                    <Link to={"/products"}>Continue Shopping</Link>
+                    <Link to={"/products"}>{t("pageCart.continueShopping")}</Link>
                   </div>
                 </div>
               </div>
@@ -328,22 +324,22 @@ const OrderPage = () => {
               {user?.address ? (
                 <div className="cart__discount">
                   <h6>
-                    Địa chỉ giao hàng{" "}
+                    {t("pageCart.address")}
                     <Button
                       style={{
                         fontSize: "15px",
                         fontWeight: 500,
                       }}
-                      onClick={showDrawer}
+                      onClick={()=> navigate("/profile-user")}
                       type="link"
                     >
-                      Thay đổi
+                      {t("pageCart.change")}
                     </Button>
                   </h6>
                   <div
                     style={{ textTransform: "capitalize", fontSize: "16px" }}
                   >
-                    Người nhận: {user?.name}
+                    {t("pageCart.Receiver")} {user?.name}
                   </div>
                   <div>{user?.address}</div>
                   <div>
@@ -351,12 +347,33 @@ const OrderPage = () => {
                   </div>
                 </div>
               ) : (
-                <div></div>
+                <div className="cart__discount">
+                  <h6>
+                    {t("pageCart.address")}
+                    <Button
+                      style={{
+                        fontSize: "15px",
+                        fontWeight: 500,
+                      }}
+                      onClick={()=> navigate("/profile-user")}
+                      type="link"
+                    >
+                      {t("pageCart.change")}
+                    </Button>
+                  </h6>
+                  <div>
+                    <h5>Chưa có Thông tin địa chỉ</h5>
+                  </div>
+                </div>
               )}
               <CheckOut
                 provisional={priceMemo}
                 discount={priceDiscountMemo}
                 total={totalPriceMemo}
+                checkAddress={(user?.address === undefined || user.address === "") && 
+                    (user?.city === undefined || user.city === "") && (user?.district === undefined || user.district === "") &&
+                    (user?.ward === undefined || user.ward === "") && (user?.phone === undefined || user.phone === "")}
+                
                 disabled={order?.orderItemsSelected?.length === 0}
                 isLoggedIn={!!user?.id}
               />
@@ -371,8 +388,9 @@ const OrderPage = () => {
 export default OrderPage;
 
 const CheckOut = (props) => {
+  const { t } = useTranslation();
   const [activeItem, setActiveItem] = useState("home");
-  const { provisional, total, discount, disabled, isLoggedIn } = props;
+  const { provisional, total, discount, disabled, isLoggedIn,checkAddress } = props;
   const navigate = useNavigate();
 
   const handleClick = (item) => {
@@ -381,26 +399,30 @@ const CheckOut = (props) => {
 
   const handleClickCheckOut = () => {
     if (!isLoggedIn) {
-      message.info("Bạn chưa đăng nhập");
+      message.info(t("pageCart.noLogin"));
     } else if (disabled) {
-      message.info("Chưa chọn sản phẩm");
-    } else {
+      message.info(t("pageCart.noSelected"));
+    } 
+    // else if (!checkAddress){
+    //   message.info("Thông tin địa chỉ chưa có hoặc thiếu, Vui lòng kiểm tra lại!");
+    // }
+     else {
       navigate(`/Checkout`);
     }
   };
 
   return (
     <div className="cart__total">
-      <h6>Cart total</h6>
+      <h6>{t("pageCart.cartTotal")}</h6>
       <ul>
         <li>
-          Tạm tính <span>{converPrice(provisional)}</span>
+          {t("pageCart.temporary")}<span>{converPrice(provisional)}</span>
         </li>
         <li>
-          Giảm giá <span>{converPrice(discount)}</span>
+        {t("pageCart.Discount")} <span>{converPrice(discount)}</span>
         </li>
         <li>
-          Tổng tiền <span>{converPrice(total)}</span>
+        {t("pageCart.totalPrice")} <span>{converPrice(total)}</span>
         </li>
       </ul>
       <div className={activeItem === "shop" ? "active" : ""}>
@@ -413,7 +435,7 @@ const CheckOut = (props) => {
             handleClickCheckOut();
           }}
         >
-          Tiến hành mua hàng
+          {t("pageCart.checkout")}
         </NavLink>
       </div>
     </div>

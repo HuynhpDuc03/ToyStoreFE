@@ -19,6 +19,13 @@ import ProductFavorite from "../pages/ProductPage/ProductFavourite";
 import OrderDetails from "../pages/Admin/OrderDetails";
 import CouponAdmin from "../pages/Admin/CouponAdmin";
 import Dashboard from "../pages/Admin/Dashboard";
+import ContactPage from "../pages/Contact/ContactPage";
+import BlogPageDetails from "../pages/Blog/BlogDetailsPage";
+import BlogPage from "../pages/Blog/BlogPage";
+import BlogAdmin from "../pages/Admin/BlogAdmin/BlogAdmin";
+import CreateBlog from "../pages/Admin/BlogAdmin/CreateBlog";
+import EditBlog from "../pages/Admin/BlogAdmin/EditBlog";
+import ForgotAndResetPassword from "../pages/profile/ForgotAndResetPassword";
 
 
 export const routes = [
@@ -52,8 +59,22 @@ export const routes = [
     path: "/productFavorite",
     page: ProductFavorite,
     isShowHearder: true,
+  },  
+  {
+    path: "/blogs",
+    page: BlogPage,
+    isShowHearder: true,
   },
-
+  {
+    path: "/blogdetails/:id",
+    page: BlogPageDetails,
+    isShowHearder: true,
+  },
+  {
+    path: "/contact",
+    page: ContactPage,
+    isShowHearder: true,
+  },
   {
     path: "/Order",
     page: OrderPage,
@@ -87,6 +108,11 @@ export const routes = [
   {
     path: "/my-order",
     page: MyOrderPage,
+    isShowHearder: true,
+  },
+  {
+    path: "/forgotPassword",
+    page: ForgotAndResetPassword,
     isShowHearder: true,
   },
   {
@@ -130,6 +156,27 @@ export const routes = [
   {
     path: "/AdminCoupon",
     page: CouponAdmin,
+    isShowHearder: false,
+    isPrivate: true,
+
+  },
+  {
+    path: "/AdminBlog",
+    page: BlogAdmin,
+    isShowHearder: false,
+    isPrivate: true,
+
+  },
+  {
+    path: "/CreateBlog",
+    page: CreateBlog,
+    isShowHearder: false,
+    isPrivate: true,
+
+  },
+  {
+    path: "/EditBlog/:id",
+    page: EditBlog,
     isShowHearder: false,
     isPrivate: true,
 
