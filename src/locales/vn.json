@@ -204,7 +204,7 @@
     "type":"Thể loại",
     "viewCount": "Lượt xem",
     "additionalInformation": "Thông tin bổ sung",
-    "customerPreviews": "Xem trước của khách hàng" 
+    "customerPreviews": "Đánh giá sản phẩm" 
   },
 
   "pageProfile": {
@@ -243,6 +243,7 @@
     "yourOrder": "ĐƠN HÀNG CỦA BẠN",
     "orderDetails":"CHI TIẾT ĐƠN HÀNG",
     "delivery":"Giao hàng",
+    "confirmCancelOrder": "Xác nhận hủy đơn hàng",
     "cancelOrder": "Vui lòng xác nhận hủy đơn hàng!",
     "receivedOrder":"Vui lòng xác nhận đã nhận được hàng",
     "waitOrder": "Đang xác nhận đơn hàng vui lòng chờ trong giây lát!",

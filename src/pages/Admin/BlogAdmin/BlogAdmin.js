@@ -1,14 +1,14 @@
 import {
     Button,
     theme,
-    Layout
+    Layout,
+    message
   } from "antd";
   import React, { useEffect, useState } from "react";
 
   import * as BlogService from "../../../services/BlogService";
   import { useMutationHooks } from "../../../hooks/useMutationHook";
 
-  import * as message from "../../../components/message/message";
   import { useQuery } from "@tanstack/react-query";
   import TableComponent from "../../../components/TableComponent/TableComponent";
   import {
@@ -122,9 +122,11 @@ const BlogAdmin = () => {
   
     useEffect(() => {
       if (isSuccessDeleted && dataDeleted?.status === "OK") {
+        message.destroy()
         message.success("Xóa bài viết thành công !");
         handleCancelDelete();
       } else if (isErrorDeleted) {
+        message.destroy()
         message.error("Có lỗi khi xóa bài viết !");
       }
     }, [isSuccessDeleted, isErrorDeleted]);

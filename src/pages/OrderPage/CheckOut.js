@@ -125,10 +125,12 @@ const CheckOut = () => {
 
   const handleAddOrder = () => {
     if (!deliveryMethod) {
+      message.destroy()
       message.info(t('pageCheckOut.noCheckDilyvery'));
       return;
     }
     if (!payment) {
+      message.destroy()
       message.info(t('pageCheckOut.noCheckPaymentMethod'));
       return;
     }
@@ -158,7 +160,7 @@ const CheckOut = () => {
         totalPrice: totalPriceMemo,
         discountPrice: Number(priceDiscountMemo),
       });
-      console.log("Order Data:", mutationAddOrder);
+
     }
   };
 
@@ -178,6 +180,7 @@ const CheckOut = () => {
       });
 
       dispatch(removeAllOrderProduct({ listChecked: arrayOrdered }));
+      message.destroy()
       message.success(t('pageCheckOut.orderSucces'));
       navigate("/OrderSuccess", {
         state: {
@@ -195,7 +198,8 @@ const CheckOut = () => {
         },
       });
     } else if (isError) {
-      message.error();
+      message.destroy()
+      message.error('Có lỗi khi thêm xóa tất cả sản phẩm !');
     }
   }, [isSuccess, isError]);
 
@@ -207,15 +211,18 @@ const CheckOut = () => {
         setDiscountAmount(discount);
         setIsCouponApplied(true);
         setCouponError("");
+        message.destroy()
         message.success(t('pageCheckOut.applyCodeSuccess'));
       } else {
         setCouponError(
           t('pageCheckOut.applyCodeFailure') || couponMessage
         );
+        message.destroy()
         message.error(t('pageCheckOut.applyCodeFailure')||couponMessage );
       }
     } catch (error) {
       setCouponError(t('pageCheckOut.applyCodeError'));
+      message.destroy()
       message.error(t('pageCheckOut.applyCodeError'));
     }
   };

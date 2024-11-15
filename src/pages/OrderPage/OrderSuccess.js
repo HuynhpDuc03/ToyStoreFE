@@ -47,7 +47,6 @@ const OrderSuccess = () => {
 
     fetchLocationData();
   }, [state.city, state.district, state.ward]);
-  console.log("state",state)
 
   return (
     <div>
@@ -194,7 +193,7 @@ const OrderSuccess = () => {
                                 width={100}
                                 height={100}
                                 src={
-                                  order?.image[0]}
+                                  order?.image}
                                 alt=""
                               />
                             </div>

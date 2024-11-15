@@ -1,30 +1,14 @@
 import {
-  ArrowRightOutlined,
-  DollarCircleOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  ProductFilled,
-  ShoppingCartOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import { Content, Header } from "antd/es/layout/layout";
-import * as OrderService from "../../services/OrderService";
-import * as ProductService from "../../services/ProductService";
-
 import React, { useState } from "react";
-import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
-import { Button, Col, Layout, message, Row, Table, theme } from "antd";
+import { Button, Layout, theme } from "antd";
 import SiderComponent from "../../components/SiderComponent/SiderComponent";
 import { useSelector } from "react-redux";
 import "../../css/info-box.css";
-import { converPrice, formatDate } from "../../utils";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import PieChartPrice from "../../components/PieChartComponent/PieChartComponent";
-import { Contant } from "../../contant";
-import * as UserService from "../../services/UserService";
-import { useNavigate } from "react-router-dom";
 import BarChartComponent from "../../components/BarChartComponent/BarChartRevenueComponent";
-import { useTranslation } from "react-i18next";
 import DashboardSummary from "../../components/DashboardSummary/DashboardSummary";
 import PieChartStockByCategory from "../../components/PieChartComponent/PieChartStockByCategoryComponent";
 import PieChartLowStock from "../../components/PieChartComponent/PieChartLowStockComponent";

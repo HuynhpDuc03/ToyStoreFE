@@ -7,7 +7,6 @@ import { Spin } from "antd";
 const BarChartStock = ({ access_token }) => {
   const getchartProductStock = async () => {
     const res = await DashboardService.getchartProductStock(access_token);
-    console.log("Response data: ", res?.data);
     return res?.data;
   };
 

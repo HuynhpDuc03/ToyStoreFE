@@ -100,7 +100,6 @@ const EditBlog = () => {
         user?.access_token,
         formData
       );
-      console.log("Blog updated successfully:", response);
       navigate("/AdminBlog");
     } catch (error) {
       console.error("Error updating blog:", error);

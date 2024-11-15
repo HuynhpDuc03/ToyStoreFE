@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import * as ProductService from "../../services/ProductService";
 import { useQuery } from "@tanstack/react-query";
-import { Button, InputNumber, Rate, message } from "antd";
+import { Button, Image, InputNumber, Rate, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { addOrderProduct } from "../../redux/slides/orderSlide";
 import favoriteSlide, {
   addFavoriteProduct,
   removeFavoriteProduct,
 } from "../../redux/slides/favoriteSlide";
-import { converPrice, initFacebookSDK } from "../../utils";
+import { converPrice, formatDateBlog, initFacebookSDK } from "../../utils";
 import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 import ProductImagesSlider from "../../components/ProductImageSliderCompoent/ProductImagesSlider";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
@@ -18,6 +18,8 @@ import { ShoppingCartOutlined } from "@ant-design/icons";
 import LikeButtonComponent from "../../components/LikeButtonComponent/LikeButtonComponent";
 import CommentComponent from "../../components/CommentComponent/CommentComponent";
 import { useTranslation } from "react-i18next";
+import { formatDistanceToNow } from "date-fns";
+import { vi, en } from "date-fns/locale";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -33,7 +35,6 @@ const ProductDetail = () => {
   const dispatch = useDispatch();
 
   const onChange = (value) => {
-    console.log("value", value);
     setNumProduct(Number(value));
   };
   useEffect(() => {
@@ -46,13 +47,17 @@ const ProductDetail = () => {
 
   const fetchGetDetailsProduct = async () => {
     const res = await ProductService.getDetailsProduct(id);
-    return res.data;
+    return { product: res.data.product, rating: res.data.ratings };
   };
-  const { isLoading, data: productDetails } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ["product-details", id],
     queryFn: fetchGetDetailsProduct,
     enabled: !!id,
   });
+
+  const productDetails = data?.product;
+  const productRating = data?.rating;
+
 
   useEffect(() => {
     const orderRedux = order?.orderItems?.find(
@@ -92,7 +97,7 @@ const ProductDetail = () => {
             orderItem: {
               name: productDetails?.name,
               amount: numProduct,
-              image: productDetails?.image,
+              image: productDetails?.image[0],
               price: productDetails?.price,
               product: productDetails?._id,
               discount: productDetails?.discount,
@@ -100,6 +105,7 @@ const ProductDetail = () => {
             },
           })
         );
+        message.destroy()
         message
           .open({
             type: "loading",
@@ -110,6 +116,7 @@ const ProductDetail = () => {
             message.success(t("pageProductDetails.addedToCart"), 1.5)
           );
       } else {
+        message.destroy()
         message.error(t("pageProductDetails.errorToCart"), 1.5);
       }
     }
@@ -122,13 +129,14 @@ const ProductDetail = () => {
     } else {
       if (favourite) {
         dispatch(removeFavoriteProduct({ idProduct: productDetails?._id }));
+        message.destroy()
         message.success(t("pageProductDetails.removeFavorite"), 1.5);
       } else {
         dispatch(
           addFavoriteProduct({
             favoriteItem: {
               name: productDetails?.name,
-              image: productDetails?.image,
+              image: productDetails?.image[0],
               price: productDetails?.price,
               product: productDetails?._id,
               discount: productDetails?.discount,
@@ -138,6 +146,7 @@ const ProductDetail = () => {
             },
           })
         );
+        message.destroy()
         message.success(t("pageProductDetails.addToFavorite"), 1.5);
       }
       setFavourite(!favourite);
@@ -293,7 +302,11 @@ const ProductDetail = () => {
                                   </span>
                                 </div>
                                 <div className="col-md-5">
-                                  <ButtonComponent style={{ height: "48px", width: "100%" }}>MUA NGAY</ButtonComponent>
+                                  <ButtonComponent
+                                    style={{ height: "48px", width: "100%" }}
+                                  >
+                                    MUA NGAY
+                                  </ButtonComponent>
                                 </div>
                               </div>
                             ) : (
@@ -383,17 +396,8 @@ const ProductDetail = () => {
                         href="#tabs-6"
                         role="tab"
                       >
-                        {t("pageProductDetails.customerPreviews")}(5)
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        className="nav-link"
-                        data-toggle="tab"
-                        href="#tabs-7"
-                        role="tab"
-                      >
-                        {t("pageProductDetails.additionalInformation")}
+                        {t("pageProductDetails.customerPreviews")}(
+                        {productRating?.length})
                       </a>
                     </li>
                   </ul>
@@ -455,93 +459,48 @@ const ProductDetail = () => {
                     <div className="tab-pane" id="tabs-6" role="tabpanel">
                       <div className="product__details__tab__content">
                         <div className="product__details__tab__content__item">
-                          <h5>Products Infomation</h5>
-                          <p>
-                            A Pocket PC is a handheld computer, which features
-                            many of the same capabilities as a modern PC. These
-                            handy little devices allow individuals to retrieve
-                            and store e-mail messages, create a contact file,
-                            coordinate appointments, surf the internet, exchange
-                            text messages and more. Every product that is
-                            labeled as a Pocket PC must be accompanied with
-                            specific software to operate the unit and must
-                            feature a touchscreen and touchpad.
-                          </p>
-                          <p>
-                            As is the case with any new technology product, the
-                            cost of a Pocket PC was substantial during it’s
-                            early release. For approximately $700.00, consumers
-                            could purchase one of top-of-the-line Pocket PCs in
-                            2003. These days, customers are finding that prices
-                            have become much more reasonable now that the
-                            newness is wearing off. For approximately $350.00, a
-                            new Pocket PC can now be purchased.
-                          </p>
-                        </div>
-                        <div className="product__details__tab__content__item">
-                          <h5>Material used</h5>
-                          <p>
-                            Polyester is deemed lower quality due to its none
-                            natural quality’s. Made from synthetic materials,
-                            not natural like wool. Polyester suits become
-                            creased easily and are known for not being
-                            breathable. Polyester suits tend to have a shine to
-                            them compared to wool and cotton suits, this can
-                            make the suit look cheap. The texture of velvet is
-                            luxurious and breathable. Velvet is a great choice
-                            for dinner party jacket and can be worn all year
-                            round.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="tab-pane" id="tabs-7" role="tabpanel">
-                      <div className="product__details__tab__content">
-                        <p className="note">
-                          Nam tempus turpis at metus scelerisque placerat nulla
-                          deumantos solicitud felis. Pellentesque diam dolor,
-                          elementum etos lobortis des mollis ut risus. Sedcus
-                          faucibus an sullamcorper mattis drostique des commodo
-                          pharetras loremos.
-                        </p>
-                        <div className="product__details__tab__content__item">
-                          <h5>Products Infomation</h5>
-                          <p>
-                            A Pocket PC is a handheld computer, which features
-                            many of the same capabilities as a modern PC. These
-                            handy little devices allow individuals to retrieve
-                            and store e-mail messages, create a contact file,
-                            coordinate appointments, surf the internet, exchange
-                            text messages and more. Every product that is
-                            labeled as a Pocket PC must be accompanied with
-                            specific software to operate the unit and must
-                            feature a touchscreen and touchpad.
-                          </p>
-                          <p>
-                            As is the case with any new technology product, the
-                            cost of a Pocket PC was substantial during it’s
-                            early release. For approximately $700.00, consumers
-                            could purchase one of top-of-the-line Pocket PCs in
-                            2003. These days, customers are finding that prices
-                            have become much more reasonable now that the
-                            newness is wearing off. For approximately $350.00, a
-                            new Pocket PC can now be purchased.
-                          </p>
-                        </div>
-                        <div className="product__details__tab__content__item">
-                          <h5>Material used</h5>
-                          <p>
-                            Polyester is deemed lower quality due to its none
-                            natural quality’s. Made from synthetic materials,
-                            not natural like wool. Polyester suits become
-                            creased easily and are known for not being
-                            breathable. Polyester suits tend to have a shine to
-                            them compared to wool and cotton suits, this can
-                            make the suit look cheap. The texture of velvet is
-                            luxurious and breathable. Velvet is a great choice
-                            for dinner party jacket and can be worn all year
-                            round.
-                          </p>
+                          <h5
+                            style={{
+                              borderBottom: "1px solid rgba(0, 0, 0, .09)",
+                              paddingBottom: "12px",
+                            }}
+                          >
+                            Đánh giá
+                          </h5>
+
+                          {productRating?.map((product) => {
+                            return (
+                              <div
+                                key={product?._id}
+                                style={{
+                                  borderBottom: "1px solid rgba(0, 0, 0, .09)",
+                                  padding: "12px 0px",
+                                }}
+                              >
+                                <p>
+                                  {product?.user.name} -{" "}
+                                  {formatDistanceToNow(
+                                    new Date(product?.createdAt),
+                                    {
+                                      addSuffix: true,
+                                      locale: vi,
+                                    }
+                                  )}
+                                </p>
+
+                                <p>
+                                  {" "}
+                                  <Rate
+                                    disabled
+                                    value={product?.rating}
+                                    style={{ fontSize: "16px" }}
+                                  />{" "}
+                                  {product?.comment}
+                                </p>
+                                <Image alt="hinh danh gia san pham" width={72} src={product?.image}/>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>
@@ -551,6 +510,7 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
+
         <div className="container">
           <div className="row">
             <div className="col-md-12">

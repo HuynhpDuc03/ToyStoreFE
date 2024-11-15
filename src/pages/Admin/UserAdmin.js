@@ -1,9 +1,8 @@
-import { Form, Button, theme, Layout, Select } from "antd";
+import { Form, Button, theme, Layout, Select, message } from "antd";
 import React, { useEffect, useState } from "react";
 import InputComponent from "../../components/InputComponent/InputComponent";
 import * as UserService from "../../services/UserService";
 import { useMutationHooks } from "../../hooks/useMutationHook";
-import * as message from "../../components/message/message";
 import { useQuery } from "@tanstack/react-query";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import {
@@ -148,7 +147,6 @@ const UserAdmin = () => {
 
   const getAllUsers = async () => {
     const res = await UserService.getAllUSer();
-    console.log("res", res);
     return res;
   };
 
@@ -268,9 +266,11 @@ const UserAdmin = () => {
 
   useEffect(() => {
     if (isSuccessDeleted && dataDeleted?.status === "OK") {
+      message.destroy()
       message.success();
       handleCancelDelete();
     } else if (isErrorDeleted) {
+      message.destroy()
       message.error();
     }
   }, [isSuccessDeleted]);
@@ -287,9 +287,11 @@ const UserAdmin = () => {
   };
   useEffect(() => {
     if (isSuccessUpdated && dataUpdated?.status === "OK") {
+      message.destroy()
       message.success();
       handleCloseDrawer();
     } else if (isErrorUpdated) {
+      message.destroy()
       message.error();
     }
   }, [isSuccessUpdated]);

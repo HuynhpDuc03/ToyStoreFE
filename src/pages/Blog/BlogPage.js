@@ -17,7 +17,6 @@ const BlogPage = () => {
 
   const fetchBlogAll = async (page, limit) => {
     const res = await BlogService.getAllBlogs(page, limit);
-    console.log("res", res);
     setPagination((prevPagination) => ({
       ...prevPagination,
       total: res?.total, // Update total blog count

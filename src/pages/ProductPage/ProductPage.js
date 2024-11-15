@@ -30,7 +30,7 @@ const ProductPage = () => {
 
   const Productsearch = useSelector((state) => state?.product?.search);
   const searchDebounce = useDebounce(Productsearch, 400);
-  const [limit, setLimit] = useState(8);
+  const [limit, setLimit] = useState(12);
   const [typeProducts, setTypeProducts] = useState([]);
   const [sortOrder, setSortOrder] = useState();
 
@@ -212,7 +212,7 @@ const ProductPage = () => {
                             products?.total === products?.data?.length ||
                             products?.totalPage === 1
                           }
-                          onClick={() => setLimit((prev) => prev + 4)}
+                          onClick={() => setLimit((prev) => prev + 12)}
                         >
                           {t("pageHome.readMore")}
                         </button>

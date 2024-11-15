@@ -40,19 +40,21 @@ const ProductDetailsContent = ({ id }) => {
     }
   };
   const onChange = (value) => {
-    console.log("value", value);
     setNumProduct(Number(value));
   };
   const fetchGetDetailsProduct = async () => {
     const res = await ProductService.getDetailsProduct(id);
-    return res?.data;
+    return { product: res.data.product, rating: res.data.rating };
   };
-  const { isLoading, data: productDetails } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ["product-details", id],
     queryFn: fetchGetDetailsProduct,
   });
+  const productDetails = data?.product;
+  const productRating = data?.rating;
 
-  console.log("details", productDetails);
+
+
 
   useEffect(() => {
     const orderRedux = order?.orderItems?.find(
@@ -87,13 +89,12 @@ const ProductDetailsContent = ({ id }) => {
         orderRedux?.amount + numProduct <= orderRedux?.countInstock ||
         (!orderRedux && productDetails?.countInStock > 0)
       ) {
-        console.log(orderRedux?.amount);
         dispatch(
           addOrderProduct({
             orderItem: {
               name: productDetails?.name,
               amount: numProduct,
-              image: productDetails?.image,
+              image: productDetails?.image[0],
               price: productDetails?.price,
               product: productDetails?._id,
               discount: productDetails?.discount,
@@ -101,6 +102,7 @@ const ProductDetailsContent = ({ id }) => {
             },
           })
         );
+        message.destroy()
         message
           .open({
             type: "loading",
@@ -111,6 +113,7 @@ const ProductDetailsContent = ({ id }) => {
             message.success(t("pageProductDetails.addedToCart"), 1.5)
           );
       } else {
+        message.destroy()
         message.error(t("pageProductDetails.errorToCart"), 1.5);
       }
     }
@@ -122,6 +125,7 @@ const ProductDetailsContent = ({ id }) => {
     } else {
       if (favourite) {
         dispatch(removeFavoriteProduct({ idProduct: productDetails?._id }));
+        message.destroy()
         message.info(t("pageProductDetails.removeFavorite"), 1.5);
       } else {
         dispatch(
@@ -138,6 +142,7 @@ const ProductDetailsContent = ({ id }) => {
             },
           })
         );
+        message.destroy()
         message.success(t("pageProductDetails.addToFavorite"), 1.5);
       }
       setFavourite(!favourite);

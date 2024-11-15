@@ -13,7 +13,6 @@ const PieChartLowStock = ({ access_token }) => {
   const content = <div style={contentStyle} />;
   const getStockPercentage = async () => {
     const res = await DashboardService.getstockPercentage(access_token);
-    console.log("API Response:", res?.data);
     return res?.data;
   };
 

@@ -32,9 +32,11 @@ const BarChartComponent = ({ access_token }) => {
         }));
         setData(mappedData); // Update data for the chart
       } else {
+        message.destroy()
         message.error(response.message);
       }
     } catch (error) {
+      message.destroy()
       message.error("Error fetching data from API.");
     } finally {
       setLoading(false);
@@ -68,6 +70,7 @@ const BarChartComponent = ({ access_token }) => {
       const toDate = selectedRange[1].format(dateFormat);
       fetchData("FromTo", fromDate, toDate);
     } else {
+      message.destroy()
       message.error("Please select a valid date range.");
     }
     setIsModalVisible(false);

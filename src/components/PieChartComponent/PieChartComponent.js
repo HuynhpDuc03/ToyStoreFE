@@ -7,7 +7,6 @@ const PieChartPrice = ({ data, dateRange,isLoading }) => {
   let chartData = [];
   let chartOptions = {};
   const { t } = useTranslation();
-  console.log("data", data)
   if (data && data.length > 0) {
     chartData = convertDataChart(data, "paymentMethod", dateRange, t);
     chartData = [

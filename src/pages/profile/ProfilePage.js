@@ -1,5 +1,6 @@
 import {
   EnvironmentOutlined,
+  MailOutlined,
   PhoneOutlined,
   SmileOutlined,
   TruckOutlined,
@@ -141,9 +142,11 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (isSuccess) {
+      message.destroy()
       message.success(t("pageProfile.updateSuccess"));
       handleGetDetailUser(user?.id, user?.access_token);
     } else if (isError) {
+      message.destroy()
       message.error(t("pageProfile.updateFailure"));
     }
   }, [isSuccess, isError]);
@@ -217,46 +220,48 @@ const ProfilePage = () => {
               <p>{t("pageProfile.subTitle")}</p>
               <hr />
               <Form action="">
-                <label className="mb-2 font-weight-bold">
-                  {t("pageProfile.Email")}: {email}
-                </label>
-
-                <Form.Item className="mb-4">
-                  <label className="mb-2 font-weight-bold">
-                    {t("pageProfile.name")}:
-                  </label>
-                  <Input
-                    className="mt-2"
-                    style={{ width: "100%" }}
-                    type="text"
-                    size="large"
-                    value={name}
-                    onChange={handleOnchangeName}
-                    placeholder={t("pageProfile.name")}
-                    prefix={<UserOutlined />}
-                    disabled={!editMode}
-                  />
-                </Form.Item>
-
-                <Form.Item className="mb-4">
-                  <label className="mb-2 font-weight-bold">
-                    {t("pageProfile.phone")}:
-                  </label>
-                  <Input
-                    className="mt-2"
-                    type="number"
-                    style={{ width: "100%" }}
-                    size="large"
-                    value={phone}
-                    onChange={handleOnchangePhone}
-                    placeholder={t("pageProfile.phone")}
-                    prefix={<PhoneOutlined />}
-                    disabled={!editMode}
-                  />
-                </Form.Item>
+                <div className="row">
+                  <div className="col-md-6  ">
+                    <Form.Item>
+                      <label className="mb-2 font-weight-bold">
+                        {t("pageProfile.Email")}: {}
+                      </label>
+                      <Input
+                        className="mt-2"
+                        style={{ width: "100%" }}
+                        type="text"
+                        size="large"
+                        value={email}
+                        prefix={<MailOutlined />}
+                        disabled={true}
+                      />
+                    </Form.Item>
+                  </div>
+                  <div className="col-md-6 ">
+                    <Form.Item>
+                      <label className="mb-2 font-weight-bold">
+                        {t("pageProfile.name")}:
+                      </label>
+                      <Input
+                        className="mt-2"
+                        style={{ width: "100%" }}
+                        type="text"
+                        size="large"
+                        value={name}
+                        onChange={handleOnchangeName}
+                        placeholder={t("pageProfile.name")}
+                        prefix={<UserOutlined />}
+                        disabled={!editMode}
+                      />
+                    </Form.Item>
+                  </div>
+                </div>
 
                 <div className="row">
                   <div className="col-md-4 mb-3">
+                  <label className="mb-2 font-weight-bold">
+                        {/* {t("pageProfile.address")}: */} Chọn Tỉnh/Thành
+                      </label>
                     <Select
                       placeholder={t("pageProfile.city")}
                       value={city || undefined}
@@ -273,6 +278,10 @@ const ProfilePage = () => {
                     />
                   </div>
                   <div className="col-md-4 mb-3">
+                  <label className="mb-2 font-weight-bold">
+                        {/* {t("pageProfile.address")}: */}
+                        Chọn quận/huyện
+                      </label>
                     <Select
                       placeholder={t("pageProfile.district")}
                       style={{ width: "100%" }}
@@ -289,6 +298,10 @@ const ProfilePage = () => {
                     />
                   </div>
                   <div className="col-md-4 mb-3">
+                  <label className="mb-2 font-weight-bold">
+                        {/* {t("pageProfile.address")}: */}
+                        Chọn phường/xã
+                      </label>
                     <Select
                       placeholder={t("pageProfile.street")}
                       value={ward || undefined}
@@ -306,22 +319,44 @@ const ProfilePage = () => {
                   </div>
                 </div>
 
-                <Form.Item className="mb-4">
-                  <label className="mb-2 font-weight-bold">
-                    {t("pageProfile.address")}:
-                  </label>
-                  <Input
-                    className="mt-2"
-                    type="text"
-                    style={{ width: "100%" }}
-                    size="large"
-                    value={address}
-                    onChange={handleOnchangeAddress}
-                    placeholder={t("pageProfile.address")}
-                    prefix={<EnvironmentOutlined />}
-                    disabled={!editMode}
-                  />
-                </Form.Item>
+                <div className="row">
+                  <div className="col-md-4  ">
+                    <Form.Item>
+                      <label className="mb-2 font-weight-bold">
+                        {t("pageProfile.phone")}:
+                      </label>
+                      <Input
+                        className="mt-2"
+                        type="number"
+                        style={{ width: "100%" }}
+                        size="large"
+                        value={phone}
+                        onChange={handleOnchangePhone}
+                        placeholder={t("pageProfile.phone")}
+                        prefix={<PhoneOutlined />}
+                        disabled={!editMode}
+                      />
+                    </Form.Item>
+                  </div>
+                  <div className="col-md-8 ">
+                    <Form.Item>
+                      <label className="mb-2 font-weight-bold">
+                        {t("pageProfile.address")}:
+                      </label>
+                      <Input
+                        className="mt-2"
+                        type="text"
+                        style={{ width: "100%" }}
+                        size="large"
+                        value={address}
+                        onChange={handleOnchangeAddress}
+                        placeholder={t("pageProfile.address")}
+                        prefix={<EnvironmentOutlined />}
+                        disabled={!editMode}
+                      />
+                    </Form.Item>
+                  </div>
+                </div>
 
                 <div className="d-flex justify-content-end mt-4">
                   {!editMode && (

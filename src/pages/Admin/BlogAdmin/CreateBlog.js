@@ -90,12 +90,14 @@ const CreateBlog = () => {
         formData,
         user?.access_token
       );
+      message.destroy()
       message.success("Tạo bài viết thành công");
       form.resetFields();
       setBannerImage(null);
       setEditorValue("");
       setSelectedTags([]);
     } catch (error) {
+      message.destroy()
       message.error("Lỗi khi tạo bài viết");
     }
   };

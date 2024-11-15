@@ -47,7 +47,6 @@ const OrderDetails = () => {
   });
   const { isLoading, data: orderDetails } = queryOrder;
 
-  console.log("ordersdetails", orderDetails);
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -95,7 +94,7 @@ const OrderDetails = () => {
 
   const dataSource = orderDetails?.orderItems.map((item, index) => ({
     key: index + 1,
-    image: item.image[0],
+    image: item.image,
     name: item.name,
     price: converPrice(item.price),
     quantity: item.amount,

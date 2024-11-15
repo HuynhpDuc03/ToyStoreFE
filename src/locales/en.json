@@ -228,6 +228,7 @@
     "infoAddress": "Address Information",
     "summaryOfTotalAmount": "Summary of Total Amount",
     "delivery": "Delivery",
+    "confirmCancelOrder":"Confirm order cancellation",
     "cancelOrder": "Please confirm order cancellation!",
     "payment": "Payment",
     "titleCancel": "Are you sure you want to cancel your order?",

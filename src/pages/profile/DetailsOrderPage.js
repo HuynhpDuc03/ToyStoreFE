@@ -203,7 +203,7 @@ const DetailsOrderPage = () => {
                           <List.Item>
                             <List.Item.Meta
                               avatar={
-                                <Avatar size={80} src={orderItem?.image[0]} />
+                                <Avatar size={80} src={orderItem?.image} />
                               }
                               title={
                                 <Link

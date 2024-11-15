@@ -18,6 +18,7 @@ const ForgotAndResetPassword = () => {
 
   const handleForgotPassword = async () => {
     if (!email) {
+      message.destroy()
       message.error(t("pageForgotPassword.error")); 
       return;
     }
@@ -38,6 +39,7 @@ const ForgotAndResetPassword = () => {
 
   const handleVerifyOtp = async () => {
     if (!otp) {
+      message.destroy()
       message.error(t("pageForgotPassword.verifyError"));
       return;
     }

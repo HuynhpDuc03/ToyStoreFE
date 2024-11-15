@@ -139,7 +139,6 @@ const CouponAdmin = () => {
     isError: isErrorDeleted,
   } = mutationDeleted;
 
-  console.log("dataUpdated", dataUpdated);
 
   const queryCoupon = useQuery({
     queryKey: ["coupons"],
@@ -213,9 +212,11 @@ const CouponAdmin = () => {
 
   useEffect(() => {
     if (isSuccessUpdated && dataUpdated?.status === "OK") {
+      message.destroy()
       message.success("Cập nhật thông tin thành công !");
       handleCloseDrawer();
     } else if (isErrorUpdated) {
+      message.destroy()
       message.error("Đã xảy ra lỗi khi cập nhật thông tin !!!");
     }
   }, [isSuccessUpdated, isErrorUpdated]);
@@ -228,9 +229,11 @@ const CouponAdmin = () => {
     mutation.mutate(null, {
       onSettled: () => {
         queryCoupon.refetch();
+        message.destroy()
         message.success("Tạo coupon thành công");
       },
       onError: (error) => {
+        message.destroy()
         message.error("Lỗi khi tạo coupon: " + error.message);
       },
     });
@@ -242,10 +245,12 @@ const CouponAdmin = () => {
       {
         onSettled: () => {
           queryCoupon.refetch();
-          setIsModalOpen(false); // Đóng modal sau khi xóa
+          setIsModalOpen(false); 
+          message.destroy()
           message.success("Xóa coupon thành công!");
         },
         onError: (error) => {
+          message.destroy()
           message.error("Lỗi khi xóa coupon: " + error.message);
         },
       }

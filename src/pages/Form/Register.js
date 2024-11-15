@@ -38,6 +38,7 @@ const Register = () => {
 
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
+      message.destroy()
       message
         .open({ type: "loading", content: "Loading...", duration: 1 })
         .then(() => {
@@ -48,6 +49,7 @@ const Register = () => {
           }, 1000);
         });
     } else if (isError || (data && data.status === "ERR")) {
+      message.destroy()
       message.error(data?.message || error?.message || t("pageRegister.failure"));
     }
   }, [isSuccess, isError, data, error, navigate]);

@@ -7,7 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 const PieChartStockByCategory = ({ access_token }) => {
   const getChartCategoryStock = async () => {
     const res = await DashboardService.chartCategoryStock(access_token);
-    console.log("API Response:", res?.data);
     return res?.data;
   };
 

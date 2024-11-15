@@ -9,15 +9,14 @@ import {
   Col,
   Row,
   Table,
+  message,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import InputComponent from "../../components/InputComponent/InputComponent";
 import * as ProductService from "../../services/ProductService";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import { WrapperUploadFile } from "../../components/StyleAdmin/Style";
-import * as message from "../../components/message/message";
 import { useQuery } from "@tanstack/react-query";
-import TableComponent from "../../components/TableComponent/TableComponent";
 import {
   AuditOutlined,
   CheckOutlined,
@@ -73,28 +72,33 @@ const ProductAdmin = () => {
 
   const [form] = Form.useForm();
 
-  const mutation = useMutationHooks((data) => {
-    const {
-      name,
-      price,
-      description,
-      rating,
-      image,
-      type,
-      discount,
-      countInStock,
-    } = data;
-    const res = ProductService.createProduct({
-      name,
-      price,
-      description,
-      rating,
-      image,
-      type,
-      discount,
-      countInStock,
-    });
-    return res;
+  // const mutation = useMutationHooks((data) => {
+  //   const {
+  //     name,
+  //     price,
+  //     description,
+  //     rating,
+  //     image,
+  //     type,
+  //     discount,
+  //     countInStock,
+  //   } = data;
+  //   const res = ProductService.createProduct({
+  //     name,
+  //     price,
+  //     description,
+  //     rating,
+  //     image,
+  //     type,
+  //     discount,
+  //     countInStock,
+  //   });
+  //   return res;
+  // });
+
+
+  const mutationCreate = useMutationHooks((data) => {
+    return ProductService.createProduct(data);
   });
 
   const mutationUpdate = useMutationHooks((data) => {
@@ -161,7 +165,7 @@ const ProductAdmin = () => {
     const res = await ProductService.getAllTypeProduct();
     return res;
   };
-  const { data, isSuccess, isError } = mutation;
+  const { data, isSuccess, isError } = mutationCreate;
   const {
     data: dataUpdated,
     isSuccess: isSuccessUpdated,
@@ -172,7 +176,6 @@ const ProductAdmin = () => {
     isSuccess: isSuccessDeleted,
     isError: isErrorDeleted,
   } = mutationDeleted;
-  console.log("dataUpdated", dataUpdated);
 
   const queryProduct = useQuery({
     queryKey: ["products", { page: currentPage, limit: pageSize }],
@@ -189,7 +192,7 @@ const ProductAdmin = () => {
     setCurrentPage(pagination.current);
   };
 
-  console.log("currentPage", currentPage);
+ 
   const renderAction = () => {
     return (
       <div>
@@ -259,22 +262,28 @@ const ProductAdmin = () => {
 
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
+      message.destroy()
       message.success("Thêm sản phẩm mới thành công !");
       handleCancel();
     } else if (isError) {
+      message.destroy()
       message.error("Có lỗi khi thêm sản phẩm !");
     }
   }, [isSuccess, isError]);
 
   useEffect(() => {
     if (isSuccessDeleted && dataDeleted?.status === "OK") {
+      message.destroy()
       message.success("Xóa sản phẩm thành công !");
       handleCancelDelete();
     } else if (isErrorDeleted) {
+      message.destroy()
       message.error("Có lỗi khi xóa sản phẩm !");
     }
   }, [isSuccessDeleted, isErrorDeleted]);
 
+ 
+ 
   const handleCloseDrawer = () => {
     setOpenDrawer(false);
     setStateProductDetail({
@@ -292,9 +301,11 @@ const ProductAdmin = () => {
 
   useEffect(() => {
     if (isSuccessUpdated && dataUpdated?.status === "OK") {
+      message.destroy()
       message.success("Cập nhật thông tin thành công !");
       handleCloseDrawer();
     } else if (isErrorUpdated) {
+      message.destroy()
       message.error("Đã xảy ra lỗi khi cập nhật thông tin !!!");
     }
   }, [isSuccessUpdated, isErrorUpdated]);
@@ -314,21 +325,7 @@ const ProductAdmin = () => {
     );
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-    setStateProduct({
-      name: "",
-      price: "",
-      description: "",
-      rating: "",
-      image: "",
-      type: "",
-      discount: "",
-      countInStock: "",
-    });
-    form.resetFields();
-  };
-
+ 
   const onFinish = () => {
     const params = {
       name: stateProduct.name,
@@ -343,7 +340,7 @@ const ProductAdmin = () => {
       discount: stateProduct.discount,
       countInStock: stateProduct.countInStock,
     };
-    mutation.mutate(params, {
+    mutationCreate.mutate(params, {
       onSettled: () => {
         queryProduct.refetch();
       },
@@ -363,7 +360,7 @@ const ProductAdmin = () => {
       [e.target.name]: e.target.value,
     });
   };
-
+ 
   const handleOnchangeAvatar = async ({ fileList }) => {
     const base64Images = await Promise.all(
       fileList.map((file) => {
@@ -405,7 +402,7 @@ const ProductAdmin = () => {
       image: base64Images,
     });
   };
-
+ 
   const onUpdateProducts = () => {
     mutationUpdate.mutate(
       { id: rowSelected, token: user?.access_token, ...stateProductDetail },
@@ -434,6 +431,26 @@ const ProductAdmin = () => {
     setCollapsed(!collapsed);
     setMarginLeft(collapsed ? 200 : 80);
   };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+    setStateProduct(inittial()); // Khởi tạo lại stateProduct
+  };
+  
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setStateProduct(inittial()); // Khởi tạo lại stateProduct khi đóng modal
+    form.resetFields(); // Đặt lại các trường trong form
+  };
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      form.setFieldsValue(stateProductDetail);
+    } else {
+      form.resetFields(); // Đặt lại các trường trong form khi mở modal
+    }
+  }, [form, stateProductDetail, isModalOpen]);
+
   return (
     <LoadingComponent isLoading={isLoadingProducts}>
       <Layout>
@@ -473,7 +490,7 @@ const ProductAdmin = () => {
                 />
               }
               className="btn btn-default"
-              onClick={() => setIsModalOpen(true)}
+              onClick={handleOpenModal}
               style={{
                 width: 64,
                 height: 64,
@@ -947,6 +964,13 @@ const ProductAdmin = () => {
                 pageSize: pageSize,
                 total: products?.total || 0,
                 position: ["bottomCenter"],
+              }}
+              onRow={(record, rowIndex) => {
+                return {
+                  onClick: (event) => {
+                    setRowSelected(record._id);
+                  },
+                };
               }}
               onChange={handleTableChange}
             />

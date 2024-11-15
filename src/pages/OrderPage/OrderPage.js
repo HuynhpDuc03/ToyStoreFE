@@ -21,7 +21,6 @@ const OrderPage = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [listChecked, setListChecked] = useState([]);
-  console.log(user);
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
@@ -237,7 +236,7 @@ const OrderPage = () => {
                                 <img
                                   width={100}
                                   height={100}
-                                  src={order?.image[0]}
+                                  src={order?.image}
                                   alt=""
                                 />
                               </div>
@@ -399,12 +398,15 @@ const CheckOut = (props) => {
 
   const handleClickCheckOut = () => {
     if (!isLoggedIn) {
+      message.destroy()
       message.info(t("pageCart.noLogin"));
     } else if (disabled) {
+      message.destroy()
       message.info(t("pageCart.noSelected"));
     } 
     // else if (!checkAddress){
-    //   message.info("Thông tin địa chỉ chưa có hoặc thiếu, Vui lòng kiểm tra lại!");
+      //message.destroy()
+      //message.info("Thông tin địa chỉ chưa có hoặc thiếu, Vui lòng kiểm tra lại!");
     // }
      else {
       navigate(`/Checkout`);

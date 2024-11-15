@@ -6,7 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import { formatDistanceToNow } from "date-fns";
-import { vi, en } from "date-fns/locale"; // Import locale tiếng Việt nếu bạn cần
+import { vi } from "date-fns/locale"; 
 import { formatDateBlog } from "../../utils";
 
 const BlogPageDetails = () => {
@@ -90,7 +90,7 @@ const BlogPageDetails = () => {
           <div className="row d-flex justify-content-center">
             <div className="col-lg-12">
               <div className="blog__details__pic">
-                <img src={blogDetails?.bannerImage} alt="" />
+                <img src={blogDetails?.bannerImage} alt="" width={1170} height={600}/>
               </div>
             </div>
             <div className="col-lg-8">

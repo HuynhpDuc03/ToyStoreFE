@@ -22,7 +22,6 @@ const HomePage = () => {
 
   const fetchAllSpecialProducts = async () => {
     const res = await ProductService.getAllSpecialProducts(4);
-    console.log("bestseller", res);
     return res;
   };
   const { isLoading: abc, data: abcs } = useQuery({

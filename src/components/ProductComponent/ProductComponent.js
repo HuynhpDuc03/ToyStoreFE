@@ -37,6 +37,7 @@ const ProductComponent = (props) => {
   const handleFavoriteClick = () => {
     if (isFavourite) {
       dispatch(removeFavoriteProduct({ idProduct: id }));
+      message.destroy()
       message.info("Đã xóa khỏi danh sách yêu thích", 1.5);
     } else {
       dispatch(
@@ -53,6 +54,7 @@ const ProductComponent = (props) => {
           },
         })
       );
+      message.destroy()
       message.success("Đã thêm vào danh sách yêu thích", 1.5);
     }
   };
