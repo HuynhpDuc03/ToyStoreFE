@@ -1,50 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import * as ProductService from "../../services/ProductService";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { searchProduct } from "../../redux/slides/productSlide";
-import { Select, Skeleton } from "antd";
-import { useDebounce } from "../../hooks/useDebounce";
-import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
+import { Pagination, Select } from "antd";
 import ProductComponent from "../../components/ProductComponent/ProductComponent";
 import CategoryComponent from "../../components/CategoryComponent/CategoryComponent";
 import { useTranslation } from "react-i18next";
+import * as ProductService from "../../services/ProductService";
+import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
+import { useNavigate } from "react-router-dom";
 
 const ProductPage = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const handleNavigatetype = (type) => {
-    navigate(
-      `/products/${type
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        ?.replace(/ /g, "_")}`,
-      { state: type }
-    );
-  };
-  const onSearch = (e) => {
-    dispatch(searchProduct(e.target.value));
-  };
-
-  const Productsearch = useSelector((state) => state?.product?.search);
-  const searchDebounce = useDebounce(Productsearch, 400);
-  const [limit, setLimit] = useState(12);
   const [typeProducts, setTypeProducts] = useState([]);
-  const [sortOrder, setSortOrder] = useState();
-
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [limit, setLimit] = useState(12);
+  const [page, setPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState("lowtohigh");
   const [selectedPrices, setSelectedPrices] = useState([]);
-  const [totalProducts, setTotalProducts] = useState([]);
-  const fetchProductAll = async (context) => {
-    const limit = context?.queryKey && context?.queryKey[1];
-    const search = context?.queryKey && context?.queryKey[2];
-    const sort = context?.queryKey && context?.queryKey[3];
-    const price = context?.queryKey && context?.queryKey[4];
-    const res = await ProductService.getAllProduct(search, limit, sort, price);
-    setTotalProducts(res.total);
-    return res;
-  };
+  const [selectedType, setSelectedType] = useState(null);
+  const navigate = useNavigate();
   const fetchAllTypeProduct = async () => {
     const res = await ProductService.getAllTypeProduct();
     if (res?.status === "OK") {
@@ -52,68 +28,55 @@ const ProductPage = () => {
     }
   };
 
+  const fetchGetAllProduct = async (filters, page, limit) => {
+    const res = await ProductService.getAllProduct(filters, page, limit); // Truyền page và limit
+    setTotalProducts(res?.total);
+    return res;
+  };
+
+  const filters = {
+    type: selectedType,
+    priceRange: selectedPrices,
+    sort: sortOrder,
+  };
+
+  const { isLoading, data: products } = useQuery({
+    queryKey: ["products", page, limit, filters],
+    queryFn: () => fetchGetAllProduct(filters, page, limit),
+    retry: 3,
+    retryDelay: 1000,
+    keepPreviousData: true,
+  });
+
   useEffect(() => {
     fetchAllTypeProduct();
   }, []);
 
-  const { isLoading, data: products } = useQuery({
-    queryKey: ["products", limit, searchDebounce, sortOrder, selectedPrices],
-    queryFn: fetchProductAll,
-    retry: 3,
-    retryDelay: 500,
-    keepPreviousData: true,
-  });
-
   const handleSortingChange = (value) => {
     setSortOrder(value);
+    setPage(1); // Reset về trang đầu khi thay đổi sắp xếp
   };
 
-  const handlePriceFilterChange = (range) => {
-    setSelectedPrices((prevSelectedPrices) => {
-      if (prevSelectedPrices.includes(range)) {
-        return prevSelectedPrices.filter((price) => price !== range);
-      } else {
-        return [...prevSelectedPrices, range];
-      }
-    });
-  };
-
-  const handleClearAllPrices = () => {
-    setSelectedPrices([]);
+  const handlePageChange = (newPage) => {
+    setPage(newPage); // Cập nhật trang hiện tại
   };
 
   return (
     <div>
-      {/* <!-- Breadcrumb Section Begin --> */}
-      <section className="breadcrumb-option">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="breadcrumb__text">
-                <h4>{t("header.shop")}</h4>
-                <div className="breadcrumb__links">
-                  <Link to="/">{t("header.home")}</Link>
-                  <span>{t("header.shop")}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* <!-- Breadcrumb Section End --> */}
-
-      {/* <!-- Shop Section Begin --> */}
       <section className="shop spad">
         <div className="container">
           <div className="row">
             <div className="col-lg-3">
               <CategoryComponent
-                onSearch={onSearch}
+                onSearch={(e) => dispatch(searchProduct(e.target.value))}
                 typeProducts={typeProducts}
-                handleNavigatetype={handleNavigatetype}
-                handlePriceFilterChange={handlePriceFilterChange}
+                handleNavigatetype={(type) => {
+                  setSelectedType(type); // Cập nhật trạng thái loại sản phẩm
+                  setPage(1); // Reset về trang đầu khi thay đổi loại sản phẩm
+                }}
+                handlePriceFilterChange={setSelectedPrices}
                 selectedPrices={selectedPrices}
-                handleClearAllPrices={handleClearAllPrices}
+                handleClearAllPrices={() => setSelectedPrices([])}
               />
             </div>
             <div className="col-lg-9">
@@ -127,105 +90,72 @@ const ProductPage = () => {
                       </p>
                     </div>
                   </div>
-                  <div class="col-lg-6 col-md-6 col-sm-6">
-                    <div class="shop__product__option__right">
-                      <p>{t("shopPage.sort")}</p>
+                  <div className="col-lg-6 col-md-6 col-sm-6">
+                    <div className="shop__product__option__right">
                       <Select
-                        defaultValue="lowtohigh"
-                        dropdownStyle={{ width: "140px" }}
+                        defaultValue={sortOrder}
                         onChange={handleSortingChange}
-                        options={[
-                          {
-                            value: "lowtohigh",
-                            label: t("shopPage.lowToHigh"),
-                          },
-                          {
-                            value: "hightolow",
-                            label: t("shopPage.highToLow"),
-                          },
-                          {
-                            value: "name-asc",
-                            label: t("shopPage.nameatoz"),
-                          },
-                          {
-                            value: "name-desc",
-                            label: t("shopPage.nameztoa"),
-                          },
-                          {
-                            value: "bestSeller",
-                            label: t("pageHome.bestSeller"),
-                          },
-                          {
-                            value: "popular",
-                            label: t("pageHome.hotSale"),
-                          },
-                          {
-                            value: "newArrivals",
-                            label: t("pageHome.newArrivals"),
-                          },
-                        ]}
-                      />
+                      >
+                        <Select.Option value="lowtohigh">
+                          {t("shopPage.lowToHigh")}
+                        </Select.Option>
+                        <Select.Option value="hightolow">
+                          {t("shopPage.highToLow")}
+                        </Select.Option>
+                        <Select.Option value="name-asc">
+                          {t("shopPage.nameatoz")}
+                        </Select.Option>
+                        <Select.Option value="name-desc">
+                          {t("shopPage.nameztoa")}
+                        </Select.Option>
+                        <Select.Option value="bestSeller">
+                          {t("pageHome.bestSeller")}
+                        </Select.Option>
+                        <Select.Option value="popular">
+                          {t("pageHome.hotSale")}
+                        </Select.Option>
+                        <Select.Option value="newArrivals">
+                          {t("pageHome.newArrivals")}
+                        </Select.Option>
+                      </Select>
                     </div>
                   </div>
                 </div>
+                {isLoading ? (
+                  <LoadingComponent isLoading={isLoading} />
+                ) : (
+                  <div className="row">
+                    {products?.data?.map((product) => (
+                      <ProductComponent
+                        key={product?._id}
+                        countInStock={product?.countInStock}
+                        image={product?.image}
+                        name={product?.name}
+                        price={product?.price}
+                        rating={product?.rating}
+                        discount={product?.discount}
+                        selled={product?.selled}
+                        id={product?._id}
+                      />
+                    ))}
+                  </div>
+                )}
+                {products?.data?.length > 0 ? (
+                  <Pagination
+                  align="center"
+                    current={page}
+                    pageSize={limit}
+                    total={totalProducts}
+                    onChange={handlePageChange} // Gọi hàm xử lý khi thay đổi trang
+                  />
+                ) : (
+                  <></>
+                )}
               </div>
-
-              {isLoading ? (
-                <>
-                  <Skeleton active paragraph={{ rows: 2 }} />
-                  <Skeleton active paragraph={{ rows: 2 }} />
-                  <Skeleton active paragraph={{ rows: 2 }} />
-                  <Skeleton active paragraph={{ rows: 2 }} />
-                  <Skeleton active paragraph={{ rows: 2 }} />
-                </>
-              ) : (
-                <>
-                  <div className="row">
-                    {products?.data?.map((product) => {
-                      return (
-                        <ProductComponent
-                          key={product._id}
-                          countInStock={product.countInStock}
-                          description={product.description}
-                          image={product.image[0]}
-                          name={product.name}
-                          price={product.price}
-                          rating={product.rating}
-                          type={product.type}
-                          discount={product.discount}
-                          selled={product.selled}
-                          id={product._id}
-                        />
-                      );
-                    })}
-                  </div>
-                  <div className="row">
-                    <div className="col-lg-12">
-                      <div className="product__pagination">
-                        <button
-                          type="button"
-                          style={{
-                            width: "30%",
-                          }}
-                          className="btn btn-primary"
-                          disabled={
-                            products?.total === products?.data?.length ||
-                            products?.totalPage === 1
-                          }
-                          onClick={() => setLimit((prev) => prev + 12)}
-                        >
-                          {t("pageHome.readMore")}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
             </div>
           </div>
         </div>
       </section>
-      {/* <!-- Shop Section End --> */}
     </div>
   );
 };

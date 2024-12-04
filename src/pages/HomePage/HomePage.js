@@ -13,51 +13,31 @@ import { useTranslation } from "react-i18next";
 
 const HomePage = () => {
   const { t } = useTranslation();
-  const limit = 8;
-
-  const fetchProductAll = async () => {
-    const res = await ProductService.getAllProduct(null, limit);
-    return res;
-  };
-
+  const limit = 16;
+  const [filter, setFilter] = useState("bestSellers");
   const fetchAllSpecialProducts = async () => {
-    const res = await ProductService.getAllSpecialProducts(4);
-    return res;
+    const res = await ProductService.getAllSpecialProducts(limit);
+    return res.data; // Chỉ lấy `data` từ API response
   };
-  const { isLoading: abc, data: abcs } = useQuery({
-    queryKey: ["productsdada"],
+
+  const { isLoading, data: products } = useQuery({
+    queryKey: ["specialProducts"],
     queryFn: fetchAllSpecialProducts,
   });
-
+  const filteredProducts = products?.[filter] || [];
+console.log("filteredProducts",filteredProducts)
   const fetchBlog = async () => {
     const res = await BlogService.getAllBlogs(1, 3);
     return res;
   };
-
-  const { isLoading, data: products } = useQuery({
-    queryKey: ["products"],
-    queryFn: fetchProductAll,
-  });
+ 
   const { data: blogs } = useQuery({
     queryKey: ["blogs"],
     queryFn: fetchBlog,
   });
 
-  const [filter, setFilter] = useState("bestSeller");
-
-  const filteredProducts = products?.data?.filter((product) => {
-    if (filter === "bestSeller") {
-      return product.bestSeller === true;
-    } else if (filter === "hotSale") {
-      return product.hotSale === true;
-    } else if (filter === "newArrivals") {
-      return product.newArrivals === true;
-    }
-    return product;
-  });
-
   return (
-    <LoadingComponent isLoading={isLoading}>
+    <>
       <Carousel autoplay>
         <div>
           <img
@@ -89,12 +69,12 @@ const HomePage = () => {
         </div>
       </Carousel>
 
-      <section class="banner spad">
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-7 offset-lg-4">
-              <div class="banner__item">
-                <div class="banner__item__pic">
+      <section className="banner spad">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-7 offset-lg-4">
+              <div className="banner__item">
+                <div className="banner__item__pic">
                   <img
                     width={440}
                     height={440}
@@ -102,29 +82,29 @@ const HomePage = () => {
                     alt=""
                   />
                 </div>
-                <div class="banner__item__text">
+                <div className="banner__item__text">
                   <h2>{t("pageHome.LegoCollection")}</h2>
                   <a href="#">{t("pageHome.shopNow")}</a>
                 </div>
               </div>
             </div>
-            <div class="col-lg-5">
-              <div class="banner__item banner__item--middle">
-                <div class="banner__item__pic">
+            <div className="col-lg-5">
+              <div className="banner__item banner__item--middle">
+                <div className="banner__item__pic">
                   <img
                     src={require("../../img/product/ZD-Original-X-men-Deadpool-Wolve.jpg")}
                     alt=""
                   />
                 </div>
-                <div class="banner__item__text">
+                <div className="banner__item__text">
                   <h2>{t("pageHome.SuperHero")}</h2>
                   <a href="#">{t("pageHome.shopNow")}</a>
                 </div>
               </div>
             </div>
-            <div class="col-lg-7">
-              <div class="banner__item banner__item--last">
-                <div class="banner__item__pic">
+            <div className="col-lg-7">
+              <div className="banner__item banner__item--last">
+                <div className="banner__item__pic">
                   <img
                     width={480}
                     height={440}
@@ -132,7 +112,7 @@ const HomePage = () => {
                     alt=""
                   />
                 </div>
-                <div class="banner__item__text">
+                <div className="banner__item__text">
                   <h2>{t("pageHome.CarCollection")}</h2>
                   <a href="#">{t("pageHome.shopNow")}</a>
                 </div>
@@ -144,48 +124,54 @@ const HomePage = () => {
 
       {/*<!-- Product Section Begin --> */}
 
-      <section class="product spad">
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-12">
+      <section className="product spad">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-12">
               <ul className="filter__controls">
                 <li
-                  className={filter === "bestSeller" ? "active" : ""}
-                  onClick={() => setFilter("bestSeller")}
+                  className={filter === "bestSellers" ? "active" : ""}
+                  onClick={() => setFilter("bestSellers")}
                 >
-                  Best Sellers
+                  {t("pageHome.bestSeller")}
                 </li>
                 <li
                   className={filter === "newArrivals" ? "active" : ""}
                   onClick={() => setFilter("newArrivals")}
                 >
-                  New Arrivals
+                  {t("pageHome.newArrivals")}
                 </li>
                 <li
-                  className={filter === "hotSale" ? "active" : ""}
-                  onClick={() => setFilter("hotSale")}
+                  className={filter === "hotSales" ? "active" : ""}
+                  onClick={() => setFilter("hotSales")}
                 >
-                  Hot Sales
+                  {t("pageHome.hotSale")}
                 </li>
               </ul>
             </div>
           </div>
-          <div class="row product__filter">
-            {filteredProducts?.map((product) => (
-              <ProductComponent
-                key={product._id}
-                countInStock={product.countInStock}
-                description={product.description}
-                image={product.image[0]}
-                name={product.name}
-                price={product.price}
-                rating={product.rating}
-                type={product.type}
-                discount={product.discount}
-                selled={product.selled}
-                id={product._id}
-              />
-            ))}
+
+          {/* Hiển thị sản phẩm */}
+          <div className="row product__filter">
+            {isLoading ? (
+              <p>{t("pageHome.loading")}</p>
+            ) : (
+              filteredProducts?.map((product) => (
+                <ProductComponent
+                  key={product?._id}
+                  countInStock={product?.countInStock}
+                  description={product?.description}
+                  image={product?.image[0]}
+                  name={product?.name}
+                  price={product?.price}
+                  rating={product?.rating}
+                  type={product?.type}
+                  discount={product?.discount}
+                  selled={product?.selled}
+                  id={product?._id}
+                />
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -287,7 +273,7 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-    </LoadingComponent>
+    </>
   );
 };
 export default HomePage;

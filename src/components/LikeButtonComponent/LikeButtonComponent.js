@@ -5,7 +5,7 @@ const LikeButtonComponent = (props) => {
   return (
     <div style={{paddingLeft:"15%", marginBottom:"10px"}}>
       <div
-        class="fb-like"
+        className="fb-like"
         data-href={dataHref}
         data-width=""
         data-layout=""

@@ -1,42 +1,79 @@
 import axios from "axios";
 import { axiosJWT } from "./UserService";
 
-export const getAllProduct = async (search, limit, sort, priceFilter, page) => {
-  let res = {};
-  const baseUrl = `${process.env.REACT_APP_API_URL}/product/get-all`;
 
-  let query = `?limit=${limit}`;
 
-  if (search?.length > 0) {
-    query += `&filter=name=${search}`;
-  }
-
-  if (priceFilter) {
-    query += `&filter=price=${priceFilter}`;
-  }
-
-  if (sort) {
-    query += `&sort=${sort}`;
-  }
-
-  if (page) {
-    query += `&page=${page}`;
-  }
-  res = await axios.get(`${baseUrl}${query}`);
+export const getAllProduct = async (filters, page, limit) => {
+  const { type, priceRange, sort } = filters;
+  const res = await axios.get(
+    `${process.env.REACT_APP_API_URL}/product/get-all`, {
+      params: { type, priceRange, sort, page, limit } // Thêm page và limit vào params
+    }
+  );
   return res.data;
 };
+
+export const getAllProductAdmin = async ( page, limit) => {
+  const res = await axios.get(
+    `${process.env.REACT_APP_API_URL}/product/get-all-admin`, {
+      params: { page, limit } // Thêm page và limit vào params
+    }
+  );
+  return res.data;
+};
+
+// export const getAllProduct = async (search, limit, sort, priceFilter, page) => {
+//   let res = {};
+//   const baseUrl = `${process.env.REACT_APP_API_URL}/product/get-all`;
+
+//   let query = `?limit=${limit}`;
+
+//   if (search?.length > 0) {
+//     query += `&filter=name=${search}`;
+//   }
+
+//   if (priceFilter) {
+//     query += `&filter=price=${priceFilter}`;
+//   }
+
+//   if (sort) {
+//     query += `&sort=${sort}`;
+//   }
+
+//   if (page) {
+//     query += `&page=${page}`;
+//   }
+//   res = await axios.get(`${baseUrl}${query}`);
+//   return res.data;
+// };
 
 export const searchProduct = async (search) => {
   let res = {};
-  const baseUrl = `${process.env.REACT_APP_API_URL}/product/get-all`;
+  const baseUrl = `${process.env.REACT_APP_API_URL}/product/get-search`;
   let query = `?limit=6`;
 
   if (search?.length > 0) {
-    query += `&filter=name=${search}`;
+    query += `&query=${encodeURIComponent(search)}`; // Sử dụng `query` thay vì `name`
   }
-  res = await axios.get(`${baseUrl}${query}`);
+
+  try {
+    res = await axios.get(`${baseUrl}${query}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching search results:", error);
+    return { data: [] }; // Trả về kết quả rỗng nếu xảy ra lỗi
+  }
+};
+
+export const getProductRelated = async (data) => {
+  const res = await axios.get(
+    `${process.env.REACT_APP_API_URL}/product/get-ProductRelated`,
+    { params: data }  // Chuyển data thành query params
+  );
   return res.data;
 };
+
+
 
 // export const getAllProduct = async (search, limit) => {
 //   let res = {};
@@ -163,3 +200,4 @@ export const addReview = async (data, access_token) => {
   );
   return res.data;
 };
+ 

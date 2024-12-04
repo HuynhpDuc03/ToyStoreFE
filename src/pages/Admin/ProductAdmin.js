@@ -10,6 +10,7 @@ import {
   Row,
   Table,
   message,
+  Checkbox,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import InputComponent from "../../components/InputComponent/InputComponent";
@@ -40,6 +41,7 @@ import { converPrice, renderOptions, truncateDescription } from "../../utils";
 import SiderComponent from "../../components/SiderComponent/SiderComponent";
 import TextArea from "antd/es/input/TextArea";
 import LoadingComponent from "../../components/LoadingComponent/LoadingCompoent";
+import imageCompression from "browser-image-compression";
 
 const ProductAdmin = () => {
   const user = useSelector((state) => state?.user);
@@ -64,6 +66,9 @@ const ProductAdmin = () => {
     type: "",
     discount: "",
     countInStock: "",
+    bestSeller: false,
+    hotSale: false,
+    newArrivals: false,
   });
 
   const [stateProduct, setStateProduct] = useState(inittial());
@@ -71,31 +76,6 @@ const ProductAdmin = () => {
   const [stateProductDetail, setStateProductDetail] = useState(inittial());
 
   const [form] = Form.useForm();
-
-  // const mutation = useMutationHooks((data) => {
-  //   const {
-  //     name,
-  //     price,
-  //     description,
-  //     rating,
-  //     image,
-  //     type,
-  //     discount,
-  //     countInStock,
-  //   } = data;
-  //   const res = ProductService.createProduct({
-  //     name,
-  //     price,
-  //     description,
-  //     rating,
-  //     image,
-  //     type,
-  //     discount,
-  //     countInStock,
-  //   });
-  //   return res;
-  // });
-
 
   const mutationCreate = useMutationHooks((data) => {
     return ProductService.createProduct(data);
@@ -117,16 +97,20 @@ const ProductAdmin = () => {
     const res = await ProductService.getDetailsProduct(rowSelected);
     if (res?.data) {
       setStateProductDetail({
-        name: res?.data?.name,
-        price: res?.data?.price,
-        description: res?.data?.description,
-        rating: res?.data?.rating,
-        image: res?.data?.image,
-        type: res?.data?.type,
-        discount: res?.data?.discount,
-        countInStock: res?.data?.countInStock,
+        name: res?.data?.product?.name,
+        price: res?.data?.product?.price,
+        description: res?.data?.product?.description,
+        rating: res?.data?.product?.rating,
+        image: res?.data?.product?.image,
+        type: res?.data?.product?.type,
+        discount: res?.data?.product?.discount,
+        countInStock: res?.data?.product?.countInStock,
+        bestSeller: res?.data?.product?.bestSeller,
+        hotSale: res?.data?.product?.hotSale,
+        newArrivals: res?.data?.product?.newArrivals,
       });
     }
+
     setIsLoaddingUpdate(false);
   };
 
@@ -158,7 +142,7 @@ const ProductAdmin = () => {
   };
 
   const getAllProducts = async () => {
-    return ProductService.getAllProduct("", pageSize, "", "", currentPage-1);
+    return ProductService.getAllProductAdmin(currentPage, pageSize);
   };
 
   const fetchAllTypeProduct = async () => {
@@ -192,7 +176,6 @@ const ProductAdmin = () => {
     setCurrentPage(pagination.current);
   };
 
- 
   const renderAction = () => {
     return (
       <div>
@@ -256,34 +239,31 @@ const ProductAdmin = () => {
         ...products,
         key: products._id,
         price: converPrice(products.price),
-        description: truncateDescription(products.description, 100),
       };
     });
 
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
-      message.destroy()
+      message.destroy();
       message.success("Thêm sản phẩm mới thành công !");
       handleCancel();
     } else if (isError) {
-      message.destroy()
+      message.destroy();
       message.error("Có lỗi khi thêm sản phẩm !");
     }
   }, [isSuccess, isError]);
 
   useEffect(() => {
     if (isSuccessDeleted && dataDeleted?.status === "OK") {
-      message.destroy()
+      message.destroy();
       message.success("Xóa sản phẩm thành công !");
       handleCancelDelete();
     } else if (isErrorDeleted) {
-      message.destroy()
+      message.destroy();
       message.error("Có lỗi khi xóa sản phẩm !");
     }
   }, [isSuccessDeleted, isErrorDeleted]);
 
- 
- 
   const handleCloseDrawer = () => {
     setOpenDrawer(false);
     setStateProductDetail({
@@ -301,11 +281,11 @@ const ProductAdmin = () => {
 
   useEffect(() => {
     if (isSuccessUpdated && dataUpdated?.status === "OK") {
-      message.destroy()
+      message.destroy();
       message.success("Cập nhật thông tin thành công !");
       handleCloseDrawer();
     } else if (isErrorUpdated) {
-      message.destroy()
+      message.destroy();
       message.error("Đã xảy ra lỗi khi cập nhật thông tin !!!");
     }
   }, [isSuccessUpdated, isErrorUpdated]);
@@ -325,7 +305,6 @@ const ProductAdmin = () => {
     );
   };
 
- 
   const onFinish = () => {
     const params = {
       name: stateProduct.name,
@@ -360,49 +339,136 @@ const ProductAdmin = () => {
       [e.target.name]: e.target.value,
     });
   };
- 
+
   const handleOnchangeAvatar = async ({ fileList }) => {
-    const base64Images = await Promise.all(
-      fileList.map((file) => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file.originFileObj);
-          reader.onload = () => {
-            resolve(reader.result);
-          };
-          reader.onerror = (error) => {
-            reject(error);
-          };
-        });
-      })
-    );
-    setStateProduct({
-      ...stateProduct,
-      image: base64Images,
-    });
+    try {
+      // Resize và nén hình ảnh
+      const compressedFiles = await Promise.all(
+        fileList.map(async (file) => {
+          const compressedFile = await imageCompression(file.originFileObj, {
+            maxSizeMB: 0.5, // Giới hạn kích thước (1MB)
+            maxWidthOrHeight: 600, // Giới hạn chiều rộng/cao tối đa
+            useWebWorker: true, // Sử dụng Web Worker để cải thiện hiệu suất
+          });
+
+          // Chuyển file nén thành base64
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(compressedFile);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+          });
+        })
+      );
+
+      setStateProduct({
+        ...stateProduct,
+        image: compressedFiles, // Base64 của ảnh đã resize/compress
+      });
+    } catch (error) {
+      console.error("Error resizing image:", error);
+    }
   };
 
+  // const handleOnchangeAvatarDetails = async ({ fileList }) => {
+  //   try {
+  //     const compressedFiles = await Promise.all(
+  //       fileList.map(async (file) => {
+  //         const compressedFile = await imageCompression(file.originFileObj, {
+  //           maxSizeMB: 0.5,
+  //           maxWidthOrHeight: 600,
+  //           useWebWorker: true,
+  //         });
+
+  //         return new Promise((resolve, reject) => {
+  //           const reader = new FileReader();
+  //           reader.readAsDataURL(compressedFile);
+  //           reader.onload = () => resolve(reader.result);
+  //           reader.onerror = (error) => reject(error);
+  //         });
+  //       })
+  //     );
+
+  //     setStateProductDetail({
+  //       ...stateProductDetail,
+  //       image: compressedFiles,
+  //     });
+  //   } catch (error) {
+  //     console.error('Error resizing image:', error);
+  //   }
+  // };
   const handleOnchangeAvatarDetails = async ({ fileList }) => {
-    const base64Images = await Promise.all(
-      fileList.map((file) => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file.originFileObj);
-          reader.onload = () => {
-            resolve(reader.result);
-          };
-          reader.onerror = (error) => {
-            reject(error);
-          };
-        });
-      })
-    );
-    setStateProductDetail({
-      ...stateProductDetail,
-      image: base64Images,
-    });
+    try {
+      const compressedFiles = await Promise.all(
+        fileList.map(async (file) => {
+          const compressedFile = await imageCompression(file.originFileObj, {
+            maxSizeMB: 0.5, // Giới hạn kích thước (0.5MB)
+            maxWidthOrHeight: 600, // Giới hạn chiều rộng/cao tối đa
+            useWebWorker: true,
+          });
+
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(compressedFile);
+            reader.onload = () => {
+              resolve(reader.result);
+            };
+            reader.onerror = (error) => reject(error);
+          });
+        })
+      );
+
+      setStateProductDetail({
+        ...stateProductDetail,
+        image: compressedFiles, // Cập nhật hình ảnh đã nén
+      });
+    } catch (error) {
+      console.error("Error resizing image:", error);
+    }
   };
- 
+
+  // const handleOnchangeAvatar = async ({ fileList }) => {
+  //   const base64Images = await Promise.all(
+  //     fileList.map((file) => {
+  //       return new Promise((resolve, reject) => {
+  //         const reader = new FileReader();
+  //         reader.readAsDataURL(file.originFileObj);
+  //         reader.onload = () => {
+  //           resolve(reader.result);
+  //         };
+  //         reader.onerror = (error) => {
+  //           reject(error);
+  //         };
+  //       });
+  //     })
+  //   );
+  //   setStateProduct({
+  //     ...stateProduct,
+  //     image: base64Images,
+  //   });
+  // };
+
+  // const handleOnchangeAvatarDetails = async ({ fileList }) => {
+  //   const base64Images = await Promise.all(
+  //     fileList.map((file) => {
+  //       return new Promise((resolve, reject) => {
+  //         const reader = new FileReader();
+  //         reader.readAsDataURL(file.originFileObj);
+  //         reader.onload = () => {
+  //           resolve(reader.result);
+  //         };
+  //         reader.onerror = (error) => {
+  //           reject(error);
+  //         };
+  //       });
+  //     })
+  //   );
+  //   setStateProductDetail({
+  //     ...stateProductDetail,
+  //     image: base64Images,
+  //   });
+  // };
+
   const onUpdateProducts = () => {
     mutationUpdate.mutate(
       { id: rowSelected, token: user?.access_token, ...stateProductDetail },
@@ -436,7 +502,7 @@ const ProductAdmin = () => {
     setIsModalOpen(true);
     setStateProduct(inittial()); // Khởi tạo lại stateProduct
   };
-  
+
   const handleCancel = () => {
     setIsModalOpen(false);
     setStateProduct(inittial()); // Khởi tạo lại stateProduct khi đóng modal
@@ -825,7 +891,68 @@ const ProductAdmin = () => {
                       </Form.Item>
                     </Col>
                   </Row>
-
+                  <Row gutter={24}>
+                    <Col span={6} offset={1}>
+                      <Form.Item
+                        label="Best Seller"
+                        name="bestSeller"
+                        labelCol={2}
+                        valuePropName="checked" // Để lấy giá trị checked của checkbox
+                      >
+                        <Checkbox
+                          checked={stateProductDetail.bestSeller}
+                          onChange={(e) =>
+                            hanleOnChangeDetail({
+                              target: {
+                                name: "bestSeller",
+                                value: e.target.checked,
+                              },
+                            })
+                          }
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                      <Form.Item
+                        label="Hot Sale"
+                        labelCol={2}
+                        name="hotSale"
+                        valuePropName="checked"
+                      >
+                        <Checkbox
+                          checked={stateProductDetail.hotSale}
+                          onChange={(e) =>
+                            hanleOnChangeDetail({
+                              target: {
+                                name: "hotSale",
+                                value: e.target.checked,
+                              },
+                            })
+                          }
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                      <Form.Item
+                        label="New Arrivals"
+                        labelCol={2}
+                        name="newArrivals"
+                        valuePropName="checked"
+                      >
+                        <Checkbox
+                          checked={stateProductDetail.newArrivals}
+                          onChange={(e) =>
+                            hanleOnChangeDetail({
+                              target: {
+                                name: "newArrivals",
+                                value: e.target.checked,
+                              },
+                            })
+                          }
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
                   <Row gutter={20}>
                     <Col span={6} offset={1}>
                       <Form.Item

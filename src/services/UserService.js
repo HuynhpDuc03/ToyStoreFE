@@ -71,6 +71,10 @@ export const forgotPassword = async (data) => {
     return res.data
 }
 
+export const RegisterSendOTP = async (data) => {
+    const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/register-send-otp`, data)
+    return res.data
+}
 
 export const resetPassword = async (data) => {
     const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/reset-password`, data)

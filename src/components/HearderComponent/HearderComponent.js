@@ -174,20 +174,20 @@ const Menu = () => {
               <div className={activeItem === "shop" ? "active" : ""}>
                 <NavLink
                   to="/productFavorite"
-                  activeClassName="active"
+                  className={({ isActive }) => (isActive ? "active" : "")}
                   onClick={() => handleClick("shop")}
                 >
                   <HeartOutlined style={{ color: "#fff", fontSize: "24px" }} />
                 </NavLink>
                 <NavLink
                   to="/Order"
-                  activeClassName="active"
+                  className={({ isActive }) => (isActive ? "active" : "")}
                   onClick={() => handleClick("shop")}
                 >
                   <ShoppingCartOutlined
                     style={{ color: "#fff", fontSize: "24px" }}
                   />
-                  <span className="number-cart">{order.length}</span>
+                  <span className="number-cart">{order?.length}</span>
                 </NavLink>
               </div>
             </div>
@@ -278,10 +278,10 @@ const Header = () => {
               </div>
             )}
 
-            <div class="header__top__hover">
+            <div className="header__top__hover">
               <span>
                 {i18n.language === "en" ? "EN" : "VN"}{" "}
-                <i class="arrow_carrot-down"></i>
+                <i className="arrow_carrot-down"></i>
               </span>
               <ul>
                 <li onClick={() => changeLanguage("en")}>EN</li>

@@ -46,7 +46,7 @@ const ForgotAndResetPassword = () => {
 
     setIsVerifyingOtp(true);
     try {
-      const response = await UserService.verifyOtp({ email, otp });
+      const response = await UserService.verifyOtp({ email, otp, otpType:'resetPassword'  });
       message.success(t("pageForgotPassword.verifySuccess"));
       setStep(3);
     } catch (error) {

@@ -5,7 +5,7 @@ const CommentComponent = (props) => {
   return (
     <div style={{ marginBottom: "10px" }}>
       <div
-        class="fb-comments"
+        className="fb-comments"
         data-href={dataHref}
         data-width={width}
         data-numposts="5"

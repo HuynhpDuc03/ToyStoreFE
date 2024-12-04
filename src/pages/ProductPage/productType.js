@@ -134,8 +134,8 @@ const ProductType = () => {
                       </p>
                     </div>
                   </div>
-                  <div class="col-lg-6 col-md-6 col-sm-6">
-                    <div class="shop__product__option__right">
+                  <div className="col-lg-6 col-md-6 col-sm-6">
+                    <div className="shop__product__option__right">
                       <p>{t("shopPage.sort")}</p>
                       <Select
                         defaultValue="lowtohigh"

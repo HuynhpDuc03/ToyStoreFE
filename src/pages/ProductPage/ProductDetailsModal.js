@@ -256,6 +256,7 @@ const ProductDetailsContent = ({ id }) => {
                             {t("pageProductDetails.countInStock")}
                           </span>
                         </div>
+						{/*
                         <div className="col-md-5">
                           <ButtonComponent
                             style={{ height: "48px", width: "100%" }}
@@ -264,6 +265,7 @@ const ProductDetailsContent = ({ id }) => {
                             MUA NGAY
                           </ButtonComponent>
                         </div>
+						*/}
                       </div>
                     ) : (
                       <h5 style={{ color: "rgb(255, 123, 2)" }}>

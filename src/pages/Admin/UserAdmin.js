@@ -1,4 +1,4 @@
-import { Form, Button, theme, Layout, Select, message } from "antd";
+import { Form, Button, theme, Layout, Select, message, Switch } from "antd";
 import React, { useEffect, useState } from "react";
 import InputComponent from "../../components/InputComponent/InputComponent";
 import * as UserService from "../../services/UserService";
@@ -63,6 +63,8 @@ const UserAdmin = () => {
     city: "",
     district: "",
     ward: "",
+    isBlock: false,
+
   });
 
   const [stateUser, setStateUser] = useState(inittial());
@@ -99,6 +101,7 @@ const UserAdmin = () => {
         city,
         district,
         ward,
+        isBlock: res?.data?.isBlock,
       });
 
       if (city) {
@@ -183,53 +186,41 @@ const UserAdmin = () => {
   };
   const columns = [
     {
+      title: "Khóa",
+      dataIndex: "isBlock",
+      render: (text, record) => (
+        <Switch
+        checked={record.isBlock}
+        onChange={(checked) => handleToggleBlock(record._id, checked)}
+        />
+      ),
+      width: "20%",
+      responsive: ["md"],
+    },
+    {
       title: "Họ tên",
       dataIndex: "name",
-      width: "15%",
+      width: "20%",
       responsive: ["lg"],
     },
     {
       title: "Email",
       dataIndex: "email",
-      width: "15%",
+      width: "20%",
       responsive: ["lg"],
     },
 
     {
       title: "Số điện thoại",
       dataIndex: "phone",
-      width: "10%",
-      responsive: ["lg"],
-    },
-    {
-      title: "Địa chỉ",
-      dataIndex: "address",
       width: "20%",
-      responsive: ["lg"],
-    },
-    {
-      title: "Phường/Xã",
-      dataIndex: "ward",
-      width: "10%",
-      responsive: ["lg"],
-    },
-    {
-      title: "Quận/Huyện",
-      dataIndex: "district",
-      width: "10%",
-      responsive: ["lg"],
-    },
-    {
-      title: "Tỉnh/Thành",
-      dataIndex: "city",
-      width: "10%",
       responsive: ["lg"],
     },
     {
       title: "Chức năng",
       dataIndex: "Action",
       render: renderAction,
-      width: "10%",
+      width: "20%",
       responsive: ["md"],
     },
   ];
@@ -274,6 +265,36 @@ const UserAdmin = () => {
       message.error();
     }
   }, [isSuccessDeleted]);
+
+  
+
+  const handleToggleBlock = (userId, isBlocked) => {
+    // Tìm người dùng trong dataTable
+
+    const userToUpdate = dataTable.find(user => user._id === userId);
+   
+    // if (!userToUpdate) {
+    //   console.error("User  not found");
+    //   return;
+    // }
+  
+    // // Giữ nguyên tất cả các thông tin khác và cập nhật isBlock
+    // const updatedUser  = {
+    //   ...userToUpdate,
+    //   isAdmin: userToUpdate?.isAdmin === 'True' ? true : false,
+    //   isBlock: isBlocked,
+    // };
+  
+    // // Gửi yêu cầu cập nhật
+    // mutationUpdate.mutate(
+    //   { id: userId, token: user?.access_token, ...updatedUser  },
+    //   {
+    //     onSettled: () => {
+    //       queryUser .refetch(); // Refetch dữ liệu người dùng để cập nhật bảng
+    //     },
+    //   }
+    // );
+  };
 
   const handleCloseDrawer = () => {
     setOpenDrawer(false);

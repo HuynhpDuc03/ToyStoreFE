@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 const CategoryComponent = ({
-  onSearch,
   typeProducts,
   handleNavigatetype,
   handlePriceFilterChange,
@@ -15,21 +14,14 @@ const CategoryComponent = ({
 
   return (
     <div className="shop__sidebar">
-      <div className="shop__sidebar__search">
-        <form>
-          <input type="text" placeholder={t('Category.Search')} onChange={onSearch} />
-          <button type="submit">
-            <span className="icon_search"></span>
-          </button>
-        </form>
-      </div>
+ 
 
       <div className="shop__sidebar__accordion">
       <div className="accordion" id="accordionExample">
           <div className="card">
             <div className="card-heading">
               <Link data-toggle="collapse" data-target="#collapseOne">
-                {t('Category.Categories')} ({typeProducts.length})
+                {t('Category.Categories')} ({typeProducts?.length})
               </Link>
             </div>
             <div
@@ -40,7 +32,7 @@ const CategoryComponent = ({
               <div className="card-body">
                 <div className="shop__sidebar__categories">
                   <ul className="nice-scroll category-list">
-                    {typeProducts.map((item, index) => {
+                    {typeProducts?.map((item, index) => {
                       return (
                         <li key={index} style={{textTransform:"capitalize"}}>
                           <Link
@@ -64,20 +56,20 @@ const CategoryComponent = ({
         <hr />
 
         <div className="accordion" id="accordionExample1">
-          <div class="card">
-            <div class="card-heading">
+          <div className="card">
+            <div className="card-heading">
               <Link data-toggle="collapse" data-target="#collapseTwo">
               {t('shopPage.price')}
               </Link>
             </div>
             <div
               id="collapseTwo"
-              class="collapse show"
+              className="collapse show"
               data-parent="#accordionExample1"
             >
-              <div class="card-body">
-                <div class="shop__sidebar__categories">
-                  <ul class="nice-scroll">
+              <div className="card-body">
+                <div className="shop__sidebar__categories">
+                  <ul className="nice-scroll">
                     <li>
                       <Checkbox
                         onChange={() => handlePriceFilterChange("0-200000")}

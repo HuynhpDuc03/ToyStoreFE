@@ -11,6 +11,7 @@ import {
   addFavoriteProduct,
   removeFavoriteProduct,
 } from "../../redux/slides/favoriteSlide";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const ProductComponent = (props) => {
   const { image, name, price, rating, discount, selled, id, countInStock } =
@@ -37,7 +38,7 @@ const ProductComponent = (props) => {
   const handleFavoriteClick = () => {
     if (isFavourite) {
       dispatch(removeFavoriteProduct({ idProduct: id }));
-      message.destroy()
+      message.destroy();
       message.info("Đã xóa khỏi danh sách yêu thích", 1.5);
     } else {
       dispatch(
@@ -54,7 +55,7 @@ const ProductComponent = (props) => {
           },
         })
       );
-      message.destroy()
+      message.destroy();
       message.success("Đã thêm vào danh sách yêu thích", 1.5);
     }
   };
@@ -65,8 +66,17 @@ const ProductComponent = (props) => {
       className="col-lg-3 col-md-6 col-sm-6 border-shadow"
       style={{ marginTop: "5px", marginBottom: "5px" }}
     >
-      <div style={{ marginBottom: "15px" }}>
-        <div
+      <div style={{ marginBottom: "15px",textAlign:"center" }}>
+        <LazyLoadImage
+          alt={name}
+          src={image} // Đường dẫn đến hình ảnh
+          effect="blur" // Hiệu ứng khi tải hình ảnh
+          width="190px" // Chiều rộng hình ảnh
+          height="280px"
+          delayTime="1000"
+          onClick={() => handleDetailsProduct(id)}
+        />
+        {/* <div
           className="product__item__pic set-bg"
           style={{
             // backgroundImage: `url(${require("../../img/product/" + image)})`,
@@ -79,7 +89,7 @@ const ProductComponent = (props) => {
           <span className="label" style={{ color: "red" }}>
             YÊU THÍCH
           </span>
-        </div>
+        </div> */}
         <div className="product__item__text">
           <h6
             style={{
@@ -141,7 +151,7 @@ const ProductComponent = (props) => {
             <Button
               type="primary"
               onClick={() => setOpen(true)}
-              style={{ padding:"14px 30px" }}
+              style={{ padding: "14px 30px" }}
             >
               <ShoppingCartOutlined
                 style={{

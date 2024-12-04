@@ -36,13 +36,13 @@ const OrderDetails = () => {
   const [ward, setWard] = useState("");
   const queryClient = useQueryClient();
 
-  const fetchGetDetailsProduct = async () => {
+  const fetchGetDetailsOrder = async () => {
     const res = await OrderService.getDetailsOrder(id);
     return res.data;
   };
   const queryOrder = useQuery({
     queryKey: ["product-details", id],
-    queryFn: fetchGetDetailsProduct,
+    queryFn: fetchGetDetailsOrder,
     enabled: !!id,
   });
   const { isLoading, data: orderDetails } = queryOrder;

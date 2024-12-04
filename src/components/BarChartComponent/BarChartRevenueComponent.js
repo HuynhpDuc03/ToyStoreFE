@@ -25,10 +25,10 @@ const BarChartComponent = ({ access_token }) => {
 
       if (response.status === "OK") {
         // Map the response to the format expected by the chart
-        const mappedData = response.data.map((item) => ({
-          label: item.date, // Assuming 'date' is the label in the response
-          totalRevenue: item.totalRevenue,
-          itemsSold: item.totalSold, // Adjusting the field to match 'totalSold'
+        const mappedData = response?.data?.map((item) => ({
+          label: item?.date, // Assuming 'date' is the label in the response
+          totalRevenue: item?.totalRevenue,
+          itemsSold: item?.totalSold, // Adjusting the field to match 'totalSold'
         }));
         setData(mappedData); // Update data for the chart
       } else {
@@ -85,7 +85,7 @@ const BarChartComponent = ({ access_token }) => {
       },
     },
     xaxis: {
-      categories: data.map((item) => item.label),
+      categories: data?.map((item) => item.label),
     },
     yaxis: {
       labels: {
@@ -177,13 +177,13 @@ const BarChartComponent = ({ access_token }) => {
         <Chart
           options={chartOptions}
           series={[
-            {
-              name: "Số lượng đã bán",
-              data: data.map((item) => item.itemsSold),
-            },
+            // {
+            //   name: "Số lượng đã bán",
+            //   data: data?.map((item) => item?.itemsSold),
+            // },
             {
               name: "Doanh thu",
-              data: data.map((item) => item.totalRevenue),
+              data: data?.map((item) => item?.totalRevenue),
             },
           ]}
           type="bar"

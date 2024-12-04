@@ -188,7 +188,7 @@ ol {
   top: 0;
   left: 0;
   z-index: 999999;
-  background: #000;
+  background: rgba(0, 0, 0, 0.6);
 }
 
 .loader {

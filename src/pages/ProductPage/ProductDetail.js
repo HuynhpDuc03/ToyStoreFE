@@ -20,6 +20,7 @@ import CommentComponent from "../../components/CommentComponent/CommentComponent
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
 import { vi, en } from "date-fns/locale";
+import ProductComponent from "../../components/ProductComponent/ProductComponent";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -57,7 +58,6 @@ const ProductDetail = () => {
 
   const productDetails = data?.product;
   const productRating = data?.rating;
-
 
   useEffect(() => {
     const orderRedux = order?.orderItems?.find(
@@ -105,7 +105,7 @@ const ProductDetail = () => {
             },
           })
         );
-        message.destroy()
+        message.destroy();
         message
           .open({
             type: "loading",
@@ -116,7 +116,7 @@ const ProductDetail = () => {
             message.success(t("pageProductDetails.addedToCart"), 1.5)
           );
       } else {
-        message.destroy()
+        message.destroy();
         message.error(t("pageProductDetails.errorToCart"), 1.5);
       }
     }
@@ -129,7 +129,7 @@ const ProductDetail = () => {
     } else {
       if (favourite) {
         dispatch(removeFavoriteProduct({ idProduct: productDetails?._id }));
-        message.destroy()
+        message.destroy();
         message.success(t("pageProductDetails.removeFavorite"), 1.5);
       } else {
         dispatch(
@@ -146,12 +146,23 @@ const ProductDetail = () => {
             },
           })
         );
-        message.destroy()
+        message.destroy();
         message.success(t("pageProductDetails.addToFavorite"), 1.5);
       }
       setFavourite(!favourite);
     }
   };
+  const fetchGetProductRelated = async (type) => {
+    const data = { type: productDetails?.type, limit: 4 };
+    const res = await ProductService.getProductRelated(data);
+    return res;
+  };
+
+  const { data: ProductRelated } = useQuery({
+    queryKey: ["product-related", productDetails?.type],
+    queryFn: fetchGetProductRelated,
+    enabled: !!productDetails?.type,
+  });
 
   const discountedPrice =
     productDetails?.price * (1 - productDetails?.discount / 100);
@@ -301,6 +312,7 @@ const ProductDetail = () => {
                                     {t("pageProductDetails.countInStock")}
                                   </span>
                                 </div>
+                                {/* 
                                 <div className="col-md-5">
                                   <ButtonComponent
                                     style={{ height: "48px", width: "100%" }}
@@ -308,6 +320,7 @@ const ProductDetail = () => {
                                     MUA NGAY
                                   </ButtonComponent>
                                 </div>
+                                */}
                               </div>
                             ) : (
                               <h5 style={{ color: "rgb(255, 123, 2)" }}>
@@ -497,7 +510,11 @@ const ProductDetail = () => {
                                   />{" "}
                                   {product?.comment}
                                 </p>
-                                <Image alt="hinh danh gia san pham" width={72} src={product?.image}/>
+                                <Image
+                                  alt="hinh danh gia san pham"
+                                  width={72}
+                                  src={product?.image}
+                                />
                               </div>
                             );
                           })}
@@ -521,6 +538,22 @@ const ProductDetail = () => {
                 width="1140"
               />
             </div>
+                <h3 className="mt-3 mb-3" style={{textAlign:"center"}}>Sản phẩm liên quan</h3>
+              {ProductRelated
+                ? ProductRelated.data?.map((product) => (
+                    <ProductComponent
+                      countInStock={product.countInStock}
+                      image={product.image}
+                      name={product.name}
+                      price={product.price}
+                      rating={product.rating}
+                      discount={product.discount}
+                      selled={product.selled}
+                      id={product._id}
+                    />
+                  ))
+                : null}
+         
           </div>
         </div>
       </section>

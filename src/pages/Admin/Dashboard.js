@@ -69,17 +69,17 @@ const Dashboard = () => {
             }}
           >
             <div className="container-fluid">
-              <div class="row">
-                <div class="col-md-3">
+              <div className="row">
+                <div className="col-md-3">
                   <DashboardSummary />
                 </div>
 
-                <div class="col-md-6">
+                <div className="col-md-6">
                   <BarChartComponent token={user.access_token} />
                   <BarChartStock token={user.access_token} />
                 </div>
 
-                <div class="col-md-3">
+                <div className="col-md-3">
                   <PieChartStockByCategory token={user.access_token} />
                   <PieChartLowStock token={user.access_token}/>
                 </div>

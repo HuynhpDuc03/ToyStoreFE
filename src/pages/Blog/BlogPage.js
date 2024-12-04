@@ -88,7 +88,7 @@ const BlogPage = () => {
             total={pagination.total}
             onChange={onChangePage}
             align="center"
-            showTotal={(total) => `${t("pagination.total")} ${total} ${t("pagination.items")}`}
+            showTotal={(total) => `${t("pagination.total")} ${total} ${t("bài viết")}`}
           />
         </div>
       </section>
