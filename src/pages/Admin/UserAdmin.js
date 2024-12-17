@@ -190,8 +190,8 @@ const UserAdmin = () => {
       dataIndex: "isBlock",
       render: (text, record) => (
         <Switch
-        checked={record.isBlock}
-        onChange={(checked) => handleToggleBlock(record._id, checked)}
+        checked={record?.isBlock}
+        onChange={(checked) => handleToggleBlock(record?._id, checked)}
         />
       ),
       width: "20%",
@@ -267,34 +267,33 @@ const UserAdmin = () => {
   }, [isSuccessDeleted]);
 
   
+  const mutationUpdateBlockStatus = useMutationHooks((data) => {
+    const { id, isBlock, token } = data;
+    return UserService.updateIsBlock({ id, isBlock }, token); 
+  });
 
   const handleToggleBlock = (userId, isBlocked) => {
-    // Tìm người dùng trong dataTable
-
-    const userToUpdate = dataTable.find(user => user._id === userId);
-   
-    // if (!userToUpdate) {
-    //   console.error("User  not found");
-    //   return;
-    // }
-  
-    // // Giữ nguyên tất cả các thông tin khác và cập nhật isBlock
-    // const updatedUser  = {
-    //   ...userToUpdate,
-    //   isAdmin: userToUpdate?.isAdmin === 'True' ? true : false,
-    //   isBlock: isBlocked,
-    // };
-  
-    // // Gửi yêu cầu cập nhật
-    // mutationUpdate.mutate(
-    //   { id: userId, token: user?.access_token, ...updatedUser  },
-    //   {
-    //     onSettled: () => {
-    //       queryUser .refetch(); // Refetch dữ liệu người dùng để cập nhật bảng
-    //     },
-    //   }
-    // );
+    console.log("isBlocked",isBlocked)
+    mutationUpdateBlockStatus.mutate(
+      { id: userId, isBlock: isBlocked, token: user?.access_token }, 
+      {
+        onSuccess: (response) => {
+          if (response.status === "OK") {
+            message.success("Cập nhật trạng thái thành công!");
+            queryUser.refetch(); // Làm mới danh sách người dùng
+          } else {
+            message.error(response.message || "Cập nhật trạng thái thất bại.");
+          }
+        },
+        onError: (error) => {
+          console.error("Error updating block status:", error);
+          message.error("Đã xảy ra lỗi khi cập nhật trạng thái.");
+        },
+      }
+    );
   };
+
+
 
   const handleCloseDrawer = () => {
     setOpenDrawer(false);
@@ -309,11 +308,11 @@ const UserAdmin = () => {
   useEffect(() => {
     if (isSuccessUpdated && dataUpdated?.status === "OK") {
       message.destroy()
-      message.success();
+      message.success("Cập nhật thông tin người dùng thành công.");
       handleCloseDrawer();
     } else if (isErrorUpdated) {
       message.destroy()
-      message.error();
+      message.error("Có lỗi khi cập nhật thông tin người dùng");
     }
   }, [isSuccessUpdated]);
 
@@ -327,6 +326,7 @@ const UserAdmin = () => {
       {
         onSettled: () => {
           queryUser.refetch();
+          message.success("Xóa tài khoản thành công.")
         },
       }
     );

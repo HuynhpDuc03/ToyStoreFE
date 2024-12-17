@@ -24,12 +24,14 @@ import SiderComponent from "../../../components/SiderComponent/SiderComponent";
 
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { useNavigate } from "react-router-dom";
 
 const CreateBlog = () => {
   const user = useSelector((state) => state?.user); // Lấy token từ Redux store
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+  const navigate = useNavigate();
   const [marginLeft, setMarginLeft] = useState(200);
   const [collapsed, setCollapsed] = useState(false);
   const [form] = Form.useForm();
@@ -96,6 +98,7 @@ const CreateBlog = () => {
       setBannerImage(null);
       setEditorValue("");
       setSelectedTags([]);
+      navigate("/AdminBlog");
     } catch (error) {
       message.destroy()
       message.error("Lỗi khi tạo bài viết");

@@ -71,7 +71,7 @@ const Signin = () => {
                     <h2>{t("pageLogin.login")}</h2>
                     {loginError && (
                       <div className="text-center text-danger mt-3">
-                        {t("pageLogin.wrongPassword")}
+                       {loginError}
                       </div>
                     )}
                   </div>

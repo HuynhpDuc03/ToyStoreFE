@@ -12,12 +12,13 @@ import * as CouponService from "../../services/CouponService";
 import { useTranslation } from "react-i18next";
 
 const CheckOut = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const order = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
   const { state } = useLocation(); // Lấy dữ liệu từ ProductDetail
-  const selectedOrderItems = state?.orderItemsSelected || order?.orderItemsSelected;
-  
+  const selectedOrderItems =
+    state?.orderItemsSelected || order?.orderItemsSelected;
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [payment, setPayment] = useState("");
@@ -34,8 +35,6 @@ const CheckOut = () => {
     setPayment(e.target.id);
   };
 
-
-  
   const [deliveryMethod, setDeliveryMethod] = useState("");
 
   const handleDeliveryCheckboxChange = (e) => {
@@ -87,7 +86,8 @@ const CheckOut = () => {
   }, [priceMemo, discountAmount]);
 
   const totalPriceMemo = useMemo(() => {
-    const totalPrice = priceMemo - priceDiscountMemo + diliveryPriceMemo - priceCoupon;
+    const totalPrice =
+      priceMemo - priceDiscountMemo + diliveryPriceMemo - priceCoupon;
     return isNaN(totalPrice) ? 0 : totalPrice;
   }, [priceMemo, priceDiscountMemo, diliveryPriceMemo, priceCoupon]);
 
@@ -125,13 +125,13 @@ const CheckOut = () => {
 
   const handleAddOrder = () => {
     if (!deliveryMethod) {
-      message.destroy()
-      message.info(t('pageCheckOut.noCheckDilyvery'));
+      message.destroy();
+      message.info(t("pageCheckOut.noCheckDilyvery"));
       return;
     }
     if (!payment) {
-      message.destroy()
-      message.info(t('pageCheckOut.noCheckPaymentMethod'));
+      message.destroy();
+      message.info(t("pageCheckOut.noCheckPaymentMethod"));
       return;
     }
     if (
@@ -160,7 +160,6 @@ const CheckOut = () => {
         totalPrice: totalPriceMemo,
         discountPrice: Number(priceDiscountMemo),
       });
-
     }
   };
 
@@ -180,8 +179,8 @@ const CheckOut = () => {
       });
 
       dispatch(removeAllOrderProduct({ listChecked: arrayOrdered }));
-      message.destroy()
-      message.success(t('pageCheckOut.orderSucces'));
+      message.destroy();
+      message.success(t("pageCheckOut.orderSucces"));
       navigate("/OrderSuccess", {
         state: {
           deliveryMethod,
@@ -198,8 +197,8 @@ const CheckOut = () => {
         },
       });
     } else if (isError) {
-      message.destroy()
-      message.error('Có lỗi khi thêm xóa tất cả sản phẩm !');
+      message.destroy();
+      message.error("Có lỗi khi thêm xóa tất cả sản phẩm !");
     }
   }, [isSuccess, isError]);
 
@@ -211,25 +210,22 @@ const CheckOut = () => {
         setDiscountAmount(discount);
         setIsCouponApplied(true);
         setCouponError("");
-        message.destroy()
-        message.success(t('pageCheckOut.applyCodeSuccess'));
+        message.destroy();
+        message.success(t("pageCheckOut.applyCodeSuccess"));
       } else {
-        setCouponError(
-          t('pageCheckOut.applyCodeFailure') || couponMessage
-        );
-        message.destroy()
-        message.error(t('pageCheckOut.applyCodeFailure')||couponMessage );
+        setCouponError(t("pageCheckOut.applyCodeFailure") || couponMessage);
+        message.destroy();
+        message.error(t("pageCheckOut.applyCodeFailure") || couponMessage);
       }
     } catch (error) {
-      setCouponError(t('pageCheckOut.applyCodeError'));
-      message.destroy()
-      message.error(t('pageCheckOut.applyCodeError'));
+      setCouponError(t("pageCheckOut.applyCodeError"));
+      message.destroy();
+      message.error(t("pageCheckOut.applyCodeError"));
     }
   };
 
   return (
     <div>
-
       <section className="breadcrumb-option">
         <div className="container">
           <div className="row">
@@ -237,8 +233,8 @@ const CheckOut = () => {
               <div className="breadcrumb__text">
                 <h4>{t("pageCheckOut.checkout")}</h4>
                 <div className="breadcrumb__links">
-                <a href="/">{t("header.home")}</a>
-                <a href="/products">{t("header.shop")}</a>
+                  <a href="/">{t("header.home")}</a>
+                  <a href="/products">{t("header.shop")}</a>
                   <span>{t("pageCheckOut.checkout")}</span>
                 </div>
               </div>
@@ -247,21 +243,23 @@ const CheckOut = () => {
         </div>
       </section>
 
-
       <section className="checkout spad">
         <div className="container">
           <div className="checkout__form">
             <form action="/">
               <div className="row">
                 <div className="col-lg-8 col-md-6">
-                  <h6 className="checkout__title">{t("pageCheckOut.productPayment")}</h6>
+                  <h6 className="checkout__title">
+                    {t("pageCheckOut.productPayment")}
+                  </h6>
 
                   <div style={{ marginBottom: "24px" }}>
                     <h6
                       className="coupon__code"
                       style={{ marginBottom: "24px" }}
                     >
-                      <span className="icon_gift_alt"></span>{t("pageCheckOut.selectDelivery")}
+                      <span className="icon_gift_alt"></span>
+                      {t("pageCheckOut.selectDelivery")}
                     </h6>
                     <div className="checkout__input__checkbox">
                       <label for="fast">
@@ -301,12 +299,13 @@ const CheckOut = () => {
                       className="coupon__code"
                       style={{ marginBottom: "24px" }}
                     >
-                      <span className="icon_creditcard"></span>{t("pageCheckOut.selectPayment")}
+                      <span className="icon_creditcard"></span>
+                      {t("pageCheckOut.selectPayment")}
                     </h6>
                     <div className="checkout__input__checkbox">
                       <label for="paymentincash">
                         Thanh toán bằng tiền mặt
-                        <input 
+                        <input
                           onChange={handleCheckboxChange}
                           checked={payment === "paymentincash"}
                           type="checkbox"
@@ -314,14 +313,18 @@ const CheckOut = () => {
                         />
                         <span className="checkmark"></span>
                       </label>
+                   
                     </div>
                   </div>
                 </div>
                 <div className="col-lg-4 col-md-6">
                   <div className="checkout__order">
-                    <h4 className="order__title">{t("pageCheckOut.yourOrder")}</h4>
+                    <h4 className="order__title">
+                      {t("pageCheckOut.yourOrder")}
+                    </h4>
                     <div className="checkout__order__products">
-                      {t("pageCart.product")} <span>{t("pageCart.totalPrice")}</span>
+                      {t("pageCart.product")}{" "}
+                      <span>{t("pageCart.totalPrice")}</span>
                     </div>
                     <ul className="checkout__total__products">
                       {order?.orderItemsSelected?.map((order, index) => {
@@ -352,25 +355,26 @@ const CheckOut = () => {
                     </ul>
                     <ul className="checkout__total__all">
                       <li>
-                      {t("pageCheckOut.temporary")} <span>{converPrice(priceMemo)}</span>
+                        {t("pageCheckOut.temporary")}{" "}
+                        <span>{converPrice(priceMemo)}</span>
                       </li>
                       <li>
-                      {t("pageCheckOut.Discount")} <span>{converPrice(priceDiscountMemo)}</span>
+                        {t("pageCheckOut.Discount")}{" "}
+                        <span>{converPrice(priceDiscountMemo)}</span>
                       </li>
                       {isCouponApplied && (
                         <li>
-                           {t("pageCheckOut.DiscountCode")}{" "}
-                          <span>
-                            {converPrice(priceCoupon)}
-                          </span>
+                          {t("pageCheckOut.DiscountCode")}{" "}
+                          <span>{converPrice(priceCoupon)}</span>
                         </li>
                       )}
                       <li>
-                      {t("pageCheckOut.ShippingFee")}{" "}
+                        {t("pageCheckOut.ShippingFee")}{" "}
                         <span>{converPrice(diliveryPriceMemo)}</span>
                       </li>
                       <li>
-                       {t("pageCheckOut.makeMoney")} <span>{converPrice(totalPriceMemo)}</span>
+                        {t("pageCheckOut.makeMoney")}{" "}
+                        <span>{converPrice(totalPriceMemo)}</span>
                       </li>
                     </ul>
                     <Input
@@ -391,7 +395,9 @@ const CheckOut = () => {
                     {couponError && (
                       <p style={{ color: "red" }}>{couponError}</p>
                     )}
-                    <p className="mt-3">{`${t("pageCheckOut.address")}:  ${user?.address}, ${ward}, ${district}, ${province}`}</p>
+                    <p className="mt-3">{`${t("pageCheckOut.address")}:  ${
+                      user?.address
+                    }, ${ward}, ${district}, ${province}`}</p>
                     <button
                       type="button"
                       onClick={() => handleAddOrder()}
@@ -406,8 +412,6 @@ const CheckOut = () => {
           </div>
         </div>
       </section>
-
-
     </div>
   );
 };

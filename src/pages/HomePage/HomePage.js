@@ -25,12 +25,12 @@ const HomePage = () => {
     queryFn: fetchAllSpecialProducts,
   });
   const filteredProducts = products?.[filter] || [];
-console.log("filteredProducts",filteredProducts)
+  console.log("filteredProducts", filteredProducts);
   const fetchBlog = async () => {
     const res = await BlogService.getAllBlogs(1, 3);
     return res;
   };
- 
+
   const { data: blogs } = useQuery({
     queryKey: ["blogs"],
     queryFn: fetchBlog,
@@ -42,6 +42,7 @@ console.log("filteredProducts",filteredProducts)
         <div>
           <img
             width={"100%"}
+            height={"400px"}
             src={require("../../img/banner/banner1.webp")}
             alt="banner1"
           />
@@ -49,6 +50,7 @@ console.log("filteredProducts",filteredProducts)
         <div>
           <img
             width={"100%"}
+            height={"400px"}
             src={require("../../img/banner/banner2.webp")}
             alt="banner2"
           />
@@ -56,6 +58,7 @@ console.log("filteredProducts",filteredProducts)
         <div>
           <img
             width={"100%"}
+            height={"400px"}
             src={require("../../img/banner/Banner3.webp")}
             alt="banner3"
           />
@@ -63,6 +66,7 @@ console.log("filteredProducts",filteredProducts)
         <div>
           <img
             width={"100%"}
+            height={"400px"}
             src={require("../../img/banner/Banner4.webp")}
             alt="banner4"
           />

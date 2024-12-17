@@ -60,6 +60,15 @@ export const refreshToken = async (refreshToken) => {
     return res.data
 }
 
+export const updateIsBlock= async (data,access_token) => {
+    const res = await axios.put(`${process.env.REACT_APP_API_URL}/user/block-status`, {data}, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    })
+    return res.data
+}
+
 export const logoutUser = async () => {
     const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/log-out`)
     return res.data

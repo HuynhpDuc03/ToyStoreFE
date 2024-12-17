@@ -12,6 +12,7 @@ import {
   Rate,
   Checkbox,
   Input,
+  message,
 } from "antd";
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -110,6 +111,7 @@ const MyOrderPage = () => {
             state?.token,
             order.orderItems
           );
+          message.success("Đơn hàng đã được hủy thành công.")
           queryClient.invalidateQueries([
             "order",
             state?.id,
@@ -197,7 +199,7 @@ const MyOrderPage = () => {
         pagination.limit,
         activeTab,
       ]);
-
+      message.success("Cảm ơn bạn đã mua hàng.")
       setOpenUpdate(false);
     } catch (error) {
       console.error(error);
@@ -240,8 +242,9 @@ const MyOrderPage = () => {
           );
         }
       }
-      setOpenRate(false); // Đóng modal sau khi gửi
-      queryClient.invalidateQueries(["order", state?.id]); // Cập nhật lại dữ liệu order
+      setOpenRate(false); 
+      message.success("Cảm ơn bạn đã đánh giá sản phẩm của chúng tôi.");
+      queryClient.invalidateQueries(["order", state?.id]); 
     } catch (error) {
       console.error("Failed to submit review:", error);
     }

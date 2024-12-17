@@ -7,6 +7,7 @@ import {
   Select,
   Image,
   Upload,
+  message,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import {
@@ -100,6 +101,7 @@ const EditBlog = () => {
         user?.access_token,
         formData
       );
+      message.success("Cập nhật thông tin bài viết thành công.")
       navigate("/AdminBlog");
     } catch (error) {
       console.error("Error updating blog:", error);

@@ -274,6 +274,7 @@ const OrderDetails = () => {
                 <h4>Thay đổi trạng thái đơn hàng</h4>
                 <Select
                   className="mt-3"
+                  disabled={orderDetails?.orderStatus === "5"}
                   defaultValue={orderDetails?.orderStatus || "1"}
                   style={{ width: 306 }}
                   options={[
