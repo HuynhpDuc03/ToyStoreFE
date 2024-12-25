@@ -123,7 +123,47 @@ const CheckOut = () => {
     fetchLocationData();
   }, [user.city, user.district, user.ward]);
 
-  const handleAddOrder = () => {
+  // const handleAddOrder = () => {
+  //   if (!deliveryMethod) {
+  //     message.destroy();
+  //     message.info(t("pageCheckOut.noCheckDilyvery"));
+  //     return;
+  //   }
+  //   if (!payment) {
+  //     message.destroy();
+  //     message.info(t("pageCheckOut.noCheckPaymentMethod"));
+  //     return;
+  //   }
+  //   if (
+  //     (!user?.access_token &&
+  //       order &&
+  //       user?.name &&
+  //       user?.address &&
+  //       user?.phone &&
+  //       user?.city,
+  //     priceMemo && user?.id)
+  //   ) {
+  //     mutationAddOrder.mutate({
+  //       token: user?.access_token,
+  //       orderItems: order?.orderItemsSelected,
+  //       fullName: user?.name,
+  //       address: user?.address,
+  //       city: user?.city,
+  //       district: user?.district,
+  //       ward: user?.ward,
+  //       phone: user?.phone,
+  //       user: user?.id,
+  //       email: user?.email,
+  //       paymentMethod: payment,
+  //       itemsPrice: priceMemo,
+  //       shippingPrice: diliveryPriceMemo,
+  //       totalPrice: totalPriceMemo,
+  //       discountPrice: Number(priceDiscountMemo),
+  //     });
+  //   }
+  // };
+
+  const handleAddOrder = async () => {
     if (!deliveryMethod) {
       message.destroy();
       message.info(t("pageCheckOut.noCheckDilyvery"));
@@ -134,6 +174,59 @@ const CheckOut = () => {
       message.info(t("pageCheckOut.noCheckPaymentMethod"));
       return;
     }
+    if (payment === "zalopay") {
+      try {
+        const data = {
+          orderItems: order?.orderItemsSelected,
+          fullName: user?.name,
+          address: user?.address,
+          city: user?.city,
+          district: user?.district,
+          ward: user?.ward,
+          phone: user?.phone,
+          user: user?.id,
+          email: user?.email,
+          paymentMethod: payment,
+          itemsPrice: priceMemo,
+          shippingPrice: diliveryPriceMemo,
+          totalPrice: totalPriceMemo,
+          discountPrice: Number(priceDiscountMemo),
+        };
+  
+        const response = await OrderService.createOrderZalopay(
+          data,
+          user?.access_token
+        );
+  
+        if (response?.status === "OK") {
+          const popup = window.open(
+            response?.payment_url,
+            "_blank",
+            `width=800,height=600,left=${(window.innerWidth - 800) / 2},top=${(window.innerHeight - 600) / 2},scrollbars=yes`
+          );
+          
+    
+          // Kiểm tra trạng thái popup
+          if (!popup) {
+            message.error("Không thể mở cửa sổ thanh toán! Vui lòng kiểm tra cài đặt trình duyệt.");
+          } else {
+            // Lắng nghe trạng thái cửa sổ thanh toán
+            const timer = setInterval(() => {
+              if (popup.closed) {
+                clearInterval(timer);
+                // Gọi API kiểm tra trạng thái giao dịch
+                checkPaymentStatus();
+              }
+            }, 1000);
+          }
+        }
+      } catch (error) {
+        message.error(t("pageCheckOut.zalopayError"));
+      }
+      return;
+    }
+  
+    // Xử lý các phương thức thanh toán khác
     if (
       (!user?.access_token &&
         order &&
@@ -162,6 +255,7 @@ const CheckOut = () => {
       });
     }
   };
+  
 
   const mutationAddOrder = useMutationHooks((data) => {
     const { token, ...rests } = data;
@@ -202,6 +296,41 @@ const CheckOut = () => {
     }
   }, [isSuccess, isError]);
 
+  const checkPaymentStatus = async () => {
+    try {
+      // const statusResponse = await OrderServi"ce.getPaymentStatus({ orderId: currentOrderId });
+      const statusResponse = {"status": "success"}
+      if (statusResponse?.status === "success") {
+        message.success("Thanh toán thành công!");
+        const arrayOrdered = [];
+        order?.orderItemsSelected?.forEach((element) => {
+          arrayOrdered.push(element.product);
+        });
+  
+        dispatch(removeAllOrderProduct({ listChecked: arrayOrdered }));
+        navigate("/OrderSuccess", {
+          state: {
+            deliveryMethod,
+            payment,
+            fullName: user?.name,
+            address: user?.address,
+            city: user?.city,
+            district: user?.district,
+            ward: user?.ward,
+            phone: user?.phone,
+            email: user?.email,
+            orders: order?.orderItemsSelected,
+            totalPriceMemo,
+          },
+        });
+      } else {
+        message.error("Thanh toán thất bại hoặc bị hủy!");
+      }
+    } catch (error) {
+      message.error("Không thể kiểm tra trạng thái thanh toán!");
+    }
+  };
+  
   const handleApplyCoupon = async () => {
     try {
       const res = await CouponService.applyCoupon(couponCode);
@@ -310,6 +439,19 @@ const CheckOut = () => {
                           checked={payment === "paymentincash"}
                           type="checkbox"
                           id="paymentincash"
+                        />
+                        <span className="checkmark"></span>
+                      </label>
+                   
+                    </div>
+                    <div className="checkout__input__checkbox">
+                      <label for="zalopay">
+                        Thanh toán bằng <img style={{width:"70px", height:"20px"}} src={require("../../img/icon/logozalopay.png")}/>
+                        <input
+                          onChange={handleCheckboxChange}
+                          checked={payment === "zalopay"}
+                          type="checkbox"
+                          id="zalopay"
                         />
                         <span className="checkmark"></span>
                       </label>

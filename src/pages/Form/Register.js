@@ -70,6 +70,12 @@ const Register = () => {
     setLoading(true);
     try {
       const response = await UserService.RegisterSendOTP({ email });
+
+      if(response.status === 'ERR' && response.message === 'Email already exists') {
+        message.error("Tài khoản đã tồn tại");
+        return;
+      }
+
       message.success(t("pageForgotPassword.sendOTP")); 
       setStep(2);
     } catch (error) {

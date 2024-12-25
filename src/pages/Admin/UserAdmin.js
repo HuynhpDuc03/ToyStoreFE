@@ -326,6 +326,7 @@ const UserAdmin = () => {
       {
         onSettled: () => {
           queryUser.refetch();
+          message.destroy()
           message.success("Xóa tài khoản thành công.")
         },
       }

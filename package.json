@@ -1,6 +1,6 @@
 {
   "allowedHosts": "all",
-  "proxy": "http://localhost:3001",
+  "proxy": "https://toystorebe.onrender.com",
   "name": "toystore",
   "version": "0.1.0",
   "private": true,
@@ -27,6 +27,7 @@
     "jquery": "^3.7.1",
     "jwt-decode": "^4.0.0",
     "moment": "^2.30.1",
+    "netlify-cli": "^17.38.1",
     "quill": "^2.0.2",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",

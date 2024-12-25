@@ -19,7 +19,21 @@ const Signin = () => {
 
   const mutation = useMutationHooks((data) => UserService.loginUser(data));
   const { data, isSuccess, isError, error } = mutation;
+  
+  const handleGetDetailUser = async (id, token) => {
+    if (!token) return;
+    try {
+      const storage = localStorage.getItem("refresh_token");
+      const refreshToken = JSON.parse(storage);
 
+      const res = await UserService.getDetailsUser(id, token);
+      dispatch(
+        updateUser({ ...res?.data, access_token: token, refreshToken })
+      );
+    } catch (error) {
+      console.error("Lỗi khi lấy chi tiết người dùng:", error);
+    }
+  };
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
       message.destroy()
@@ -35,6 +49,8 @@ const Signin = () => {
       });
 
       localStorage.setItem("access_token", JSON.stringify(data?.access_token));
+      localStorage.setItem("refresh_token", JSON.stringify(data?.refresh_token));
+      
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
         if (decoded?.id) {
@@ -46,12 +62,9 @@ const Signin = () => {
         data?.message || error?.message || t("pageLogin.loginFailure")
       );
     }
-  }, [isSuccess, isError, error, data, navigate]);
+  }, [isSuccess, isError, error, data, navigate,handleGetDetailUser]);
 
-  const handleGetDetailUser = async (id, token) => {
-    const res = await UserService.getDetailsUser(id, token);
-    dispatch(updateUser({ ...res?.data, access_token: token }));
-  };
+  
 
   const handleSignIn = (e) => {
     e.preventDefault();

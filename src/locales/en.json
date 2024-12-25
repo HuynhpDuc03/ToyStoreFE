@@ -115,7 +115,10 @@
     "noAccount": "Don't have an account?",
     "haveAccount": "Already have an account?",
     "name": "Full Name",
-    "phone": "Number Phone"
+    "phone": "Number Phone",
+    "success": "Account registration successfully",
+    "pleaseLogin": "Please login"
+
   },
   "pageCheckOut": {
     "checkout": "Checkout",

@@ -206,6 +206,8 @@ const Header = () => {
   const handleLogout = async () => {
     await UserService.logoutUser();
     dispatch(resetUser());
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     handleNavigatelogin();
   };
 

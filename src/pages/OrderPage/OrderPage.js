@@ -369,9 +369,7 @@ const OrderPage = () => {
                 provisional={priceMemo}
                 discount={priceDiscountMemo}
                 total={totalPriceMemo}
-                checkAddress={(user?.address === undefined || user.address === "") && 
-                    (user?.city === undefined || user.city === "") && (user?.district === undefined || user.district === "") &&
-                    (user?.ward === undefined || user.ward === "") && (user?.phone === undefined || user.phone === "")}
+                checkAddress={(user?.address === undefined || user.address === "")}
                 
                 disabled={order?.orderItemsSelected?.length === 0}
                 isLoggedIn={!!user?.id}
@@ -404,10 +402,10 @@ const CheckOut = (props) => {
       message.destroy()
       message.info(t("pageCart.noSelected"));
     } 
-    // else if (!checkAddress){
-      //message.destroy()
-      //message.info("Thông tin địa chỉ chưa có hoặc thiếu, Vui lòng kiểm tra lại!");
-    // }
+    else if (checkAddress){
+      message.destroy()
+      message.info("Thông tin địa chỉ chưa có hoặc thiếu, Vui lòng kiểm tra lại!");
+    }
      else {
       navigate(`/Checkout`);
     }

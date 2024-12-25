@@ -128,7 +128,9 @@
     "noAccount":"Chưa có tài khoản?",
     "haveAccount":"Đã có tài khoản?",
     "name":"Họ và tên",
-    "phone": "Số điện thoại"
+    "phone": "Số điện thoại",
+    "success": "Đăng ký tài khoản thành công",
+    "pleaseLogin": "Vui lòng đăng nhập"
   },
 
   "pageCheckOut": {

@@ -5,7 +5,7 @@ module.exports = {
     allowedHosts: 'all', // or specify the hostname you want to allow access
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'https://toystorebe.onrender.com',
         changeOrigin: true,
       },
     },
